@@ -23,31 +23,33 @@
 # *  e-mail address 'jmdelarosa@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This modules contains constants related to Spider protocols
-"""
 
-#------------------ Constants values --------------------------------------
-# spider documentation url
-SPIDER_DOCS = 'http://spider.wadsworth.org/spider_doc/spider/docs/man/'
+from protocol_classify_base import SpiderProtClassifyCluster
 
-# Filter types
-FILTER_TOPHAT = 0
-FILTER_GAUSSIAN = 1
-FILTER_FERMI = 2
-FILTER_BUTTERWORTH = 3
-FILTER_RAISEDCOS = 4
+      
 
-FILTER_LOWPASS = 0
-FILTER_HIGHPASS = 1
+class SpiderProtClassifyDiday(SpiderProtClassifyCluster):
+    """ Diday's method, using 'CL CLA' 
+    """
+    _label = 'classify diday'
+    
+    def __init__(self, **kwargs):
+        SpiderProtClassifyCluster.__init__(self, 'mda/cluster.msa', 'CLA',  **kwargs)
 
-# CA-PCA protocol
-CA = 0
-PCA = 1
-IPCA = 2
-
-# Center of gravity values
-CG_NONE = 0
-CG_PH = 1
-CG_RT180 = 2
-
+    #--------------------------- INFO functions -------------------------------------------- 
+    
+    def _validate(self):
+        errors = []
+        return errors
+    
+    def _citations(self):
+        cites = []
+        return cites
+    
+    def _summary(self):
+        summary = []
+        return summary
+    
+    def _methods(self):
+        return self._summary()  # summary is quite explicit and serve as methods
+    

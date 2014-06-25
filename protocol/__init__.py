@@ -24,32 +24,18 @@
 # *
 # **************************************************************************
 """
-This module contains templates files from Spider scripts that will 
-generated a file that can be executed from Spider, replacing specific
-variables.
+Import of all protocols included in spider.
 """
+from protocol_base import SpiderProtocol
+from protocol_classify_base import SpiderProtClassify
+from protocol_filters import SpiderProtFilter
+from protocol_align_apsr import SpiderProtAlignAPSR
+from protocol_custommask import SpiderProtCustomMask
+from protocol_ca_pca import SpiderProtCAPCA
+from protocol_classify_diday import SpiderProtClassifyDiday
+from protocol_classify_ward import SpiderProtClassifyWard
+from protocol_classify_kmeans import SpiderProtClassifyKmeans
+from protocol_mda import SpiderWfMDA
+from protocol_align_pairwise import SpiderProtAlignPairwise
 
-from os.path import join, dirname, abspath, exists
 
-TEMPLATE_DIR = abspath(dirname(__file__))
-
-def createSpiderScript(templateFile, scriptFile, paramsDict):
-    """ This function will read a template, substitute the params with values
-    and write the resulting script. """
-    f = open(templateFile, 'r')
-    
-    for line in f:
-        line = line.strip()
-        if not line.startswith(';'):
-            line = line % paramsDict
-        print line
-        
-        
-def getTemplate(templateName):
-    """ Return the path to the template file given its name. """
-    templateFile = join(TEMPLATE_DIR, templateName)
-    if not exists(templateFile):
-        raise Exception("getTemplate: template '%s' was not found in templates directory" % templateName)
-    
-    return templateFile
-    
