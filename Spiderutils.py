@@ -325,31 +325,11 @@ def getDocfileHeaders(filename, output='list'):
 #########################################################################
 # functions for writedoc
 
-# returns e.g., ('16-OCT-03', '13:08:16', '031016130816')
-def nowisthetime():
-    "return current time as tuple of 3 strings: (date, time, ID)"
-    tt = time.localtime(time.time())
-    # localtime return format: (2003, 10, 16, 12, 48, 30, 3, 289, 1)
-    #t = string.split(time.asctime(tt))
-    t = time.asctime(tt).split()
-    # asctime return format: 'Thu Oct 16 12:50:17 2003'
-    mo = t[1].upper()
-    day = t[2]
-    if len(day) < 2: day = '0' + day
-    timestr = t[3]
-    yr = t[4]
-    datestr = "%s-%s-%s" % (day, mo, yr)
-
-    yr = yr[-2:]
-    # this is just to get the month as a number
-    d = map(str,tt)   # stringify all numbers in the tuple
-    mon = d[1]
-    if len(mon) < 2: mon = '0' + mon
-    #(h,m,s) = string.split(timestr,':')
-    (h,m,s) = timestr.split(':')
-    idstr = "%s%s%s%s%s%s" % (yr,mon,day,h,m,s)
-
-    return (datestr, timestr, idstr)
+# returns e.g., ('16-OCT-2003 AT 13:08:16')
+def nowisthetime(dt=None, format='%d-%b-%Y AT %H:%M:%S'):
+    if dt is None:
+        dt = datetime.now()
+    return dt.strftime(format).upper()
 
 def makeDocfileHeader(filename, batext=None):
     "create the comment line used at the top of SPIDER document files"

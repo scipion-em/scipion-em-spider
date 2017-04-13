@@ -69,13 +69,8 @@ def getEnviron():
     """
     global SPIDER, SPIDER_MPI
     env = Environ(os.environ)
-    SPIDER_PATH = env.getFirst((SPIDER_HOME, SPIDER_DIR), mandatory=True)  #
-    # Scipion
-    # definition
-
-    # env.setInstalled(os.path.exists(SPIDER_DIR))
-
-    if SPIDER_PATH is None:
+    SPIDER_DIR = env.getFirst(('SPIDER_HOME', 'SPIDER_DIR'), mandatory=True)  #
+    if SPIDER_DIR is None:
         errors = ''
         for var in [SPBIN_DIR, SPMAN_DIR, SPPROC_DIR]:
             if not var in env:

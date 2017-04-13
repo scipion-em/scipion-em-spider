@@ -30,7 +30,6 @@ This module contains converter functions related to Spider
 import numpy
 
 from pyworkflow.em.constants import NO_INDEX, ALIGN_2D, ALIGN_3D, ALIGN_PROJ
-from pyworkflow.em.convert import ImageHandler
 from pyworkflow.utils.path import moveFile
 
 from spider import SpiderDocFile, runTemplate
@@ -161,7 +160,7 @@ def alignmentToRow(alignment, alignmentRow, alignType):
     """
     is2D = alignType == ALIGN_2D
     inverseTransform = alignType == ALIGN_PROJ
-    #only flip is meaninfull if 2D case
+    #only flip is meaningful if 2D case
     #in that case the 2x2 determinant is negative
     flip = False
     matrix = alignment.getMatrix()

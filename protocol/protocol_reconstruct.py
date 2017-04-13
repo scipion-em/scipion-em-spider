@@ -58,7 +58,7 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
                       pointerCondition='hasAlignmentProj',
                       label="Input particles", important=True,
                       help='Select the input particles.\n')
-        form.addParallelSection(threads=1, mpi=0)
+        form.addParallelSection(threads=1, mpi=1)
         
     #--------------------------- INSERT steps functions --------------------------------------------  
     def _insertAllSteps(self):        
@@ -113,7 +113,8 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
                   '[nummps]': self.numberOfThreads.get()
                   }     
         writeScript(script, self._getPath('recons_fourier.txt'), params)
-        runScript(script, 'txt/stk', program=SPIDER, log=self._log,
+        program = SPIDER_MPI if self.numberOfMpi.get() > 2 else SPIDER
+        runScript(script, 'txt/stk', program=program, log=self._log,
                          cwd=self.getWorkingDir())
         
     def createOutputStep(self):
