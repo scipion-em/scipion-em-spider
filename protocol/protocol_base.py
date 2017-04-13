@@ -29,7 +29,7 @@ Some Spider protocol base classes.
 
 from pyworkflow.em import EMProtocol
 
-from ..spider import runTemplate, environment
+from ..spider import runTemplate, SPIDER, SPIDER_MPI
 from ..convert import writeSetOfImages
 
 
@@ -72,7 +72,9 @@ class SpiderProtocol(EMProtocol):
         self._enterWorkingDir()
         
         log = getattr(self, '_log', None)
-        runTemplate(inputScript, ext, paramsDict, log)
+        mpi = getattr(self, 'numberOfMpi', None)
+        program = SPIDER_MPI if mpi >1 else SPIDER
+        runTemplate(inputScript, ext, paramsDict, program=program, log=log)
         self._leaveWorkingDir()
     
         f = open(self.getLogPaths()[0], 'r')

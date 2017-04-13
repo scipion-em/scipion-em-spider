@@ -67,7 +67,7 @@ def getEnviron():
     If SPIDER_DIR is defined, the bin, man and proc folders will be 
     defined from it. If not, each of them should be defined separately. 
     """
-    global SPIDER
+    global SPIDER, SPIDER_MPI
     env = Environ(os.environ)
     SPIDER_PATH = env.getFirst((SPIDER_HOME, SPIDER_DIR), mandatory=True)  #
     # Scipion
@@ -159,7 +159,7 @@ def writeScript(inputScript, outputScript, paramsDict):
     fOut.close()    
      
     
-def runTemplate(inputScript, ext, paramsDict, log=None, cwd=None):
+def runTemplate(inputScript, ext, paramsDict, program=SPIDER, log=None, cwd=None):
     """ This function will create a valid Spider script
     by copying the template and replacing the values in dictionary.
     After the new file is read, the Spider interpreter is invoked.
@@ -174,7 +174,7 @@ def runTemplate(inputScript, ext, paramsDict, log=None, cwd=None):
     # First write the script from the template with the substitutions
     writeScript(inputScript, outputScript, paramsDict)
     # Then proceed to run the script
-    runScript(outputScript, ext, log, cwd)
+    runScript(outputScript, ext, program, log, cwd)
     
 
 def runScript(inputScript, ext, log=None, cwd=None):

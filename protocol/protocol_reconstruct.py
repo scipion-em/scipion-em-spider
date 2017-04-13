@@ -33,7 +33,8 @@ from pyworkflow.em.protocol import ProtRefine3D
 from pyworkflow.em.constants import ALIGN_PROJ
 from pyworkflow.em.data import Volume
 
-from ..spider import SpiderDocFile, writeScript, runScript
+from ..spider import SpiderDocFile, writeScript, runScript, SPIDER, SPIDER_MPI
+from ..Spiderutils import nowisthetime
 from ..convert import ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX, SHIFTY, convertEndian, alignmentToRow
 from protocol_base import SpiderProtocol
 
@@ -112,7 +113,7 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
                   '[nummps]': self.numberOfThreads.get()
                   }     
         writeScript(script, self._getPath('recons_fourier.txt'), params)
-        runScript(script, 'txt/stk', log=self._log,
+        runScript(script, 'txt/stk', program=SPIDER, log=self._log,
                          cwd=self.getWorkingDir())
         
     def createOutputStep(self):
