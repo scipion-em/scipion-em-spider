@@ -73,7 +73,7 @@ class SpiderProtocol(EMProtocol):
         
         log = getattr(self, '_log', None)
         mpi = getattr(self, 'numberOfMpi', None)
-        program = SPIDER_MPI if mpi >1 else SPIDER
+        program = SPIDER_MPI if mpi > 1 else SPIDER
         runTemplate(inputScript, ext, paramsDict, program=program, log=log)
         self._leaveWorkingDir()
     

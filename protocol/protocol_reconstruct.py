@@ -62,10 +62,10 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
         
     #--------------------------- INSERT steps functions --------------------------------------------  
     def _insertAllSteps(self):        
-        # Create new stacks and selfiles per defocus groups
+        # Create new stack and docfile
         self._insertFunctionStep('convertInputStep', self.inputParticles.get().getObjId())
 
-        self._insertFunctionStep('runScriptStep', 'recons_fourier.txt')
+        self._insertFunctionStep('runScriptStep')
                 
         self._insertFunctionStep('createOutputStep')
     
@@ -107,20 +107,29 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
             
         convertEndian(stackfile, partSet.getSize())  
                 
-    def runScriptStep(self, script):
+    def runScriptStep(self):
         params = {'[unaligned_images]': "'particles'",
                   '[next_group_align]': "'docfile'",
                   '[nummps]': self.numberOfThreads.get()
-                  }     
-        writeScript(script, self._getPath('recons_fourier.txt'), params)
-        program = SPIDER_MPI if self.numberOfMpi.get() > 2 else SPIDER
-        runScript(script, 'txt/stk', program=program, log=self._log,
-                         cwd=self.getWorkingDir())
-        
+                  }
+        if self.numberOfMpi.get() > 2:
+            # self.runTemplate not used since we have runs with and without MPI
+            script = 'recons_fourier_mpi1.txt'
+            script2 = 'recons_fourier_mpi2.txt'
+
+            writeScript(script, self._getPath(script), params)
+            writeScript(script2, self._getPath(script2), params)
+            runScript(script, 'txt/stk', program=SPIDER, log=self._log,
+                      cwd=self.getWorkingDir())
+            runScript(script2, 'txt/stk', program=SPIDER_MPI, log=self._log,
+                      cwd=self.getWorkingDir())
+        else:
+            self.runTemplate('recons_fourier.txt', 'stk', params)
+
+
     def createOutputStep(self):
         imgSet = self.inputParticles.get()
         vol = Volume()
-        # FIXME: return two half-volumes as well
         vol.setFileName(self._getPath('volume.stk'))
         vol.setSamplingRate(imgSet.getSamplingRate())
 
