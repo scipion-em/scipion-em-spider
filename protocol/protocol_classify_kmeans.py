@@ -95,7 +95,7 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
     
     def _methods(self):
         msg  = "\nInput particles %s " % self.getObjectTag('inputParticles')
-        msg += "were divided into % classes using K-means classification " % self.getNumberOfClasses()
+        msg += "were divided into %d classes using K-means classification " % self.getNumberOfClasses()
         msg += "(SPIDER command [[http://spider.wadsworth.org/spider_doc/spider/docs/man/clkm.html][CL KM]]) "
         msg += "using %s factors. " % self.numberOfFactors
         return [msg]
