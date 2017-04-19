@@ -117,8 +117,8 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
             script = 'recons_fourier_mpi1.txt'
             script2 = 'recons_fourier_mpi2.txt'
 
-            writeScript(script, self._getPath(script), params)
-            writeScript(script2, self._getPath(script2), params)
+            for fn in script, script2:
+                writeScript(fn, self._getPath(fn), params)
             runScript(script, 'txt/stk', program=SPIDER, log=self._log,
                       cwd=self.getWorkingDir())
             runScript(script2, 'txt/stk', program=SPIDER_MPI, log=self._log,

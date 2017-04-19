@@ -26,6 +26,8 @@
 # **************************************************************************
 
 from os.path import join
+from glob import glob
+import re
 
 import pyworkflow.utils as pwutils
 import pyworkflow.em as em
@@ -54,8 +56,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     [SPIDER documentation on projection-matching]]
     
     """
-    _label = 'refinement'
-    
+
     #--------------------------- DEFINE param functions --------------------------------------------   
     def _defineParams(self, form):
         form.addSection(label='Input')
@@ -157,8 +158,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         """ Convert all needed inputs before running the refinement script. """
         partSet = self.inputParticles.get()
 
-        self._writeParamsFile(partSet)        
-        
+        self._writeParamsFile(partSet)
+        self._getLastIterNumber()
         self._writeGroupFiles(partSet)
         
         # Convert the input volume
@@ -288,8 +289,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def createOutputStep(self):
         imgSet = self.inputParticles.get()
         vol = Volume()
-        #FIXME: return the last completed iteration
-        vol.setFileName(self._getExtraPath('Refinement/final/bpr%02d.stk' % (self.numberOfIterations.get() + 1)))
+        vol.setFileName(self._getExtraPath('Refinement/final/bpr%02d.stk' % self._getLastIterNumber()))
         vol.setSamplingRate(imgSet.getSamplingRate())
 
         self._defineOutputs(outputVolume=vol)
@@ -350,7 +350,19 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     #--------------------------- UTILS functions --------------------------------------------
     def _getDefocusGroup(self, img):
         return img.getMicId()
-    
+
+    def _getLastIterNumber(self):
+        """ Return the list of iteration files, give the iterTemplate. """
+        result = None
+        template = self._getExtraPath('Refinement/final/bpr??.stk')
+        files = sorted(glob(template))
+        if files:
+            f = files[-1]
+            s = re.compile('bpr(\d{2,2})').search(f)
+            if s:
+                result = int(s.group(1))
+        return result
+
     
 class DefocusGroupInfo():
     """ Helper class to store some information about 
@@ -363,8 +375,8 @@ class DefocusGroupInfo():
         self.selfile = template % (defocusGroup, 'selfile')
         self.docfile = template % (defocusGroup, 'align')
         self.stackfile = template % (defocusGroup, 'stack')
-        self.counter = 0 # number of particles in this group
-        # 
+        self.counter = 0  # number of particles in this group
+
         self.sel = SpiderDocFile(self.selfile, 'w+')
         self.doc = SpiderDocFile(self.docfile, 'w+')
         date, time, _ = nowisthetime()

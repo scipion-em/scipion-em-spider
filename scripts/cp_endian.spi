@@ -25,4 +25,5 @@ DO LB2 [i]=1,[numberOfParticles]
 LB2
 ; end particle-loop
 
-en
+en d
+; clean up results
