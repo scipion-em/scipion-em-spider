@@ -33,7 +33,7 @@ from pyworkflow.em.protocol import ProtRefine3D
 from pyworkflow.em.constants import ALIGN_PROJ
 from pyworkflow.em.data import Volume
 
-from ..spider import SpiderDocFile, writeScript, runScript, SPIDER, SPIDER_MPI
+from ..spider import SpiderDocFile
 from ..Spiderutils import nowisthetime
 from ..convert import ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX, SHIFTY, convertEndian, alignmentToRow
 from protocol_base import SpiderProtocol
@@ -58,7 +58,7 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
                       pointerCondition='hasAlignmentProj',
                       label="Input particles", important=True,
                       help='Select the input particles.\n')
-        form.addParallelSection(threads=1, mpi=1)
+        form.addParallelSection(threads=1, mpi=0)
         
     #--------------------------- INSERT steps functions --------------------------------------------  
     def _insertAllSteps(self):        
@@ -110,22 +110,8 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
     def runScriptStep(self):
         params = {'[unaligned_images]': "'particles'",
                   '[next_group_align]': "'docfile'",
-                  '[nummps]': self.numberOfThreads.get()
-                  }
-        if self.numberOfMpi.get() > 2:
-            # self.runTemplate not used since we have runs with and without MPI
-            script = 'recons_fourier_mpi1.txt'
-            script2 = 'recons_fourier_mpi2.txt'
-
-            for fn in script, script2:
-                writeScript(fn, self._getPath(fn), params)
-            runScript(script, 'txt/stk', program=SPIDER, log=self._log,
-                      cwd=self.getWorkingDir())
-            runScript(script2, 'txt/stk', program=SPIDER_MPI, log=self._log,
-                      cwd=self.getWorkingDir())
-        else:
-            self.runTemplate('recons_fourier.txt', 'stk', params)
-
+                  '[nummps]': self.numberOfThreads.get()}
+        self.runTemplate('recons_fourier.txt', 'stk', params)
 
     def createOutputStep(self):
         imgSet = self.inputParticles.get()

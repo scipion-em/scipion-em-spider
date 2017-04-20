@@ -25,7 +25,7 @@
 # **************************************************************************
 
 import os
-from os.path import join, dirname, abspath
+from os.path import join, dirname, abspath, exists
 import subprocess
 import re
 
@@ -108,12 +108,26 @@ def validateInstallation():
         return [] # No errors
 
 
+def getVersion():
+    env = Environ(os.environ)
+    path = env.getFirst(('SPIDER_HOME', 'SPIDER_DIR'), mandatory=True)
+    for v in getSupportedVersions():
+        if v in path or v in os.path.realpath(path):
+            return v
+    return ''
+
+
+def getSupportedVersions():
+    return ['21.13', '24.02']
+>>>>>>> 20f6b0733b... add multi-version support
+
+
 def _getFile(*paths):
     return join(PATH, *paths)
 
 
 def getScript(*paths):
-    return _getFile(SCRIPTS_DIR, *paths)
+    return _getFile(SCRIPTS_DIR, getVersion(), *paths)
 
 
 def __substituteVar(match, paramsDict, lineTemplate):

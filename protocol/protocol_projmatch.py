@@ -44,8 +44,8 @@ from protocol_base import SpiderProtocol
 
 
 class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
-    """ Iterative reference-based refinement of particles orientations,
-    based on the Spider AP SHC and AP REF programs.
+    """ Iterative reference-based refinement of particles orientations
+    with defocus groups, based on the Spider AP SHC and AP REF programs.
     
     Iterative refinement improves the accuracy in the determination of orientations.
     This improvement is accomplished by successive use of
@@ -53,7 +53,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     
     For more information, see:
     [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html]
-    [SPIDER documentation on projection-matching]]
+    [SPIDER documentation on projection-matching with defocus groups]]
     
     """
     _label = 'refinement'
