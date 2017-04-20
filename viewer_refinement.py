@@ -23,7 +23,6 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-from pyworkflow.em.packages.eman2.viewer import ANGDIST_CHIMERA
 """
 This module implements visualization program
 for Spider refinement protocols.
@@ -53,19 +52,17 @@ VOLUME_CHIMERA = 1
 VOL = 0
 VOL_HALF1 = 1
 VOL_HALF2 = 2
-VOL_FILTERED = 3
 
 # Template volume names depending on the iteration
 VOLNAMES = {
-            VOL: 'vol%02d',
-            VOL_HALF1: 'vol%02d_sub1',
-            VOL_HALF2: 'vol%02d_sub2',
-            VOL_FILTERED: 'vol%02d_filtered'
+            VOL: 'bpr%02d',
+            VOL_HALF1: 'bpr%02d_sub1',
+            VOL_HALF2: 'bpr%02d_sub2'
             }
 
+
 class SpiderViewerRefinement(ProtocolViewer):
-    """ Wrapper to visualize different type of objects
-    with the Xmipp program xmipp_showj. """
+    """ Visuallisation of Spider refinement protocol. """
     
     _environments = [DESKTOP_TKINTER, WEB_DJANGO]
     _targets = [SpiderProtRefinement]
@@ -93,11 +90,11 @@ Examples:
         group = form.addGroup('Angular assignment')
         group.addParam('showImagesAngularAssignment', params.LabelParam, default=True,
                        label='Particles angular assignment')
-        group.addParam('displayAngDist', params.EnumParam, choices=['2D plot', 'chimera'], 
-                      default=ANGDIST_2DPLOT, display=params.EnumParam.DISPLAY_HLIST, 
-                      label='Display angular distribution',
-                      help='*2D plot*: display angular distribution as interative 2D in matplotlib.\n'
-                           '*chimera*: display angular distribution using Chimera with red spheres.') 
+        group.addParam('displayAngDist', params.EnumParam, choices=['2D plot', 'chimera'],
+                       default=ANGDIST_2DPLOT, display=params.EnumParam.DISPLAY_HLIST,
+                       label='Display angular distribution',
+                       help='*2D plot*: display angular distribution as interative 2D in matplotlib.\n'
+                            '*chimera*: display angular distribution using Chimera with red spheres.')
         group.addParam('spheresScale', params.IntParam, default=-1, 
                        condition="displayAngDist == %d" % ANGDIST_CHIMERA,
                        expertLevel=params.LEVEL_ADVANCED,
@@ -105,37 +102,41 @@ Examples:
                        help='')
 
         group = form.addGroup('Volumes')
-        group.addParam('displayVol', params.EnumParam, 
+        group.addParam('displayVol', params.EnumParam,
+                       condition='viewIter==%d' % ITER_LAST,
                        choices=['slices', 'chimera'], 
                        default=VOLUME_SLICES, display=params.EnumParam.DISPLAY_HLIST, 
                        label='Display volume with',
                        help='*slices*: display volumes as 2D slices along z axis.\n'
                             '*chimera*: display volumes as surface with Chimera.')
         group.addParam('showVolumes', params.EnumParam, default=VOL,
-                       choices=['reconstructed', 'half1', 'half2', 'filtered'],
+                       condition='viewIter==%d' % ITER_LAST,
+                       choices=['reconstructed', 'half1', 'half2'],
                        label='Volume to visualize',
                        help='Select the volume to visualize')
         
         group = form.addGroup('Resolution')
 
         group.addParam('showFSC', params.LabelParam, default=True,
+                       condition='viewIter==%d' % ITER_LAST,
                        important=True,
-                       label='Display resolution plots (FSC)',
-                       help='')
-        group.addParam('groupFSC', params.EnumParam, default=1,
-                       choices=['iterations', 'defocus groups'],
+                       label='Display resolution plots (FSC)')
+        group.addParam('groupFSC', params.EnumParam, default=0,
+                       condition='viewIter==%d' % ITER_LAST,
+                       choices=['all images', 'defocus groups'],
                        display=params.EnumParam.DISPLAY_HLIST,
-                       label='Group FSC plots by',
+                       label='Show FSC plot for',
                        help='Select which FSC curve you want to '
-                            'show together in the same plot.')
-        group.addParam('groupSelection', params.NumericRangeParam, 
-                      condition='groupFSC==%d' % 1, 
-                      label="Groups list", 
-                      help="Write the group list to visualize. See examples in iteration list")        
-        group.addParam('resolutionThresholdFSC', params.FloatParam, default=0.5, 
-                      expertLevel=params.LEVEL_ADVANCED,
-                      label='Threshold in resolution plots',
-                      help='')
+                            'show together in the same plot.\n'
+                            'SPIDER saves FSC curves only for the last iteration!')
+        group.addParam('groupSelection', params.NumericRangeParam,
+                       condition='viewIter==%d and groupFSC==%d' % (ITER_LAST, 1),
+                       label="Groups list",
+                       help="Write the group list to visualize. See examples in iteration list")
+        group.addParam('resolutionThresholdFSC', params.FloatParam, default=0.5,
+                       condition='viewIter==%d' % ITER_LAST,
+                       expertLevel=params.LEVEL_ADVANCED,
+                       label='Threshold in resolution plots')
                                               
         
     def _getVisualizeDict(self):
@@ -158,7 +159,7 @@ Examples:
     
     def _getIterations(self):
         if self.viewIter == ITER_LAST:
-            return [self.protocol.numberOfIterations.get()] # FIXME: return the last completed iteration
+            return [self.protocol._getLastIterNumber()]
         else:
             return self._getListFromRangeString(self.iterSelection.get(''))
         
@@ -174,8 +175,6 @@ Examples:
 #===============================================================================
     def _createVolumesSqlite(self):
         """ Write an sqlite with all volumes selected for visualization. """
-
-        
         volSqlite = self.protocol._getExtraPath('viewer_volumes.sqlite')
         samplingRate = self.protocol.inputParticles.get().getSamplingRate()
         self.createVolumesSqlite(self.getVolumeNames(), 
@@ -184,16 +183,16 @@ Examples:
         return [self.objectView(volSqlite)]
         
     def getVolumeNames(self, it=None):
-        """ If it is not none, return the volume of this iteration only. """
+        """ If it is not none, return the volume of last iteration only. """
         if it is None:
-            iterations = self._getIterations()
+            iterations = [self.protocol._getLastIterNumber()]
         else:
             iterations = [it]
-            
+
         volTemplate = VOLNAMES[self.showVolumes.get()]
         volumes = [self._getFinalPath(volTemplate % i) + '.stk'
                    for i in iterations]
-        
+
         return volumes
 
     def _showVolumesChimera(self):
@@ -224,7 +223,7 @@ Examples:
             return self._showVolumesChimera()
         
         elif self.displayVol == VOLUME_SLICES:
-            return self._createVolumesSqlite()#self._createVolumesMd()
+            return self._createVolumesSqlite()  # self._createVolumesMd()
     
 #===============================================================================
 # plotFSC            
@@ -247,39 +246,39 @@ Examples:
         a.set_ylim([-0.1, 1.1])
         fscDoc.close()
             
-    def _showFSC(self, paramName=None):
+    def _showFSC(self, *args):
         threshold = self.resolutionThresholdFSC.get()
-        iterations = self._getIterations()
+        it = self.protocol._getLastIterNumber()
         groups = self._getGroups()
         
-        if self.groupFSC == 0: # group by iterations           
-            files = [(it, self._getFinalPath('fscdoc_%02d.stk' % it)) for it in iterations]
+        if self.groupFSC == 0:  # show FSC for all images
+            files = [(it, self._getFinalPath('fscdoc_%02d.stk' % it))]
             legendPrefix = 'iter'
         else:
-            it = iterations[-1]
             legendPrefix = 'group'
-            def group(f): # retrieve the group number
+
+            def group(f):  # retrieve the group number
                 return int(f.split('_')[-1].split('.')[0])
+
             groupFiles = glob(self._getFinalPath('fscdoc_%02d_???.stk' % it))
             groupFiles.sort()
             files = [(group(f), f) for f in groupFiles if group(f) in groups]
-            if not files: #empty files
+            if not files:  # empty files
                 return [self.errorMessage("Please select valid groups to display", 
                                           title="Wrong groups selection")]
                 
         plotter = EmPlotter(x=1, y=1, windowTitle='Resolution FSC')
         a = plotter.createSubPlot("FSC", 'Angstroms^-1', 'FSC', yformat=False)
-        #fscFile = self._getFinalPath('fscdoc_%02d.stk' % iterations[0])
         legends = []
-        for it, fscFile in files:
+        for group, fscFile in files:
             if os.path.exists(fscFile):
                 self._plotFSC(a, fscFile)
-                legends.append('%s %d' % (legendPrefix, it))
+                legends.append('%s %d' % (legendPrefix, group))
             else:
                 print "Missing file: ", fscFile
             
         if threshold < self.maxfsc:
-            a.plot([self.minInv, self.maxInv],[threshold, threshold], 
+            a.plot([self.minInv, self.maxInv], [threshold, threshold],
                    color='black', linestyle='--')
         
         plotter.showLegend(legends)
@@ -304,13 +303,11 @@ Examples:
             fscDoc.close()
         
     def _displayAngDist(self, *args):
-        #print "_displayAngDist...."
         iterations = self._getIterations()
         nparts = self.protocol.inputParticles.get().getSize()
         views = []
         
         if self.displayAngDist == ANGDIST_2DPLOT:
-	    #print " self.displayAngDist == ANGDIST_2DPLO "
             for it in iterations:
                 anglesSqlite = self._getFinalPath('angular_dist_%03d.sqlite' % it)
                 title = 'Angular distribution iter %03d' % it

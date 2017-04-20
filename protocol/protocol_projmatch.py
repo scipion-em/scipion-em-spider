@@ -56,6 +56,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     [SPIDER documentation on projection-matching]]
     
     """
+    _label = 'refinement'
 
     #--------------------------- DEFINE param functions --------------------------------------------   
     def _defineParams(self, form):
@@ -358,7 +359,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         files = sorted(glob(template))
         if files:
             f = files[-1]
-            s = re.compile('bpr(\d{2,2})').search(f)
+            s = re.compile('bpr(\d{2})').search(f)
             if s:
                 result = int(s.group(1))
         return result
@@ -390,7 +391,6 @@ class DefocusGroupInfo():
             self.defocus = (ctf.getDefocusU() + ctf.getDefocusV()) / 2.
         self.ih.convert(img, (self.counter, self.stackfile))
         self.sel.writeValues(self.counter)
-        #FIXME: use real alignment/projection parameters, now using DUMMY values
         alignRow = {ANGLE_PSI: 0.,
                     ANGLE_THE: 0.,
                     ANGLE_PHI: 0.,
