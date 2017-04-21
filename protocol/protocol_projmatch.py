@@ -36,16 +36,27 @@ from pyworkflow.em.protocol import ProtRefine3D
 from pyworkflow.em.constants import ALIGN_PROJ
 from pyworkflow.em.data import Volume
 
-from ..spider import SpiderDocFile, writeScript, getScript, runScript
+from ..spider import SpiderDocFile, writeScript, getScript, runScript, getVersion
 from ..Spiderutils import nowisthetime
 from ..convert import ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX, SHIFTY, convertEndian, alignmentToRow
 from protocol_base import SpiderProtocol
 
+# Protocol type
+DEF_GROUPS = 0
+GOLD_STD = 1
 
+# Backprojection method
+BP_CG = 0
+BP_3F = 1
+BP_RP = 2
+BP_3N = 3
 
 class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
-    """ Iterative reference-based refinement of particles orientations
-    with defocus groups, based on the Spider AP SHC and AP REF programs.
+    """ Iterative reference-based refinement of particles orientations, 
+    based on the Spider AP SHC and AP REF programs.
+    
+    Two different workflows are suggested: with defocus groups or
+    without (gold-standard refinement).
     
     Iterative refinement improves the accuracy in the determination of orientations.
     This improvement is accomplished by successive use of
@@ -53,7 +64,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     
     For more information, see:
     [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html]
-    [SPIDER documentation on projection-matching with defocus groups]]
+    [SPIDER documentation on projection-matching]]
     
     """
     _label = 'refinement'
@@ -61,6 +72,38 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     #--------------------------- DEFINE param functions --------------------------------------------   
     def _defineParams(self, form):
         form.addSection(label='Input')
+
+        form.addParam('protType', params.EnumParam,
+                      choices=['with defocus groups','gold-standard'],
+                      default=GOLD_STD,
+                      display=params.EnumParam.DISPLAY_HLIST,
+                      label='Choose refinement type',
+                      help='In the first method (with defocus groups), '
+                           'ensembles of particles with similar defocus '
+                           'values are grouped together. A separate 3D '
+                           'reconstruction is computed for each "defocus group." '
+                           'CTF-correction is performed when these reconstructions '
+                           'are merged into a final reconstruction.\n\n'
+                           'In the second, gold-standard method, the CTF-correction '
+                           'is applied at the level of windowed particle images. '
+                           'This method presents certain advantages. First, it '
+                           'circumvents one of the approximations when using '
+                           'defocus groups, namely that all particles in a defocus '
+                           'group follow the same CTF profile. At high resolution, '
+                           'where the CTF oscillates more rapidly, this assumption '
+                           'may not hold. Second, parallelization can be more '
+                           'efficient, since groups can be of identical size, '
+                           'independent of the number of particles at each defocus. '
+                           'Third, particles from what would be sparsely populated '
+                           'defocus groups need not be thrown out.\n\nHowever the '
+                           'strategy of using defocus groups may have some advantages. '
+                           'First is that it can readily account for the non-uniform '
+                           'distribution of signal-to-noise in projection data '
+                           '(Penczek, 2012). Second, we find that reconstructions '
+                           'using particle-level CTF-correction sometimes show '
+                           'artifacts when using iterative backprojection methods, '
+                           'such as *BP RP* or *BP CG*, whereas the use of defocus '
+                           'groups does not present such limitations.')
 
         form.addParam('inputParticles', params.PointerParam, 
                       pointerClass='SetOfParticles',
@@ -97,8 +140,24 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                            " (.95= use 95% window size)\n")
         form.addParam('convergence', params.FloatParam, default=0.05,
                       expertLevel=params.LEVEL_ADVANCED,
+                      condition='protType == 0 and not _protGoldStdIsSupported',
                       label='Convergence criterion fraction',
-                      help="Refinment has converged when this fraction of all images move < 1.5 * stepsize.")  
+                      help="Refinement has converged when this fraction of all images move < 1.5 * stepsize.")
+        form.addParam('sphDeconAngle', params.IntParam, default=0,
+                      expertLevel=params.LEVEL_ADVANCED,
+                      condition='_protGoldStdIsSupported and protType == 1',
+                      label='Spherical deconvolution angle (deg)',
+                      help="Spherical deconvolution angle in degreees (0 == Do not deconvolve)")
+        form.addParam('bpType', params.EnumParam,
+                      expertLevel=params.LEVEL_ADVANCED,
+                      condition='_protGoldStdIsSupported and protType == 1',
+                      choices=['BP CG', 'BP 3F', 'BP RP', 'BP 3N'],
+                      default=BP_3F,
+                      display=params.EnumParam.DISPLAY_HLIST,
+                      label='Backprojection method',
+                      help="Choose backprojection method (BP CG, BP 3F, BP RP or BP 3N). "
+                           "More information on Spider "
+                           "[https://spider.wadsworth.org/spider_doc/spider/docs/bp_overview.html][web-site]]")
         
         form.addParam('smallAngle', params.BooleanParam, default=False,
                       label='Use small angle refinement?',
@@ -182,9 +241,14 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             """ Escape path with '' and add ../ """
             return "'%s'" % join('..', p)
         
-        def script(name, paramsDict={}):
+        def script(name, paramsDict={}, protType=DEF_GROUPS):
+            if protType == DEF_GROUPS:
+                dirName = 'defocus-groups'
+            else:
+                dirName = 'no-defocus-groups'
+
             outputScript=join(refPath, name)
-            writeScript(getScript('projmatch', 'Refinement', name), outputScript, paramsDict)
+            writeScript(getScript('projmatch', 'Refinement', dirName, name), outputScript, paramsDict)
             
         nIter = self.numberOfIterations.get()
         
@@ -192,7 +256,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             return "'%s'" % ','.join(pwutils.getListFromValues(valueStr, nIter))
 
         diam = int(self.radius.get() * 2 * self.inputParticles.get().getSamplingRate())
-        params = {'[shrange]': self.alignmentShift.get(),
+        params = {'[alignsh]': self.alignmentShift.get(),  # shrange is renamed to alignsh in new versions
+                  '[shrange]': self.alignmentShift.get(),
                   '[iter-end]': self.numberOfIterations.get(),
                   '[diam]': diam,
                   '[win-frac]': self.winFrac.get(),
@@ -209,6 +274,11 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                   '[group_align_orig]': path('group{***[grp]}_align'),
                   '[unaligned_images_orig]': path('group{***[grp]}_stack')
                   }
+
+        if self._protGoldStdIsSupported() and self.protType == GOLD_STD:
+            params.update({'sphdecon': self.sphDeconAngle.get(),
+                           'bp-type': self.bpType.get() + 1})
+
         script('refine_settings.pam', params)
         for s in ['refine', 'prepare', 'grploop', 'mergegroups', 
                   'enhance', 'endmerge', 'smangloop', 'endrefine']:
@@ -299,10 +369,13 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     #--------------------------- INFO functions -------------------------------------------- 
     def _validate(self):
         errors = []
+        if self.protType == GOLD_STD and getVersion() == '21.03':
+            errors.append('Gold-standard refinement is supported only '
+                          'for newer Spider versions. Please update your installation.')
         if self.smallAngle:
             if not self.inputParticles.get().hasAlignmentProj():
                 errors.append('*Small angle* option can only be used if '
-                            'the particles have angular assignment.')
+                              'the particles have angular assignment.')
         return errors
         
     def _warnings(self):
@@ -333,7 +406,6 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         summary.append('Particle diameter: *%s* Angstroms' % diam)
         summary.append('Shift range: *%s* pixels' % self.alignmentShift)
         summary.append('Projection diameter: *%s* of window size' % self.winFrac)
-        summary.append('Convergence criterion: *%s* of particles' % self.convergence)
 
         return summary
         
@@ -363,6 +435,9 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             if s:
                 result = int(s.group(1))
         return result
+
+    def _protGoldStdIsSupported(self):
+        return True if getVersion() != '21.03' else False
 
     
 class DefocusGroupInfo():

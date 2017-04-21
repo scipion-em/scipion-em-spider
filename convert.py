@@ -95,7 +95,7 @@ def convertEndian(stackFn, stackSize):
     fn, ext = splitext(stackFn)
     fnDir, fnBase = split(fn)
     # Change to BigEndian
-    runTemplate('cp_endian.spi', ext[1:], 
+    runTemplate('../cp_endian.spi', ext[1:],
               {'[particles]': fnBase + '@******',
                '[particles_big]': fnBase + '_big@******',
                '[numberOfParticles]': stackSize
