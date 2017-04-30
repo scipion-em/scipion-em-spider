@@ -86,24 +86,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                            'are merged into a final reconstruction.\n\n'
                            'In the second, gold-standard method, the CTF-correction '
                            'is applied at the level of windowed particle images. '
-                           'This method presents certain advantages. First, it '
-                           'circumvents one of the approximations when using '
-                           'defocus groups, namely that all particles in a defocus '
-                           'group follow the same CTF profile. At high resolution, '
-                           'where the CTF oscillates more rapidly, this assumption '
-                           'may not hold. Second, parallelization can be more '
-                           'efficient, since groups can be of identical size, '
-                           'independent of the number of particles at each defocus. '
-                           'Third, particles from what would be sparsely populated '
-                           'defocus groups need not be thrown out.\n\nHowever the '
-                           'strategy of using defocus groups may have some advantages. '
-                           'First is that it can readily account for the non-uniform '
-                           'distribution of signal-to-noise in projection data '
-                           '(Penczek, 2012). Second, we find that reconstructions '
-                           'using particle-level CTF-correction sometimes show '
-                           'artifacts when using iterative backprojection methods, '
-                           'such as *BP RP* or *BP CG*, whereas the use of defocus '
-                           'groups does not present such limitations.')
+                           'More information on Spider '
+                           '[[https://spider.wadsworth.org/spider_doc/spider/docs/techs/recon1a/Docs/mr1.html][web-site]]')
 
         form.addParam('inputParticles', params.PointerParam, 
                       pointerClass='SetOfParticles',
@@ -157,7 +141,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                       label='Backprojection method',
                       help="Choose backprojection method (BP CG, BP 3F, BP RP or BP 3N). "
                            "More information on Spider "
-                           "[https://spider.wadsworth.org/spider_doc/spider/docs/bp_overview.html][web-site]]")
+                           "[[https://spider.wadsworth.org/spider_doc/spider/docs/bp_overview.html][web-site]]")
         
         form.addParam('smallAngle', params.BooleanParam, default=False,
                       label='Use small angle refinement?',
@@ -205,7 +189,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     
     #--------------------------- INSERT steps functions --------------------------------------------  
     def _insertAllSteps(self):        
-        # Create new stacks and selfiles per defocus groups
+        # Create new stacks and selfiles per groups
         self._insertFunctionStep('convertInputStep', self.inputParticles.get().getObjId())
 
         self._insertFunctionStep('runScriptStep', 'refine.pam')
@@ -219,7 +203,6 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         partSet = self.inputParticles.get()
 
         self._writeParamsFile(partSet)
-        self._getLastIterNumber()
         self._writeGroupFiles(partSet)
         
         # Convert the input volume
@@ -233,7 +216,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         """ Write the needed scripts to run refinement
         and substitute some values.
         """
-        
+        protType = self.protType.get()
         refPath = self._getExtraPath('Refinement')
         pwutils.makePath(refPath)
         
@@ -241,7 +224,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             """ Escape path with '' and add ../ """
             return "'%s'" % join('..', p)
         
-        def script(name, paramsDict={}, protType=DEF_GROUPS):
+        def script(name, paramsDict={}, protType=protType):
             if protType == DEF_GROUPS:
                 dirName = 'defocus-groups'
             else:
@@ -256,7 +239,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             return "'%s'" % ','.join(pwutils.getListFromValues(valueStr, nIter))
 
         diam = int(self.radius.get() * 2 * self.inputParticles.get().getSamplingRate())
-        params = {'[alignsh]': self.alignmentShift.get(),  # shrange is renamed to alignsh in new versions
+        params = {'[alignsh]': self.alignmentShift.get(),
+                  # shrange was renamed to alignsh in new versions
                   '[shrange]': self.alignmentShift.get(),
                   '[iter-end]': self.numberOfIterations.get(),
                   '[diam]': diam,
@@ -265,10 +249,10 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                   '[small-ang]': '1' if self.smallAngle else '0',
                   '[ang-steps]': getListStr(self.angSteps.get()),
                   '[ang-limits]': getListStr(self.angLimits.get()),
-                  '[ang-step-sm]': '(%0.2f)' % self.angStepSm.get(),
-                  '[theta-range]': '(%0.2f)' % self.thetaRange.get(),
+                  '[ang-step-sm]': "'(%0.2f)'" % self.angStepSm.get(),
+                  '[theta-range]': "'(%0.2f)'" % self.thetaRange.get(),
                   
-                  '[vol_orig]': path('vol001'),
+                  '[vol_orig]': path('vol01'),
                   '[sel_group_orig]': path('sel_group'),
                   '[sel_particles_orig]': path('group{***[grp]}_selfile'),
                   '[group_align_orig]': path('group{***[grp]}_align'),
@@ -279,9 +263,16 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             params.update({'sphdecon': self.sphDeconAngle.get(),
                            'bp-type': self.bpType.get() + 1})
 
-        script('refine_settings.pam', params)
-        for s in ['refine', 'prepare', 'grploop', 'mergegroups', 
-                  'enhance', 'endmerge', 'smangloop', 'endrefine']:
+        script('refine_settings.pam', params, protType=protType)
+        if protType == DEF_GROUPS:
+            scriptList = ['refine', 'prepare', 'grploop', 'mergegroups',
+                          'enhance', 'endmerge', 'smangloop', 'endrefine']
+        else:
+            scriptList = ['refine', 'prepare', 'refine-setrefangles',
+                          'pub-prjrefs', 'refine-loop', 'refine-smangloop',
+                          'refine-bp', 'merge-fsc-filt', 'sphdecon', 'enhance']
+
+        for s in scriptList:
             script('%s.pam' % s)
         
     def _writeParamsFile(self, partSet):
@@ -306,7 +297,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         paramFile.close()        
         
     def _writeGroupFiles(self, partSet):
-        """Write files that are needed by each defocus group:
+        """Write files that are needed by each group:
         - stack
         - selfile
         - docfile

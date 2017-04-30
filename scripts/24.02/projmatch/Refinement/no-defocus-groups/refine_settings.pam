@@ -19,19 +19,19 @@
  ; INPUT REGISTERS:    None
  ;
  ; OUTPUT REGISTERS:
- ;   +[sp_pixsiz]       Pixel size                    (A)
- ;   +[r2]              Object alignment radius       (pixels)
- ;   +[alignsh]         Alignment shift +- allowed    (pixels)
- ;   +[prj-radius]      Object projection radius      (pixels)
- ;   +[iter1]           Starting iteration
- ;   +[iter-end]        Ending   iteration
+ ;   [sp_pixsiz]       Pixel size                    (A)
+ ;   [r2]              Object alignment radius       (pixels)
+ ;   [alignsh]         Alignment shift +- allowed    (pixels)
+ ;   [prj-radius]      Object projection radius      (pixels)
+ ;   [iter1]           Starting iteration
+ ;   [iter-end]        Ending   iteration
  ;   [sphdecon]        Spherical deconvolution angle (degrees)
- ;   +[small-ang]       Small angle refinement flag   (1 == True)
- ;   +[qsub]            Specifies que type            (1 == use PBS)
- ;   +[incore-yn]       Incore files                  (1 == true)
- ;   +[gold-std]        Use 'gold-standard' work-flow (1 == True)
+ ;   [small-ang]       Small angle refinement flag   (1 == True)
+ ;   [qsub]            Specifies que type            (1 == use PBS)
+ ;   [incore-yn]       Incore files                  (1 == true)
+ ;   [gold-std]        Use 'gold-standard' work-flow (1 == True)
  ;   [bp-type]         Backprojection method         (2 == 'BP 3F')
- ;   +[nummps]          Number of threads to use      (0 == all)
+ ;   [nummps]          Number of threads to use      (0 == all)
  ;
  ;
  ; ------------- Adjust these parameters for your project --------------- EDIT -----
@@ -60,14 +60,14 @@
  [gold-std]    = 1     ; Use 'gold-standard resolution' work-flow (1 == use gold, 0 == use legacy)
 
  ; Following two string variables are used during usual refinement (one value / iteration) (Set for up to: 20 iterations)
-!GLO [ang-steps]  = '15,10,3.3,3,2,  2,2,1.5,1.5,1.5, 1.5,1.5,1.5,1.5,1.5, 1.5,1.5,1.5,1.5,1.5'      ; Angular separation (degrees)
- GLO [ang-steps]  = '15,3.3,3, 2,2,  2,1.5,1.5,1.5,1.5,  1.5,1.5,1.5,1.5,1.5,   1.5,1.5,1.5,1.5,1.5' ; Angular separation (degrees)
+!GLO [ang-steps]  = '15,10,3.3,3,2,2,2,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5'      ; Angular separation (degrees)
+ GLO [ang-steps]  = '15,3.3,3,2,2,2,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5' ; Angular separation (degrees)
 
-!GLO [ang-limits] = '0,0,0,  0,15,  8,6,5,5,5, 5,5,5,5,5, 5,5,5,5,5'      ; Angular separation limits (degrees)
- GLO [ang-limits] = '0,0,0,  15,8,  6,5,5,5,5, 5,5,5,5,5, 5,5,5,5,5,5'    ; Angular separation limits (degrees)
+!GLO [ang-limits] = '0,0,0,0,15,8,6,5,5,5,5,5,5,5,5,5,5,5,5,5'      ; Angular separation limits (degrees)
+ GLO [ang-limits] = '0,0,0,15,8,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5'    ; Angular separation limits (degrees)
 
  ; Following string variable is used to activate OPTIONAL amplitude enhancement (Set for up to: 20 iterations)
- GLO [amp-enhance-flags] = '0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0'  ; Amplitude enhancement selector
+ GLO [amp-enhance-flags] = '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'  ; Amplitude enhancement selector
 
  [small-ang] = 0    ; Use small angle refinement instead of regular (1 == Yes)
 
@@ -79,8 +79,8 @@
 
  GLO [params]                = '../params'                          ; Parameter doc file  (REQUIRED input file)
 
- GLO [in_dir]              = 'input/'                               ; Dir. for starting selection files
- GLO [out_dir]             = 'final/'                               ; Dir. for significant output files
+ GLO [in_dir]              = 'input'                               ; Dir. for starting selection files
+ GLO [out_dir]             = 'final'                               ; Dir. for significant output files
 
  GLO [sel_group]           = '../sel_group'                         ; Group selection doc file         (one)
 
@@ -107,7 +107,7 @@
 
  ; -------------- Output files -- Usually no need to edit for default refinement ---------------------
 
- GLO [work_dir]            = 'work/'                                      ; Work dir                           (one)
+ GLO [work_dir]            = 'work'                                      ; Work dir                           (one)
 
  GLO [sel_parts_s]         = '[sel_parts]_s{*[s]}'                        ; Particle subset selection doc file (two/group)
 

@@ -54,9 +54,11 @@ SCRIPTS_DIR = 'scripts'
 
 # Regular expressions for parsing vars in scripts header
 
-# Match strings of the type
-# key = value ; some comment
-REGEX_KEYVALUE = re.compile("(?P<prefix>[^[a-zA-Z0-9_-]*)(?P<var>\[?[a-zA-Z0-9_-]+\]?)(?P<s1>\s*)=(?P<s2>\s*)(?P<value>\S+)(?P<suffix>\s+.*)")
+# Match two string types:
+# [key] = value ; some comment
+# GLO [key] = 'value' ; some comment
+REGEX_KEYVALUE = re.compile("(?P<prefix>\s+GLO\s|[^[a-zA-Z0-9_-]*)(?P<var>\[?[a-zA-Z0-9_-]+\]?)(?P<s1>\s*)=(?P<s2>\s*)(?P<value>\S+)(?P<suffix>\s+.*)")
+
 # Match strings of the type [key]value
 # just before a 'fr l' line
 REGEX_KEYFRL = re.compile("(?P<var>\[?[a-zA-Z0-9_-]+\]?)(?P<value>\S+)(?P<suffix>\s+.*)")
@@ -152,12 +154,13 @@ def writeScript(inputScript, outputScript, paramsDict):
             inHeader = False
         if inHeader:
             try:
-                newLine = __substituteVar(REGEX_KEYVALUE.match(line), paramsDict, 
+                newLine = __substituteVar(REGEX_KEYVALUE.match(line), paramsDict,
                                           "%(prefix)s%(var)s%(s1)s=%(s2)s%(value)s%(suffix)s\n")
                 if newLine is None and inFrL:
-                    newLine = __substituteVar(REGEX_KEYFRL.match(line), paramsDict, 
+                    newLine = __substituteVar(REGEX_KEYFRL.match(line), paramsDict,
                                               "%(var)s%(value)s%(suffix)s\n")
                 if newLine:
+                    print "newline: ", newLine
                     line = newLine
             except Exception, ex:
                 print ex, "on line (%d): %s" % (i+1, line)

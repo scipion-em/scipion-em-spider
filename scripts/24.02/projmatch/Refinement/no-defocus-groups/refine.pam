@@ -53,11 +53,16 @@
    VB OFF                    ; File info turned off
 
  ; Input initial parameters & file names but not angular steps
- @refine-settings([pixsiz],[r2],[alignsh],[prj-radius],[iter1],[iter-end],[sphdecon],[small-ang],[qsub],[incore-yn],[gold-std],[bp-type],[nummps])
+ @refine_settings([pixsiz],[r2],[alignsh],[prj-radius],[iter1],[iter-end],[sphdecon],[small-ang],[qsub],[incore-yn],[gold-std],[bp-type],[nummps])
 
  MD
    SET MP                    ; Use only one or two processors if using master node!!
    [nummps]
+
+ IF ([iter1] <= 1) THEN
+   ; Prepare input files (only needs to be done once)
+   @prepare([iter1])
+ ENDIF
 
  SYS
    echo -e "  Alignment shift:   {%I0%[alignsh]}   Alignment radius: {%I0%[r2]}"
@@ -88,7 +93,8 @@
      @refine-setrefangles([iter],[small-ang],[ampenhance],[ang-step],[ang-limit],[num-angs])
 
      ; Create reference projection stacks ('PJ 3F') from both subset reference volumes.
-     @pub-prjrefs([iter],1,[prj-radius],[qsub])
+     [num-grps-temp] = 1 ;  use single group here
+     @pub-prjrefs([iter],[num-grps-temp],[prj-radius],[qsub])
 
    ENDIF
 

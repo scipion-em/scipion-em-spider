@@ -52,8 +52,8 @@
  ; Following two variables are used during refinement (one value / iteration) (Defined for: 20 iterations)
  IF ( [small-ang] .NE. 1 ) THEN
    ; For normal angle refinement
-   GLO [ang-steps]  = '15,3.3, 3,2,2,   2,1.5,1.5,1.5,1.5, 1.5,1.5,1.5,1.5,1.5, 1.5,1.5,1.5,1.5,1.5' ; Angular degree steps           
-   GLO [ang-limits] =  '0,0,   15,15,8, 6,5,5,5,5,         5,5,5,5,5,           5,5,5,5,5'           ; Angular limits
+   GLO [ang-steps]  = '15,3.3,3,2,2,2,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5' ; Angular degree steps
+   GLO [ang-limits] =  '0,0,15,15,8,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5'           ; Angular limits
  ELSE
    ; For SMALL angle refinement
    GLO [ang-step-sm]  = '(0.5)'      ; Angular degree steps      
@@ -61,7 +61,7 @@
  ENDIF
 
  ; Following flag variables are used to activate OPTIONAL amplitude enhancement on each step
- GLO [amp-enhance-flags] = '0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0'     ; Amplitude enhancement selector 
+ GLO [amp-enhance-flags] = '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'     ; Amplitude enhancement selector
 
 
  ; ----------------- Input files ---  May have to EDIT these names ------

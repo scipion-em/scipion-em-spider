@@ -1,0 +1,70 @@
+([iter1])
+; <html><head><title>Prepare for refinement by initializing input, etc.</title></head><body><pre>
+;
+; SOURCE:  spider/docs/techs/recon/newprogs/prepare.pam
+;          New                                           ArDean Leith  Nov 2000
+;          Declining group sort                          ArDean Leith  Oct 2010
+;          CS from params, DOC STAT                      ArDean Leith  Jan 2011
+;          Dala removal                                  ArDean Leith  Jan 2012
+;         [n-big]                                        ArDean Leith  Apr 2015
+;
+; PURPOSE: Prepare various initial files, etc.
+;
+; CALLED FROM: refine & pub_refine <a href="./refine.pam">refine.pam</a> &
+;                                  <a href="./pub_refine.pam">pub_refine.pam</a>
+;
+; Register variables & files are set in: <a href="./refine settings.pam">refine settings.pam</a>
+;
+; INPUT REGISTERS (SET ABOVE):
+;   [iter]                  Initial iteration (Usually 1)
+;
+; '***' denotes group number
+; INPUT FILES:
+;   [vol_orig]              ../vol01                             Initial volume file
+;   [sel_group]        ../sel_group                         Group selection file
+;   [sel_particles]    ../group***_selfile                  Group particle selection files
+;   [group_align_orig]      ../group***_align                    Alignment parameter files
+;   [unaligned_images] ../group***_stack                    Unaligned image stacks
+;
+; OUTPUT FILES:
+;   [in_dir]             input                                Directory
+;   [work_dir]         work                                 Directory
+;   [out_dir]             final                                Directory
+;   [vol]           final/vol01                          Starting volume file
+;   [sel_particles]         input/sel_particles_***              Group particle selection files
+;   [group_align]           final/align_01_***                   Group alignment parameter files
+;   [unaligned_images]      input/data***                        Unaligned image stacks  (LINKS!)
+;
+
+ [iter] = [iter1]            ; Needed for naming initial files
+
+ ; Create dir. for temp and output files
+ SYS
+   mkdir -p [work_dir] [out_dir] [in_dir]
+
+ ; Copy initial volume to input directory
+ CP                          ; Copy volume
+   [vol_orig]                ; Initial volume file            (input)
+   [vol]             ; Current volume file            (output)
+
+ ; Copy group selection doc file to input dir.
+ SYS                                   ; Copy group selection file to input dir.
+   cp -p [sel_group].$DATEXT  [in_dir]/[sel_group].$DATEXT
+
+  ; Copy starting alignment parameter files to final dir.
+  ;SYS
+  ; cp -p [group_align_orig].$DATEXT [group_align].$DATEXT
+
+  ; Link starting unaligned images to input dir  (large files)
+  ;SYS
+  ; ln -sf  ../[unaligned_images].$DATEXT  [unaligned_images].$DATEXT
+
+  ; Copy particle selection files to input dir. (one/group)
+  ;SYS
+  ; cp -p [sel_particles_orig].$DATEXT  [sel_particles].$DATEXT
+
+ SYS
+   echo ' Finished initial file preparation' ; echo
+
+ RE
+; </body></pre></html>

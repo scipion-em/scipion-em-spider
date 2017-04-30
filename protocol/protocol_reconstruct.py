@@ -111,7 +111,7 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
         params = {'[unaligned_images]': "'particles'",
                   '[next_group_align]': "'docfile'",
                   '[nummps]': self.numberOfThreads.get()}
-        self.runTemplate('recons_fourier.txt', 'stk', params)
+        self.runTemplate('../recons_fourier.txt', 'stk', params)
 
     def createOutputStep(self):
         imgSet = self.inputParticles.get()

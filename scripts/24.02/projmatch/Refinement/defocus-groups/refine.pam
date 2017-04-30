@@ -53,7 +53,7 @@
    VB OFF                     ; File info turned off
 
  ; Input initial parameters & file names
- @refine_settings([pixsiz],[r2],[alignsh],[prj-radius],[iter1],[iter-end],[lambda],[small-ang],[winsize],[nummps])
+ @refine_settings([pixsiz],[r2],[alignsh],[prj-radius],[iter1],[iter-end],[lambda],[small-ang],[sp_winsiz],[nummps])
 
  MD
    SET MP                     ; Use [nummps] OMP processors

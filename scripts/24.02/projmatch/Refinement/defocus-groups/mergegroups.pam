@@ -120,7 +120,7 @@
    -[xcg],-[ycg],-[zcg]            ; Shift distances for CofG
 
  SYS                               ; Delete files to save space
-   \rm [next_group_vol_template]_sub1* [next_group_vol_template]_sub2*
+   \rm -f [next_group_vol_template]_sub1* [next_group_vol_template]_sub2*
 
  [xsh] = -[xcg]
  [ysh] = -[ycg]
