@@ -17,7 +17,7 @@
  ;
  ; '##' denotes iteration, '##+' denotes next iteration, '@' denotes subset,  '***' denotes group
  ; INPUT FILES:
- ;    [sel_parts_s]         input/sel_parts_***_s@   Group particle selection file   (one for this invocation)
+ ;    [sel_parts_s]         ../group***_selfile_s@   Group particle selection file   (one for this invocation)
  ;    [next_group_align_s]  final/align##+_***_s@    Alignment parameter doc file    (one for this invocation)
  ;    [temp_out_images]     work/dala_***@ or _8@    Current aligned images template (one for this invocation)
  ;
@@ -57,7 +57,7 @@
  IF ( [bp-typet] == 1 ) THEN
 
    SYS                         ; Echo progress
-     echo -n '  Back projecting with 'BP CG',  Iteration: {%I0%[iter]} Group:{%I3%[grp]}  On: ' ; hostname
+     echo " --- Back projecting with 'BP CG',  Iteration: {%I0%[iter]} Group:{%I3%[grp]} Subset: {%I0%[s]}"
    MY FL                       ; Flush results file
 
    ; Create volume using 'BP CG'  -----------------------------------------
@@ -77,7 +77,7 @@
    ; Create volume using 'BP 3F' -----------------------------------------
 
    SYS                         ; Echo progress
-     echo "  Back projecting with 'BP 3F',  Iteration: {%I0%[iter]} Group:{%I3%[grp]}"
+     echo " --- Back projecting with 'BP 3F',  Iteration: {%I0%[iter]} Group:{%I3%[grp]} Subset: {%I0%[s]}"
    MY FL                       ; Flush results file
 
    BP 3F                       ; Back Projection - 3D Fourier
@@ -92,7 +92,7 @@
    ; Create volume using 'BP RP' -----------------------------------------
 
    SYS                         ; Echo progress
-     echo "  Back projecting with 'BP RP',  Iteration: {%I0%[iter]} Group:{%I3%[grp]}"
+     echo " --- Back projecting with 'BP RP',  Iteration: {%I0%[iter]} Group:{%I3%[grp]} Subset: {%I0%[s]}"
    MY FL                       ; Flush results file
 
    BP RP   [niter]             ; [niter] returns # iterations used
@@ -112,7 +112,7 @@
    ; Create volume using 'BP 3N' -----------------------------------------
 
    SYS                         ; Echo progress
-     echo "  Back projecting with 'BP 3N',  Iteration: {%I0%[iter]} Group:{%I3%[grp]}"
+     echo " --- Back projecting with 'BP 3N',  Iteration: {%I0%[iter]} Group:{%I3%[grp]} Subset: {%I0%[s]}"
    MY FL                       ; Flush results file
 
    BP 3N

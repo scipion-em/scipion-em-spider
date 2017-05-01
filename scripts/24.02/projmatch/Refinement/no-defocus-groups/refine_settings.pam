@@ -82,9 +82,9 @@
  GLO [in_dir]              = 'input'                               ; Dir. for starting selection files
  GLO [out_dir]             = 'final'                               ; Dir. for significant output files
 
- GLO [sel_group]           = '../sel_group'                         ; Group selection doc file         (one)
+ GLO [sel_group]           = '[in_dir]/sel_group'                         ; Group selection doc file         (one)
 
- GLO [sel_parts]           = '../group{***[grp]}_selfile'           ; Particle selection doc files     (one/group)
+ GLO [sel_parts]           = '[in_dir]/group{***[grp]}_selfile'           ; Particle selection doc files     (one/group)
 
  GLO [vol_orig]            = '../vol{**[iter]}'                     ; Initial reference volume         (one)
 
@@ -102,8 +102,8 @@
  GLO [symmetry_doc]        = '*'                                    ; OPTIONAL symmetry doc file for 'back projection' (one)
 
  ; OPTIONAL initial alignment parameter doc file if starting from reconstruction
-!GLO [group_align_orig]    = '../group{***[grp]}_align'             ; OPTIONAL Initial alignment parameter file (one/group)
- GLO [group_align_orig]    = '*'                                    ; OPTIONAL Initial alignment parameter file (one/group)
+ GLO [group_align_orig]    = '[in_dir]/group{***[grp]}_align'             ; OPTIONAL Initial alignment parameter file (one/group)
+ !GLO [group_align_orig]    = '*'                                    ; OPTIONAL Initial alignment parameter file (one/group)
 
  ; -------------- Output files -- Usually no need to edit for default refinement ---------------------
 

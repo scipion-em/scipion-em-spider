@@ -29,6 +29,7 @@ This module contains converter functions related to Spider
 
 import numpy
 
+from pyworkflow.em import Transform
 from pyworkflow.em.constants import NO_INDEX, ALIGN_2D, ALIGN_3D, ALIGN_PROJ
 from pyworkflow.utils.path import moveFile
 
@@ -148,8 +149,25 @@ def rowToAlignment(alignmentRow, alignType):
             otherwise matrix is 3D (3D volume alignment or projection)
     invTransform == True  -> for xmipp implies projection
     """
-    raise Exception("Function rowToAlignment not implemented yet")
+    #raise Exception("Function rowToAlignment not implemented yet")
 
+    is2D = alignType == ALIGN_2D
+    inverseTransform = True  # alignType == em.ALIGN_PROJ
+
+    alignment = Transform()
+    angles = numpy.zeros(3)
+    shifts = numpy.zeros(3)
+    angles[2] = alignmentRow.getValue(ANGLE_PSI, 0.)
+    shifts[0] = alignmentRow.getValue(SHIFTX, 0.)
+    shifts[1] = alignmentRow.getValue(SHIFTY, 0.)
+    if not is2D:
+        angles[0] = alignmentRow.getValue(ANGLE_PHI, 0.)
+        angles[1] = alignmentRow.getValue(ANGLE_THE, 0.)
+
+    M = matrixFromGeometry(shifts, angles, inverseTransform)
+    alignment.setMatrix(M)
+
+    return alignment
 
 def alignmentToRow(alignment, alignmentRow, alignType):
     """
@@ -200,5 +218,7 @@ def alignmentToRow(alignment, alignmentRow, alignType):
         alignmentRow[ANGLE_PSI] = -angles[2]
         
     alignmentRow[FLIP] = -1 if flip else 1
-    
-    
+
+
+def createItemMatrix(item, row, align):
+    item.setTransform(rowToAlignment(row, alignType=align))

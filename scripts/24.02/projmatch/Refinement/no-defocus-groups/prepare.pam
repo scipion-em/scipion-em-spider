@@ -23,17 +23,16 @@
 ;   [vol_orig]              ../vol01                             Initial volume file
 ;   [sel_group]        ../sel_group                         Group selection file
 ;   [sel_particles]    ../group***_selfile                  Group particle selection files
-;   [group_align_orig]      ../group***_align                    Alignment parameter files
-;   [unaligned_images] ../group***_stack                    Unaligned image stacks
+;   [group_align_orig]      ../group***_align          Alignment parameter files
+;   [unaligned_images] ../group***_stack             Unaligned image stacks
 ;
 ; OUTPUT FILES:
 ;   [in_dir]             input                                Directory
 ;   [work_dir]         work                                 Directory
 ;   [out_dir]             final                                Directory
-;   [vol]           final/vol01                          Starting volume file
-;   [sel_particles]         input/sel_particles_***              Group particle selection files
-;   [group_align]           final/align_01_***                   Group alignment parameter files
-;   [unaligned_images]      input/data***                        Unaligned image stacks  (LINKS!)
+;   [sel_parts]         input/group***_selfile              Group particle selection files
+;   [group_align]           input/group***_align                   Group alignment parameter files
+;   [unaligned_images]      input/group***_stack                        Unaligned image stacks  (LINKS!)
 ;
 
  [iter] = [iter1]            ; Needed for naming initial files
@@ -42,40 +41,35 @@
  SYS
    mkdir -p [work_dir] [out_dir] [in_dir]
 
+ ; Move group selection doc file to input dir.
+  SYS                                   ; Copy group selection file to input dir.
+   mv ../sel_group.$DATEXT  [in_dir]/
+
+ ; Move starting alignment parameter files to input dir.
+  SYS
+   mv ../group*_align.$DATEXT [in_dir]/
+
+ ; Move particle selection files to input dir. (one/group)
+  SYS
+   mv ../group*_selfile.$DATEXT  [in_dir]/
+
   UD N [num-grp]              ; Get total number of defocus groups
     [sel_group]               ; Group selection doc file        (input)
 
-  ; Split each group particle selection file in two
+ ; Split each group particle selection file in two
   DO [grp]=1,[num-grp]
     DOC SPLIT
       [sel_parts]
       [sel_parts]_s1
       [sel_parts]_s2
+
+     ; Link starting unaligned images to input dir  (large files)
+     ;SYS
+     ;  ln -sf  ../group{***[grp]}_stack.$DATEXT  [unaligned_images].$DATEXT
   ENDDO
 
- ; Copy initial volume to input directory
- ;CP                          ; Copy volume
- ;  [vol_orig]                ; Initial volume file            (input)
- ;  [vol]             ; Current volume file            (output)
-
- ; Copy group selection doc file to input dir.
- ;SYS                                   ; Copy group selection file to input dir.
- ; cp -p [sel_group].$DATEXT  [in_dir]/[sel_group].$DATEXT
-
-  ; Copy starting alignment parameter files to final dir.
-  ;SYS
-  ; cp -p [group_align_orig].$DATEXT [group_align].$DATEXT
-
-  ; Link starting unaligned images to input dir  (large files)
-  ;SYS
-  ; ln -sf  ../[unaligned_images].$DATEXT  [unaligned_images].$DATEXT
-
-  ; Copy particle selection files to input dir. (one/group)
-  ;SYS
-  ; cp -p [sel_particles_orig].$DATEXT  [sel_particles].$DATEXT
-
  SYS
-   echo ' Finished initial file preparation' ; echo
+   echo '  Finished initial files preparation' ; echo
 
  RE
 ; </body></pre></html>

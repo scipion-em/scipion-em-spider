@@ -35,7 +35,7 @@
  ;               '##'  denotes iteration, '##+' denotes next iteration)
  ;
  ; INPUT FILES:
- ;   [sel_group]          [win]/sel_group         List of groups                  (one)
+ ;   [sel_group]          ../sel_group         List of groups                  (one)
  ;   [next_group_vol]_s@  work/vol_##+_***_s@     Group subset volume             (one/group)
  ;
  ; OUTPUT FILES: ('[out] denotes output directory)
@@ -139,17 +139,17 @@
      [fsc_mask]_jnk               ; Blank volume            (deleted)
 
    ; Display mask central slice
-   SYS
-     echo "  Displaying FSC mask volume slice: [fsc_mask]_mid"
-
-   [zcen] = [nx] / 2
-   PS Z                           ; Pick slices
-     [fsc_mask]                   ; Soft mask volume        (output)
-     [fsc_mask]_mid               ; Slice image             (output)
-     [zcen]                       ; Slice number
-   DIS                            ; Display image
-     [fsc_mask]_mid               ; Slice image             (input)
-                                  ; Options
+   ;SYS
+   ;  echo "  Displaying FSC mask volume slice: [fsc_mask]_mid"
+   ;
+   ;[zcen] = [nx] / 2
+   ;PS Z                           ; Pick slices
+   ;  [fsc_mask]                   ; Soft mask volume        (output)
+   ;  [fsc_mask]_mid               ; Slice image             (output)
+   ;  [zcen]                       ; Slice number
+   ;DIS                            ; Display image
+   ;  [fsc_mask]_mid               ; Slice image             (input)
+   ;                               ; Options
  ENDIF
 
  ; Determine masked reconstruction resolution

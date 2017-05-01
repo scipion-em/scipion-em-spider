@@ -42,9 +42,9 @@
  ;
  ; '##' denotes iteration,  '##+' denotes next iteration,  '***' denotes group,  '%' denotes subset
  ; INPUT FILES:
- ;    [sel_parts_s]         input/select_***      Group particle selection files (two/group)
+ ;    [sel_parts_s]         ../group***_selfile_s%      Group particle selection files (two/group)
  ;    [iter_refangs]        work/ref_angs_##      Reference angles doc file      (one/iteration)
- ;    [unaligned_images]    input/data_***        Unaligned stacked image files  (one-stack/group)
+ ;    [unaligned_images]    ../group***_stack        Unaligned stacked image files  (one-stack/group)
  ;    [ref_projs_s]         work/ref_projs_##_s%  Reference projections          (two/iteration)
  ;    [group_align_s]       final/align##_***_s%  Alignment parameter doc files  (two/iteration/group)
  ;
@@ -134,9 +134,6 @@
        Y, [a], N                 ; Check mir, align first, denoise
        [next_group_align_s]      ; Alignment parameter doc file     (output)
 
-     SYS
-       echo "  Aligned, iteration: {%I0%[iter]} Group: {%I3%[grp]}"
-
    ELSE
 
      ; Use 'AP REF' for limited alignment search
@@ -157,6 +154,9 @@
        [next_group_align_s]      ; Alignment parameter doc file     (output)
    ENDIF
 
+   SYS
+     echo " --- Alignment finished, iteration: {%I0%[iter]} Group: {%I3%[grp]} Subset: {%I0%[s]}"
+
    IF ( [iter] >= 2 ) THEN
      ; Get size of change in projection angle
      ;     %BIG-ANGDIF,       AVG-ANGDIF,  AVG-CCROT, %WORSE,  AVG-WORSE,   AVG-BETTER
@@ -165,9 +165,10 @@
      UD E                        ; Close doc file access
 
      SYS
-       echo "  Iteration: {%I0%[iter]} Group:{%I3%[grp]}  Subset: {*[s]}  Large changes: {%F5.1%[pc-greater]}% "
+       echo " ----- Large changes: {%F5.1%[pc-greater]}%"
      SYS
-       echo "  CCROT degredation: {%I0%[degred]}%   Avg. degred.: {%F8.3%[avg-degred]}  Avg. improve.: {%F8.2%[avg-impr]}"
+       echo " ----- CCROT degredation: {%I0%[degred]}%   Avg. degred.: {%F8.3%[avg-degred]}  Avg. improve.: {%F8.2%[avg-impr]}"
+
    ENDIF
 
    ; Apply new rotational alignments to original particle images
@@ -178,9 +179,6 @@
      [next_group_align_s]        ; Alignment parameter doc file      (input)
      [temp_out_images]******     ; Current aligned images            (output)
 
-
-   SYS                           ; Echo progress
-     echo "  Back projecting,  Iteration: {%I0%[iter]} Group:{%I3%[grp]}  Subset: {*[s]}"
 
    ; 'Back project' aligned particle images according to angles from alignment doc file
    @refine-bp([iter],[iter-end],[grp],[s], [bp-type],[prj-radius])

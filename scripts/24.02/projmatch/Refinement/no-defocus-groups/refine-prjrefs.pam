@@ -1,4 +1,4 @@
- ([iter],[prj-radius],[qsub])
+ ([iter],[ang-step],[prj-radius],[qsub])
 
  ; <html><head><title>Creates reference projections on parallel cluster</title></head><body><pre>
  ;
@@ -12,38 +12,30 @@
  ;
  ; INPUT REGISTERS:
  ;   [iter]               Current iteration
- ;   [num-grps]           Number of parallel groups
+ ;   [ang-step]     Current angular step
  ;   [prj-radius]         Projection radius
  ;   [qsub]               Queing system (PBS vs PubSub)
  ;
  ; INPUT FILES: (##' denotes iteration,  '%' denotes subset, and '***' denotes group)
  ;   [iter_refangs]       work/ref_angs_##            Reference angles doc file       (one/iter)
  ;   [vol_s]              final/vol_##_s%             Current subset reference volume (two/iter)
- ;   [vol_orig]         ../vol{**[iter]}            Initial reference volume         (one)
+ ;   [vol_orig]         ../vol01            Initial reference volume         (one)
  ;
  ; OUTPUT FILES:
  ;   [ref_projs_s]        work/ref_projs_##_s%        Reference projections stacks (two/iter)
  ;
- ; PROCEDURES CALLED:
- ;   pub-submit           <a href="pub-submit.spi">       pub-submit.spi</a>
- ;   .. publish/qsub      <a href="qsub.pbs">             qsub.pbs</a>
- ;   .. pub-refine-start  <a href="pub-refine-start.spi"> pub-refine-start</a>
- ;   .... refine-settings <a href="refine-settings.spi">  refine-settings.spi</a>
- ;   .... refine-prjloop  <a href="refine-prjloop.spi">   refine-prjloop.spi</a>
- ;
  ; -------------------------------- END BATCH HEADER ----------------------------
 
- ; Create stacks holding projections from both current reference volumes in parallel.
+ ; Create stacks holding projections from both current reference volumes
 
  UD N [num-angs]                ; Get number of reference images used
    [iter_refangs]               ; Reference images angles doc. file    (input)
-
 
  IF ( [iter] == 1 ) THEN
    ; Project initial single reference volume
 
    SYS
-     echo  "  Iteration: {%I0%[iter]}  Projecting: [vol_orig]  Angles: {%I0%[num-angs]}"
+     echo  " Iteration: {%I0%[iter]}  Projecting initial reference volume: [vol_orig]   Step: {%I%[ang-step]} deg.   Projections: {%I0%[num-angs]}"
 
    PJ 3F                      ; Projection operation
      [vol_orig]                  ; Current reference volume             (input)
@@ -55,7 +47,7 @@
  ELSE
 
    SYS
-     echo  "  Iteration: {%I0%[iter]}  Projecting: [vol]_s1 and [vol]_s2  Angles: {%I0%[num-angs]}"
+     echo  " Iteration: {%I0%[iter]}  Projecting: [vol]_s1 and [vol]_s2   Step: {%I%[ang-step]} deg.   Projections: {%I0%[num-angs]}"
 
    DO [s] = 1,2                 ; Loop over subvolumes
      PJ 3F                      ; Projection operation
@@ -70,7 +62,3 @@
 
  RE
  ; </pre></body></html>
-
-
-
-

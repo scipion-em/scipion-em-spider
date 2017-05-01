@@ -18,7 +18,7 @@
  ;       [num-angs]      Number of reference projection angles
  ;
  ; OUTPUT FILES:
- ;    [iter_refangs]     work/ang_refs_##         Ref angles doc file  (one/iter)
+ ;    [iter_refangs]     work/ref_angs_##         Ref angles doc file  (one/iter)
  ;    [ang_voea]         final/ang_voea           Ref angles doc file  (one)
  ;
  ; -- END BATCH HEADER -- ...................................................

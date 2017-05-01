@@ -26,6 +26,7 @@
 
 import os
 from os.path import join, dirname, abspath, exists
+from collections import OrderedDict
 import subprocess
 import re
 
@@ -62,6 +63,11 @@ REGEX_KEYVALUE = re.compile("(?P<prefix>\s+GLO\s|[^[a-zA-Z0-9_-]*)(?P<var>\[?[a-
 # Match strings of the type [key]value
 # just before a 'fr l' line
 REGEX_KEYFRL = re.compile("(?P<var>\[?[a-zA-Z0-9_-]+\]?)(?P<value>\S+)(?P<suffix>\s+.*)")
+
+HEADER_COLUMNS = ['ANGLE_PSI', 'ANGLE_THE',
+                  'ANGLE_PHI', 'REF', 'EXP', 'ROT', 'SHIFTX',
+                  'SHIFTY', 'NPROJ', 'DIFF', 'CCROT', 'ROT',
+                  'SX', 'SY', 'MIR-CC']
 
 
 def getEnviron():
@@ -160,7 +166,6 @@ def writeScript(inputScript, outputScript, paramsDict):
                     newLine = __substituteVar(REGEX_KEYFRL.match(line), paramsDict,
                                               "%(var)s%(value)s%(suffix)s\n")
                 if newLine:
-                    print "newline: ", newLine
                     line = newLine
             except Exception, ex:
                 print ex, "on line (%d): %s" % (i+1, line)
@@ -284,6 +289,25 @@ class SpiderDocFile(object):
                 
     def __iter__(self):
         return self.iterValues()
+
+    def close(self):
+        self._file.close()
+
+
+class SpiderDocAliFile(object):
+    """ Handler class to read Spider alignment metadata."""
+    def __init__(self, filename, mode='r'):
+        self._file = open(filename, mode)
+        self._count = 0
+
+    def __iter__(self):
+        """PSI, THE, PHI, REF#, EXP#, CUM.{ROT, SX, SY}, NPROJ, DIFF, CCROT, ROT, SX, SY, MIR-CC
+        """
+        for line in self._file:
+            line = line.strip()
+            if not line.startswith(';'):
+                row = OrderedDict(zip(HEADER_COLUMNS, line.split()[2:]))
+                yield row
 
     def close(self):
         self._file.close()

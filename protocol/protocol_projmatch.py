@@ -31,12 +31,13 @@ import re
 
 import pyworkflow.utils as pwutils
 import pyworkflow.em as em
+import pyworkflow.em.metadata as md
 import pyworkflow.protocol.params as params
 from pyworkflow.em.protocol import ProtRefine3D
 from pyworkflow.em.constants import ALIGN_PROJ
-from pyworkflow.em.data import Volume
+from pyworkflow.em.data import Volume, FSC
 
-from ..spider import SpiderDocFile, writeScript, getScript, runScript, getVersion
+from ..spider import SpiderDocFile, SpiderDocAliFile, writeScript, getScript, runScript, getVersion
 from ..Spiderutils import nowisthetime
 from ..convert import ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX, SHIFTY, convertEndian, alignmentToRow
 from protocol_base import SpiderProtocol
@@ -270,7 +271,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         else:
             scriptList = ['refine', 'prepare', 'refine-setrefangles',
                           'refine-prjrefs', 'refine-loop', 'refine-smangloop',
-                          'refine-bp', 'merge-fsc-filt', 'sphdecon', 'enhance']
+                          'refine-bp', 'merge-fsc-filt', 'sphdecon', 'enhance',
+                          'show-r2']
 
         for s in scriptList:
             script('%s.pam' % s)
@@ -376,11 +378,31 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def createOutputStep(self):
         imgSet = self.inputParticles.get()
         vol = Volume()
-        vol.setFileName(self._getExtraPath('Refinement/final/bpr%02d.stk' % self._getLastIterNumber()))
+        lastIter = self._getLastIterNumber()
+        vol.setFileName(self._getExtraPath('Refinement/final/vol_%02d.stk' % lastIter))
         vol.setSamplingRate(imgSet.getSamplingRate())
+        half1 = self._getExtraPath('Refinement/final/vol_%02d_s1.stk' % lastIter)
+        half2 = self._getExtraPath('Refinement/final/vol_%02d._s2.stk' % lastIter)
+        vol.setHalfMaps([half1, half2])
+
+        outImgSet = self._createSetOfParticles()
+        outImgSet.copyInfo(imgSet)
+        self._fillDataFromDoc(outImgSet)
 
         self._defineOutputs(outputVolume=vol)
         self._defineSourceRelation(self.inputParticles, vol)
+        self._defineOutputs(outputParticles=outImgSet)
+        self._defineTransformRelation(self.inputParticles, outImgSet)
+
+        fsc = FSC(objLabel=self.getRunName())
+        #blockName = 'model_class_%d@' % 1
+        #fn = blockName + self._getExtraPath("Refinement/final/fscdoc_m_%02d" % lastIter)
+        #mData = md.MetaData(fn)
+        #fsc.loadFromMd(mData,
+        #               md.RLN_RESOLUTION,
+        #               md.RLN_MLMODEL_FSC_HALVES_REF)
+        self._defineOutputs(outputFSC=fsc)
+        self._defineSourceRelation(vol, fsc)
     
     #--------------------------- INFO functions -------------------------------------------- 
     def _validate(self):
@@ -443,14 +465,27 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def _getLastIterNumber(self):
         """ Return the list of iteration files, give the iterTemplate. """
         result = None
-        template = self._getExtraPath('Refinement/final/bpr??.stk')
+        template = self._getExtraPath('Refinement/final/vol_??.stk')
         files = sorted(glob(template))
         if files:
             f = files[-1]
-            s = re.compile('bpr(\d{2})').search(f)
+            s = re.compile('vol_(\d{2})').search(f)
             if s:
                 result = int(s.group(1))
         return result
+
+    def _fillDataFromDoc(self, imgSet):
+        outImgsFn = self._getExtraPath('img_orig.stk')
+        outDocFn = SpiderDocAliFile(self._getExtraPath('img_aligned_doc.stk'))
+        imgSet.setAlignmentProj()
+        imgSet.copyItems(self.inputParticles.get(),
+                        updateItemCallback=self._createItemMatrix,
+                        itemDataIterator=iter(outDocFn))
+
+    def _createItemMatrix(self, item, row):
+        from pyworkflow.em.packages.spider.convert import createItemMatrix
+        from pyworkflow.em import ALIGN_PROJ
+        createItemMatrix(item, row, align=ALIGN_PROJ)
 
     def _protGoldStdIsSupported(self):
         return True if getVersion() != '21.03' else False
