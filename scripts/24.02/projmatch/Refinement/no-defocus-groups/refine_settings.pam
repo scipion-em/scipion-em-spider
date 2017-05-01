@@ -128,12 +128,13 @@
  GLO [group_align]         = '[out_dir]/align_{**[iter]}_{***[grp]}'      ; Group alignment doc file
  GLO [group_align_s]       = '[group_align]_s{*[s]}'                      ; Group subset alignment doc files   (two/group/iter)
  GLO [next_group_align]    = '[out_dir]/align_{**[next-iter]}_{***[grp]}' ; Next group alignment doc file
- GLO [next_group_align_s]  = '[next_group_align]_s{*[s]}'                 ; Next group subset alignment doc file (one/group/iter)
+ GLO [next_group_align_s]  = '[next_group_align]_s{*[s]}'                 ; Next group subset alignment doc file (two/group/iter)
 
  GLO [iter_refangs]        = '[work_dir]/ref_angs_{**[iter]}'             ; Reference angle file               (one/iter)
  GLO [iter_refangs_grp]    = '[work_dir]/ref_angs_{**[iter]}_{***[grp]}'  ; Reference projection angles doc file  (one/group/iter) (deleted)
 
- GLO [ref_projs_s]         = '[work_dir]/ref_projs_{**[iter]}_s{*[s]}'    ; Subset reference projections       (one/iter)
+ GLO [ref_projs]         = '[work_dir]/ref_projs_{**[iter]}'    ; Subset reference projections       (one/iter)
+ GLO [ref_projs_s]         = '[work_dir]/ref_projs_{**[iter]}_s{*[s]}'    ; Subset reference projections       (two/iter)
  GLO [ref_projs_s_grp]     = '[ref_projs_s]_{***[grp]}@'                  ; Subset group reference projections (two/group/iter) (deleted)
 
  GLO [fsc_mask]            = '[out_dir]/fsc_mask'                         ; Mask for FSC                       (one)

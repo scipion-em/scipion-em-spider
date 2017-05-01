@@ -1,4 +1,4 @@
- ([iter],[num-grps],[prj-radius],[qsub])
+ ([iter],[prj-radius],[qsub])
 
  ; <html><head><title>Creates reference projections on parallel cluster</title></head><body><pre>
  ;
@@ -19,6 +19,7 @@
  ; INPUT FILES: (##' denotes iteration,  '%' denotes subset, and '***' denotes group)
  ;   [iter_refangs]       work/ref_angs_##            Reference angles doc file       (one/iter)
  ;   [vol_s]              final/vol_##_s%             Current subset reference volume (two/iter)
+ ;   [vol_orig]         ../vol{**[iter]}            Initial reference volume         (one)
  ;
  ; OUTPUT FILES:
  ;   [ref_projs_s]        work/ref_projs_##_s%        Reference projections stacks (two/iter)
@@ -37,11 +38,24 @@
  UD N [num-angs]                ; Get number of reference images used
    [iter_refangs]               ; Reference images angles doc. file    (input)
 
- SYS
-   echo  "  Iteration: {%I0%[iter]}  Projecting: [vol]_s1 and [vol]_s2  Angles: {%I0%[num-angs]}"
 
- IF ( [num-grps] <= 1 ) THEN
-   ; No need for parallel jobs just use a single projection per subvolume and return
+ IF ( [iter] == 1 ) THEN
+   ; Project initial single reference volume
+
+   SYS
+     echo  "  Iteration: {%I0%[iter]}  Projecting: [vol_orig]  Angles: {%I0%[num-angs]}"
+
+   PJ 3F                      ; Projection operation
+     [vol_orig]                  ; Current reference volume             (input)
+     [prj-radius]             ; Radius of object
+     1-[num-angs]             ; Reference angles used
+     [iter_refangs]           ; Reference angles doc file            (input)
+     [ref_projs]@******     ; Reference projection stack template  (output)
+
+ ELSE
+
+   SYS
+     echo  "  Iteration: {%I0%[iter]}  Projecting: [vol]_s1 and [vol]_s2  Angles: {%I0%[num-angs]}"
 
    DO [s] = 1,2                 ; Loop over subvolumes
      PJ 3F                      ; Projection operation
@@ -52,26 +66,6 @@
        [ref_projs_s]@******     ; Reference projection stack template  (output)
    ENDDO                        ; End of: Loop over subvolumes
 
- ELSE
-
-   ; Project reference volumes in parallel and wait for all parallel jobs to finish
-
-   [task] = 2                  ; pub-refine-start will start: refine-prjloop
-   [run1] = './spider $PRJEXT/$DATEXT @pub-refine-start '
-
-   @pub-submit([iter],[num-grps],[task],[qsub])
-      [run1]                   ; Script that runs projection in parallel
-
-   SYS
-     echo "  Consolidate group reference projection stacks into single stack for each subvolume"
-
-   DO [s] = 1,2                ; Loop over subvolumes
-     CP TO STK                 ; Merge stacks into single stack
-       [ref_projs_s]_***@      ; Template for reference stacks       (input)
-       1-[num-grps]            ; File numbers
-       1                       ; Initial image in output stack
-       [ref_projs_s]@          ; Combined stack                      (output)
-   ENDDO                       ; End of: Loop over subvolumes
  ENDIF
 
  RE

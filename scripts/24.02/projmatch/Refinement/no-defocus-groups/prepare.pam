@@ -42,14 +42,25 @@
  SYS
    mkdir -p [work_dir] [out_dir] [in_dir]
 
+  UD N [num-grp]              ; Get total number of defocus groups
+    [sel_group]               ; Group selection doc file        (input)
+
+  ; Split each group particle selection file in two
+  DO [grp]=1,[num-grp]
+    DOC SPLIT
+      [sel_parts]
+      [sel_parts]_s1
+      [sel_parts]_s2
+  ENDDO
+
  ; Copy initial volume to input directory
- CP                          ; Copy volume
-   [vol_orig]                ; Initial volume file            (input)
-   [vol]             ; Current volume file            (output)
+ ;CP                          ; Copy volume
+ ;  [vol_orig]                ; Initial volume file            (input)
+ ;  [vol]             ; Current volume file            (output)
 
  ; Copy group selection doc file to input dir.
- SYS                                   ; Copy group selection file to input dir.
-   cp -p [sel_group].$DATEXT  [in_dir]/[sel_group].$DATEXT
+ ;SYS                                   ; Copy group selection file to input dir.
+ ; cp -p [sel_group].$DATEXT  [in_dir]/[sel_group].$DATEXT
 
   ; Copy starting alignment parameter files to final dir.
   ;SYS

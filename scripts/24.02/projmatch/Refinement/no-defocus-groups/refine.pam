@@ -93,24 +93,27 @@
      @refine-setrefangles([iter],[small-ang],[ampenhance],[ang-step],[ang-limit],[num-angs])
 
      ; Create reference projection stacks ('PJ 3F') from both subset reference volumes.
-     [num-grps-temp] = 1 ;  use single group here
-     @pub-prjrefs([iter],[num-grps-temp],[prj-radius],[qsub])
+     @refine-prjrefs([iter],[prj-radius],[qsub])
 
    ENDIF
 
-   DO [s] = 1,2               ; Loop over resolution subsets ------------------
+                               IF ( [iter] > 1 ) THEN
 
-     SYS
-       echo  " Iteration: {%I0%[iter]}  Projecting: [vol_s]   From: {%I0%[num-ang]} angles"
+                                DO [s] = 1,2               ; Loop over resolution subsets ------------------
 
-     ; Create stacks holding angular reference projections from both current reference volumes.
-     PJ 3F                    ; Projection operation
-       [vol_s]                ; Vol from previous iteration      (input)
-       [prj-radius]           ; Radius of object
-       1-[num-ang]            ; Number of ref. angles used
-       [iter_refangs]         ; Ref. angles doc file             (input)
-       [ref_projs_s]@*****    ; Template for ref. projections    (output)
-   ENDDO
+                                  SYS
+                                    echo  " Iteration: {%I0%[iter]}  Projecting: [vol_s]   From: {%I0%[num-angs]} angles"
+
+                                  ; Create stacks holding angular reference projections from both current reference volumes.
+                                  PJ 3F                    ; Projection operation
+                                    [vol_s]                ; Vol from previous iteration      (input)
+                                    [prj-radius]           ; Radius of object
+                                    1-[num-angs]            ; Number of ref. angles used
+                                    [iter_refangs]         ; Ref. angles doc file             (input)
+                                    [ref_projs_s]@*****    ; Template for ref. projections    (output)
+                                ENDDO
+
+                               ENDIF
 
    ; Process all groups serially one-by-one
 

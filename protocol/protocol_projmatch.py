@@ -185,7 +185,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                       label='Angular range ',
                       help="This parameter determines the range of reference projections that will be searched.")          
 
-        form.addParallelSection(threads=4, mpi=0)
+        form.addParallelSection(threads=4, mpi=1)
     
     #--------------------------- INSERT steps functions --------------------------------------------  
     def _insertAllSteps(self):        
@@ -201,22 +201,22 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def convertInputStep(self, particlesId):
         """ Convert all needed inputs before running the refinement script. """
         partSet = self.inputParticles.get()
+        protType = self.protType.get()
 
         self._writeParamsFile(partSet)
-        self._writeGroupFiles(partSet)
+        self._writeGroupFiles(partSet, protType)
         
         # Convert the input volume
         volPath = self._getExtraPath('vol01.vol')
         em.ImageHandler().convert(self.input3DReference.get(), volPath)
         pwutils.moveFile(volPath, volPath.replace('.vol', '.stk'))
         
-        self._writeRefinementScripts()
+        self._writeRefinementScripts(protType)
                 
-    def _writeRefinementScripts(self):
+    def _writeRefinementScripts(self, protType):
         """ Write the needed scripts to run refinement
         and substitute some values.
         """
-        protType = self.protType.get()
         refPath = self._getExtraPath('Refinement')
         pwutils.makePath(refPath)
         
@@ -269,7 +269,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                           'enhance', 'endmerge', 'smangloop', 'endrefine']
         else:
             scriptList = ['refine', 'prepare', 'refine-setrefangles',
-                          'pub-prjrefs', 'refine-loop', 'refine-smangloop',
+                          'refine-prjrefs', 'refine-loop', 'refine-smangloop',
                           'refine-bp', 'merge-fsc-filt', 'sphdecon', 'enhance']
 
         for s in scriptList:
@@ -296,7 +296,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                         """ % params)
         paramFile.close()        
         
-    def _writeGroupFiles(self, partSet):
+    def _writeGroupFiles(self, partSet, protType):
         """Write files that are needed by each group:
         - stack
         - selfile
@@ -306,23 +306,48 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         # Keep a dict with all groups found in particles
         groupDict = {}
         template = self._getExtraPath('group%03d_%s.stk')
-        
-        for part in partSet:
-            defocusGroup = self._getDefocusGroup(part)
-            
-            if defocusGroup not in groupDict:
-                groupInfo = DefocusGroupInfo(defocusGroup, template, ih)
-                groupDict[defocusGroup] = groupInfo
-            else:
-                groupInfo = groupDict[defocusGroup]
-                
-            groupInfo.addParticle(part)
 
-        # Write the docfile with the defocus groups information
-        # like the number of particles and the defocus
+        if protType == DEF_GROUPS:
+            for part in partSet:
+                defocusGroup = self._getDefocusGroup(part)
+
+                if defocusGroup not in groupDict:
+                    groupInfo = DefocusGroupInfo(defocusGroup, template, ih)
+                    groupDict[defocusGroup] = groupInfo
+                else:
+                    groupInfo = groupDict[defocusGroup]
+
+                groupInfo.addParticle(part)
+        else:
+            numProcs = self.numberOfMpi.get()
+            # explicitly set a minimum of 4 groups
+            numGroups = 4 if numProcs <4 else numProcs
+            d, r = divmod(len(partSet), numGroups)
+            numParts = d + 1 if r > 0 else d
+            groupId = 1
+
+            for part in partSet:
+                if groupId not in groupDict:
+                    groupInfo = DefocusGroupInfo(groupId, template, ih)
+                    groupDict[groupId] = groupInfo
+                else:
+                    groupInfo = groupDict[groupId]
+                    groupSize = groupDict[groupId].counter
+                    if groupSize > numParts:
+                        groupId += 1
+                        groupInfo = DefocusGroupInfo(groupId, template, ih)
+                        groupDict[groupId] = groupInfo
+
+                    groupInfo.addParticle(part)
+
+        # Write the docfile with the group information
+        # like the number of particles (and the defocus)
         groupsDoc = SpiderDocFile(self._getExtraPath('sel_group.stk'), 'w+')
         for gi in groupDict.values():
-            groupsDoc.writeValues(gi.number, gi.counter, gi.defocus)
+            if protType == DEF_GROUPS:
+                groupsDoc.writeValues(gi.number, gi.counter, gi.defocus)
+            else:
+                groupsDoc.writeValues(gi.number, gi.counter)
             # Convert the endianness of the stack
             convertEndian(gi.stackfile, gi.counter)
             # Close each group docfile
