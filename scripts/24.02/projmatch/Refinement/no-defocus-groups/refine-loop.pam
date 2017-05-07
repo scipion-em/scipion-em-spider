@@ -116,7 +116,6 @@
      IF ( [iter] <= 1 ) THEN
        [a]       = 'N'
        [grp_ali] = '*'           ; Alignment parameter doc file     (input)
-       [ref_projs_s] = [ref_projs] ; One single stack with projections
 
      ENDIF
     [rinc] =  2 ;;1              ! Use: 2 for large radii & faster

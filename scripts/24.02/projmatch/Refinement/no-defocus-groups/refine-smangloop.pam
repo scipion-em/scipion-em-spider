@@ -104,7 +104,10 @@
    DO                                ; Loop over all particles
      UD NEXT [key],[img]             ; Get particle number
        [sel_parts_s]                 ; Group particle selection file   (input)
-     IF ( [key] <= 0 ) EXIT          ; End of images in selection doc file
+     IF ( [key] .LE. 0 ) EXIT          ; End of images in selection doc file
+
+     SYS
+       echo "Key: {%I0%[key]}, particle: {%I0%[img]}"
 
      [num-imgs] = [num-imgs] + 1     ; # of images in current group
 
@@ -124,7 +127,7 @@
 
      ; Create stack holding set of reference projections from input volume.
      PJ 3Q                           ; Create ref. projections
-      [vol]                          ; Current volume                  (input)
+      [vol_s]                          ; Current volume                  (input)
       [prj-radius]                   ; Radius of computed object
       1-[num-refs]                   ; Ref. projection file numbers
       [ang_vora]                     ; Angles in search area doc file  (input)
@@ -134,7 +137,7 @@
      ;       PSI,THE,PHI,       REF#,EXP#, ANG,  SX, SY,    NPROJ,DIFF,     CCROT,  CURRENT_ALIGN
      AP REF  [psi],[the],[phi], [ref],[exp], [inp],[sx],[sy], [nproj],[diff], [ccrot], [t0],[t1],[t2],[t3]
        [temp_ref_projs]******         ; Template of existing ref. projections (input)
-       1-[num-refs])                  ; Ref. projection file numbers
+       (1-[num-refs])                  ; Ref. projection file numbers
        [alignsh]                      ; Shift search range
        [r1], [r2], 1                  ; First, last ring, & skip
        [ang_vora]                     ; Ref. angles file                   (input)

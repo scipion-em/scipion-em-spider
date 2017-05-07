@@ -10,7 +10,6 @@
  ;         pixsiz, resol headers,r2,...      ArDean Leith Aug 2012
  ;         For CTF corrected images          ArDean Leith Oct 2013
  ;         For gold standard reconstruction  ArDean Leith May 2014
- ;         Clean-up and small fixes           Grigory Sharov May 2017
  ;
  ; PURPOSE: Controls serial reconstruction refinement.  This is master procedure for
  ;          serial refinement over several iterations. Data may be in one or more groups.
@@ -29,15 +28,16 @@
  ;   [small-ang]           Small angle refinement flag (1 == true)
  ;
  ; INPUT FILES: ('***' denotes group here)
- ;   [vol_orig]              ../vol_01                 Initial volume file   (one)
- ;   [sel_group]        ../sel_group              Group selection file  (one)
- ;   [sel_parts]        ../group***_selfile           Group particle selection files (one/group)
- ;   [unaligned_images] ../group***_stack    Unaligned image stacks         (one/group)
+ ;   [vol_orig]              ../Reconstruction/vol_01                 Initial volume file   (one)
+ ;   [sel_group_orig]        ../Reconstruction/input/bp_sel_group     Group selection file  (one)
+ ;   [sel_parts_orig]        ../Reconstruction/input/bp_sel_part_***  Group particle selection files (one/group)
+ ;   [unaligned_images_orig] ../Reconstruction/input/bp_data_ctfd_*** Unaligned image stacks         (one/group)
  ;
  ; PROCEDURES CALLED:
  ;    refine-settings        <a href="refine-settings.spi">     refine-settings.spi</a>
+ ;    refine-show-r2         <a href="refine-show-r2.spi">      refine-show-r2.spi</a>
  ;    refine-setrefangles    <a href="refine-setrefangles.spi"> refine-setrefangles.spi</a>
- ;    refine-prjrefs            <a href="pub-prjrefs.spi">         pub-prjrefs.spi</a>
+ ;    pub-prjrefs            <a href="pub-prjrefs.spi">         pub-prjrefs.spi</a>
  ;    refine-loop            <a href="refine-loop.spi">         refine-loop.spi</a>
  ;    refine-smangloop       <a href="refine-smangloop.spi">    refine-smangloop.spi</a>
  ;    refine-bp              <a href="refine-bp.spi">           refine-bp.spi</a>
@@ -56,45 +56,100 @@
  @refine_settings([pixsiz],[r2],[alignsh],[prj-radius],[iter1],[iter-end],[sphdecon],[small-ang],[qsub],[incore-yn],[gold-std],[bp-type],[nummps])
 
  MD
-   SET MP                    ; Use only one or two processors if using master node!
+   SET MP                    ; Use only one or two processors if using master node!!
    [nummps]
-
- IF ([iter1] <= 1) THEN
-   ; Prepare input files (only needs to be done once)
-   @prepare([iter1])
- ENDIF
 
  SYS
    echo "  Alignment shift:   {%I0%[alignsh]}   Alignment radius: {%I0%[r2]}"
  SYS
-   echo "  Projection radius: {%I0%[prj-radius]}" ; echo
+   echo    "  Projection radius: {%I0%[prj-radius]}" ; echo
 
- ; Show alignment and projection radii on center slice of reference volume
- ;@show-r2([r2],[alignsh],[prj-radius])
- ;  [vol_orig]            ; Reference volume
+ SYS                         ; Create output directories if not present
+   mkdir -p [out_dir] [work_dir] [in_dir]
+
+ ; Move group selection doc file to input dir.
+  SYS                                   ; Copy group selection file to input dir.
+   mv ../sel_group.$DATEXT  [in_dir]/
+
+ ; Move starting alignment parameter files to input dir.
+  SYS
+   mv ../group*_align.$DATEXT [in_dir]/
+
+ ; Move particle selection files to input dir. (one/group)
+  SYS
+   mv ../group*_selfile.$DATEXT  [in_dir]/
 
  SD /     ITERATION     MASKED-RES    RESOLUTION
-   [iter_resol]               ; Resolution doc file              (output)
+   [iter_resol]              ; Resolution doc file              (output)
  SD E
-   [iter_resol]               ; Resolution doc file              (finished)
+   [iter_resol]              ; Resolution doc file              (finished)
 
- UD N [num-grps]              ; Find number of groups
-   [sel_group]                ; Group selection file      (input)
+ UD N [num-grps]             ; Find number of groups
+   [sel_group]               ; Group selection file      (input)
+
+ IF ( [iter1] == 1 ) THEN
+   ; Ensure that starting input files exist
+   [iter] = 1
+
+   DO [s] = 1,2
+     ; Create subset volumes from initial model
+     CP
+       [vol_orig]            ; Starting initial model == reference volume
+       [vol_s]               ; Starting subset reference volume
+   ENDDO
+
+   DO [grp] = 1,[num-grps]
+     ; Must create odd and even particle selection lists for all groups
+     DE
+       [sel_parts]_s1        ; Odd  particle selection doc file    (removed)
+     DE
+       [sel_parts]_s2        ; Even particle selection doc file    (removed)
+
+     DOC SPLIT
+       [sel_parts]           ; Particle selection doc file         (input)
+       [sel_parts]_s1        ; Odd  particle selection doc file    (output)
+       [sel_parts]_s2        ; Even particle selection doc file    (output)
+
+     IF ( [small-ang] == 1 ) THEN
+       CP
+         [in_dir]/group{***[grp]}_align
+         [group_align]
+
+       DOC SPLIT
+         [group_align]           ; Particle selection doc file         (input)
+         [group_align]_s1        ; Odd  particle selection doc file    (output)
+         [group_align]_s2        ; Even particle selection doc file    (output)
+     ENDIF
+   ENDDO
+ ENDIF
+
+ ; Show alignment and projection radii on center slice of reference volume
+ [s] = 1
+ !@refine-show-r2([r2],[alignsh],[prj-radius])
+ !  final/vol_01_s1            ; Reference volume
+
+ IF ( [small-ang] == 1 ) THEN
+   ; List desired offset angles for reference projections in a doc file.
+   @refine-setrefangles([iter],[small-ang],[ampenhance],[ang-step],[ang-limit],[num-angs])
+ ENDIF
 
  SYS
    echo "  Dataset is splitted into {%I0%[num-grps]} groups, divided into two halves for gold-standard refinement" ; echo
 
  DO [iter]=[iter1],[iter-end] ; Loop over all iterations ----------------------------------
 
-   ; List desired angles ('VO EA') for reference projections in a doc file.
-   @refine-setrefangles([iter],[small-ang],[ampenhance],[ang-step],[ang-limit],[num-angs])
-
    IF ( [small-ang] == 0 ) THEN
-   ; Create reference projection stacks ('PJ 3F') from both subset reference volumes.
-   @refine-prjrefs([iter],[ang-step],[prj-radius],[qsub])
+     ; List desired angles ('VO EA') for reference projections in a doc file.
+     @refine-setrefangles([iter],[small-ang],[ampenhance],[ang-step],[ang-limit],[num-angs])
+
+     [tmp-grps] = 1
+     ; Create reference projection stacks ('PJ 3F') from both subset reference volumes.
+     @refine-prjrefs([iter],[tmp-grps],[ang-step],[prj-radius],[qsub])
+
    ENDIF
 
    ; Process all groups serially one-by-one
+
    DO [grp] = 1,[num-grps]    ; Loop over all  groups  -----------------
 
       SYS
@@ -112,22 +167,22 @@
 
       MY FL                   ; Flush results file
 
-  ENDDO                      ; End of: Loop over all groups -------------------
+   ENDDO                      ; End of: Loop over all groups -------------------
 
-  UD E                       ; Finished with incore doc file
+   UD E                       ; Finished with incore doc file
 
    ; Merge ('AS S') the group volumes into two subset output volumes,
    ; find resolution ('FSC') by comparing FSC of the two subsets,
    ; filter ('FD C')  the combined volumes using FSC curve to limit resolution,
    ; merge ('AS S') the two subset output volumes into single overall output volume.
 
-  @merge-fsc-filt([pixsiz],[iter],[ampenhance],[r2],[sphdecon],[gold-std],[qsub])
+   @merge-fsc-filt([pixsiz],[iter],[ampenhance],[r2],[sphdecon],[gold-std],[qsub])
 
   SYS
    echo -n " Iteration: {%I0%[iter]} Finished  " ; date '+ TIME: %x  %X' ;
   SYS
-   echo "---------------------------------------------------------------------"
-  MY FL                      ; Flush results
+   echo "-------------------------------------------------------------------------------\n"
+   MY FL                      ; Flush results
  ENDDO                        ; End of loop over all iterations ----------------------------
 
    SYS
@@ -159,9 +214,8 @@
     1
     ../img_orig@
 
-
  SYS                          ; Echo current time
-   echo " Refinement finished after iteration: {**[iter]}   " ; date '+ TIME: %x  %X' ; echo
+   echo -n "  Refinement finished after iteration: {**[iter]}   " ; date '+ TIME: %x  %X' ; echo
 
  EN
  ; </pre></body></html>

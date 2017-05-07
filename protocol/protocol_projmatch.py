@@ -269,7 +269,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             scriptList = ['refine', 'prepare', 'grploop', 'mergegroups',
                           'enhance', 'endmerge', 'smangloop', 'endrefine']
         else:
-            scriptList = ['refine', 'prepare', 'refine-setrefangles',
+            scriptList = ['refine', 'refine-setrefangles',
                           'refine-prjrefs', 'refine-loop', 'refine-smangloop',
                           'refine-bp', 'merge-fsc-filt', 'sphdecon', 'enhance',
                           'show-r2']
@@ -387,7 +387,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
 
         outImgSet = self._createSetOfParticles()
         outImgSet.copyInfo(imgSet)
-        self._fillDataFromDoc(outImgSet)
+        #self._fillDataFromDoc(outImgSet)
 
         self._defineOutputs(outputVolume=vol)
         self._defineSourceRelation(self.inputParticles, vol)
