@@ -1,4 +1,4 @@
-([iter1])
+([pixsiz],[lambda],[iter1])
 ; <html><head><title>Prepare for refinement by initializing input, etc.</title></head><body><pre>
 ;
 ; SOURCE:  spider/docs/techs/recon/newprogs/prepare.pam

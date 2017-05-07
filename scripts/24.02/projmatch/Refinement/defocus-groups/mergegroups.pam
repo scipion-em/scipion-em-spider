@@ -94,12 +94,16 @@
 
     [stop-band] = [spfreq]+0.15    ; Stop band frequency
 
+    CP
+    [next_val]                   ; CTF'd reconstructed volume       (input)
+    [next_vol]_filtered          ; Filtered volume                  (output)
+
     ; Filter output volume to limit resolution
-    FQ                             ; Quick filter
-      [next_val]                   ; CTF'd reconstructed volume       (input)
-      [next_vol]_filtered          ; Filtered volume                  (output)
-      7                            ; Butterworth Low pass filter
-      [spfreq],[stop-band]         ; Pass-band and stop-band freq.
+    ;FQ                             ; Quick filter
+    ;  [next_val]                   ; CTF'd reconstructed volume       (input)
+    ;  [next_vol]_filtered          ; Filtered volume                  (output)
+    ;  7                            ; Butterworth Low pass filter
+    ;  [spfreq],[stop-band]         ; Pass-band and stop-band freq.
 
  ELSE
     ; Apply amplitude enhancement filter and filter to limit resolution
