@@ -62,7 +62,7 @@
  SYS
    echo "  Alignment shift:   {%I0%[alignsh]}   Alignment radius: {%I0%[r2]}"
  SYS
-   echo    "  Projection radius: {%I0%[prj-radius]}" ; echo
+   echo "  Projection radius: {%I0%[prj-radius]}" ; echo
 
  SYS                         ; Create output directories if not present
    mkdir -p [out_dir] [work_dir] [in_dir]
@@ -84,7 +84,7 @@
  SD E
    [iter_resol]              ; Resolution doc file              (finished)
 
- UD N [num-grps]             ; Find number of groups
+ UD N [num-grps]      ; Find number of groups
    [sel_group]               ; Group selection file      (input)
 
  IF ( [iter1] == 1 ) THEN
@@ -94,7 +94,7 @@
    DO [s] = 1,2
      ; Create subset volumes from initial model
      CP
-       [vol_orig]            ; Starting initial model == reference volume
+       [vol_orig]          ; Starting initial model == reference volume
        [vol_s]               ; Starting subset reference volume
    ENDDO
 
@@ -106,7 +106,7 @@
        [sel_parts]_s2        ; Even particle selection doc file    (removed)
 
      DOC SPLIT
-       [sel_parts]           ; Particle selection doc file         (input)
+       [sel_parts]              ; Particle selection doc file         (input)
        [sel_parts]_s1        ; Odd  particle selection doc file    (output)
        [sel_parts]_s2        ; Even particle selection doc file    (output)
 
@@ -115,10 +115,10 @@
          [in_dir]/group{***[grp]}_align
          [group_align]
 
-       DOC SPLIT
-         [group_align]           ; Particle selection doc file         (input)
-         [group_align]_s1        ; Odd  particle selection doc file    (output)
-         [group_align]_s2        ; Even particle selection doc file    (output)
+       SYS    ; Split particle selection doc file
+         awk 'NR<3||NR%2==1' [group_align].$DATEXT >  [group_align]_s1.$DATEXT
+       SYS
+         awk 'NR<3||NR%2==0' [group_align].$DATEXT  >  [group_align]_s2.$DATEXT
      ENDIF
    ENDDO
  ENDIF
@@ -181,9 +181,9 @@
   SYS
    echo -n " Iteration: {%I0%[iter]} Finished  " ; date '+ TIME: %x  %X' ;
   SYS
-   echo "-------------------------------------------------------------------------------\n"
+   echo "-------------------------------------------------------------------------------"
    MY FL                      ; Flush results
- ENDDO                        ; End of loop over all iterations ----------------------------
+ ENDDO                     ; End of loop over all iterations ----------------------------
 
    SYS
      echo " Generating output files..."
@@ -215,7 +215,7 @@
     ../img_orig@
 
  SYS                          ; Echo current time
-   echo -n "  Refinement finished after iteration: {**[iter]}   " ; date '+ TIME: %x  %X' ; echo
+   echo -n "  Refinement finished   " ; date '+ TIME: %x  %X' ; echo
 
  EN
  ; </pre></body></html>

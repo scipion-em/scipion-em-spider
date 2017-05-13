@@ -106,9 +106,6 @@
        [sel_parts_s]                 ; Group particle selection file   (input)
      IF ( [key] .LE. 0 ) EXIT          ; End of images in selection doc file
 
-     SYS
-       echo "Key: {%I0%[key]}, particle: {%I0%[img]}"
-
      [num-imgs] = [num-imgs] + 1     ; # of images in current group
 
      ; Format of alignment parameters doc file is:
@@ -151,6 +148,9 @@
      ;         PSI,THE,PHI,         REF#,EXP#, ANG,  SX,  SY,   NPROJ,DIFF,CCROT
      SD [img], [psi],[the],[phi],  [ref],[img],[inp],[sx],[sy], [num-refs],[diff],[ccrot], [t0],[t1],[t2],[t3]
        [next_group_align_s]                              ; Next align. doc file (output)
+
+     SD E                                                         ; Close doc file
+       [next_group_align_s]                                         ; Alignment doc file   (closed)
 
      IF ( [ccrot] < [old-ccrot] ) THEN
        [sum-degred]=[sum-degred]+([old-ccrot]-[ccrot]) ; Sum average CCROT degredation

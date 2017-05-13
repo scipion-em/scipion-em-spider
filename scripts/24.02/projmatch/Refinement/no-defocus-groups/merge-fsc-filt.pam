@@ -58,7 +58,7 @@
  [next-iter] = [iter] + 1        ; Next iteration
 
  SYS
-   echo ; echo "  Merging group volumes for iteration: {%I0%[iter]}"
+   echo ; echo " Merging group volumes for iteration: {%I0%[iter]}"
 
  DO [s] = 1,2                    ; Loop over two volume subsets ------------- _raw
 
@@ -194,7 +194,7 @@
    [mspfr] = [mspfrl]
 
  ENDIF
- SD END
+ SD E
    [iter_resol]                  ; Resolution doc file       (closed)
 
  ; Filter volume subsets to limit resolution

@@ -38,7 +38,7 @@
    [iter_refangs]               ; Reference images angles doc. file    (input)
 
  SYS
-   echo  "  Iteration: {%I0%[iter]}  Projecting: [vol]_s1 and [vol]_s2 with {%I0%[ang-step]} deg. step, {%I0%[num-angs]} references"
+   echo; echo " Iteration: {%I0%[iter]}  Projecting: [vol]_s1 and [vol]_s2 with {%I0%[ang-step]} deg. step, {%I0%[num-angs]} references"
 
  IF ( [num-grps] <= 1 ) THEN
    ; No need for parallel jobs just use a single projection per subvolume and return

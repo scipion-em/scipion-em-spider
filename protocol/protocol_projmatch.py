@@ -208,7 +208,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         self._writeGroupFiles(partSet, protType)
         
         # Convert the input volume
-        volPath = self._getExtraPath('vol01.vol')
+        volPath = self._getExtraPath('ref_vol.vol')
         em.ImageHandler().convert(self.input3DReference.get(), volPath)
         pwutils.moveFile(volPath, volPath.replace('.vol', '.stk'))
         
@@ -253,7 +253,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                   '[ang-step-sm]': "'(%0.2f)'" % self.angStepSm.get(),
                   '[theta-range]': "'(%0.2f)'" % self.thetaRange.get(),
                   
-                  '[vol_orig]': path('vol01'),
+                  '[vol_orig]': path('ref_vol'),
                   '[sel_group_orig]': path('sel_group'),
                   '[sel_particles_orig]': path('group{***[grp]}_selfile'),
                   '[group_align_orig]': path('group{***[grp]}_align'),
@@ -323,6 +323,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         else:
             numProcs = self.numberOfMpi.get()
             # explicitly set a minimum of 4 groups
+            # GS: maybe not necessary?
             numGroups = 4 if numProcs <4 else numProcs
             d, r = divmod(len(partSet), numGroups)
             numParts = d + 1 if r > 0 else d
