@@ -107,7 +107,7 @@
 
  ELSE
     ; Apply amplitude enhancement filter and filter to limit resolution
-    @enhance([p69],[pixsiz],[next-iter],[spfreq])
+    @enhance([spfreq],[pixsiz],[next-iter],[spfreq])
       [next_val]                   ; CTF'd reconstructed volume       (input)
       [next_vol]_filtered          ; Filtered volume                  (output)
 

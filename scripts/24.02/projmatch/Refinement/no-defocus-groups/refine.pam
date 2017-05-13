@@ -68,23 +68,19 @@
    mkdir -p [out_dir] [work_dir] [in_dir]
 
  ; Move group selection doc file to input dir.
-  SYS                                   ; Copy group selection file to input dir.
+ SYS
    mv ../sel_group.$DATEXT  [in_dir]/
 
- ; Move starting alignment parameter files to input dir.
-  SYS
-   mv ../group*_align.$DATEXT [in_dir]/
-
- ; Move particle selection files to input dir. (one/group)
-  SYS
-   mv ../group*_selfile.$DATEXT  [in_dir]/
+ ; Move starting group files to input dir.
+ SYS
+   mv ../group*_*.$DATEXT [in_dir]/
 
  SD /     ITERATION     MASKED-RES    RESOLUTION
    [iter_resol]              ; Resolution doc file              (output)
  SD E
    [iter_resol]              ; Resolution doc file              (finished)
 
- UD N [num-grps]      ; Find number of groups
+ UD N [num-grps]             ; Find number of groups
    [sel_group]               ; Group selection file      (input)
 
  IF ( [iter1] == 1 ) THEN
@@ -95,7 +91,7 @@
      ; Create subset volumes from initial model
      CP
        [vol_orig]          ; Starting initial model == reference volume
-       [vol_s]               ; Starting subset reference volume
+       [vol_s]             ; Starting subset reference volume
    ENDDO
 
    DO [grp] = 1,[num-grps]
@@ -106,7 +102,7 @@
        [sel_parts]_s2        ; Even particle selection doc file    (removed)
 
      DOC SPLIT
-       [sel_parts]              ; Particle selection doc file         (input)
+       [sel_parts]           ; Particle selection doc file         (input)
        [sel_parts]_s1        ; Odd  particle selection doc file    (output)
        [sel_parts]_s2        ; Even particle selection doc file    (output)
 
@@ -134,7 +130,7 @@
  ENDIF
 
  SYS
-   echo "  Dataset is splitted into {%I0%[num-grps]} groups, divided into two halves for gold-standard refinement" ; echo
+   echo "  Dataset is splitted into {%I0%[num-grps]} groups, each divided into two halves for gold-standard refinement" ; echo
 
  DO [iter]=[iter1],[iter-end] ; Loop over all iterations ----------------------------------
 
@@ -178,15 +174,15 @@
 
    @merge-fsc-filt([pixsiz],[iter],[ampenhance],[r2],[sphdecon],[gold-std],[qsub])
 
-  SYS
-   echo -n " Iteration: {%I0%[iter]} Finished  " ; date '+ TIME: %x  %X' ;
-  SYS
-   echo "-------------------------------------------------------------------------------"
-   MY FL                      ; Flush results
+   SYS
+     echo -n " Iteration: {%I0%[iter]} Finished  " ; date '+ TIME: %x  %X' ;
+   SYS
+     echo "-------------------------------------------------------------------------------"
+   MY FL                   ; Flush results
  ENDDO                     ; End of loop over all iterations ----------------------------
 
-   SYS
-     echo " Generating output files..."
+ SYS
+   echo " Generating output files..."
  ; Merge alignment doc files for the last iteration
  [iter] = [iter] + 1
  DO [grp] = 1,[num-grps]
@@ -195,27 +191,24 @@
      [group_align]_s2
      [group_align]
      0 ; merge by key
-  ENDDO
+ ENDDO
 
-  DOC COMBINE
-    [out_dir]/align_{**[iter]}_***
-    1-[num-grps]
-    ../img_aligned_doc
+ DOC COMBINE
+   [out_dir]/align_{**[iter]}_***
+   1-[num-grps]
+   [out_align]
 
-  SD /KEY       PSI,    THE,    PHI,   REF#,    EXP#,  CUM.{ROT,   SX,    SY},  NPROJ,   DIFF,      CCROT,    ROT,     SX,     SY,   MIR-CC
-    ../img_aligned_doc
+ SYS ; insert 2nd header line
+   sed -i '2 i\ ; PSI, THE, PHI, REF, EXP, ANG, SX, SY, NPROJ, DIFF, CCROT, ANG, SX, SY, MIR-CC' [glob_align]
 
-  SD E
-    ../img_aligned_doc
-
-  CP TO STK
-    ../group***_stack@
-    1-[num-grps]
-    1
-    ../img_orig@
+ CP TO STK
+   [in_dir]/group***_stack@
+   1-[num-grps]
+   1
+   ../stack@
 
  SYS                          ; Echo current time
-   echo -n "  Refinement finished   " ; date '+ TIME: %x  %X' ; echo
+   echo -n " Refinement finished   " ; date '+ TIME: %x  %X' ; echo
 
  EN
  ; </pre></body></html>

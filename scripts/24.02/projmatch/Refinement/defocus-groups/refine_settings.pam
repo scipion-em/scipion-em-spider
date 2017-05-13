@@ -70,7 +70,7 @@
 
  GLO [input_dir]             = 'input/'                                     ; Main dir. for input files (Used in prepare)
 
- GLO [vol_orig]              = '../vol{**[iter]}'                           ; Initial reconstructed volume (reference volume)
+ GLO [vol_orig]              = '../ref_vol'                                 ; Initial reconstructed volume (reference volume)
 
  GLO [sel_group_orig]        = '../sel_group'                               ; Group selection doc file
 
@@ -88,8 +88,6 @@
  GLO [final_dir]              = 'final/'                                    ; Main dir. for output files
  GLO [temp_work_dir]          = 'work/'                                     ; Temp work dir
  GLO [temp_local_dir]         = '/scratch/'                                 ; OPTIONAL local disk scratch dir for PubSub use
-
- GLO [start_vol]              = 'input/vol01'                               ; Initial reconstructed volume copy  
 
  GLO [sel_group]              = 'input/sel_group'                           ; Group selection doc file
  GLO [sel_group_sorted]       = 'input/sel_group_sort'                      ; Sorted group selection doc file

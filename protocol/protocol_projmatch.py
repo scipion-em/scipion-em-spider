@@ -2,6 +2,7 @@
 # *
 # * Authors:     J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es)
 #                Tapu Shaikh            (shaikh@ceitec.muni.cz)
+# *              Grigory Sharov         (gsharov@mrc-lmb.cam.ac.uk)
 # *
 # * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
 # *
@@ -27,7 +28,7 @@
 
 from os.path import join
 from glob import glob
-import re
+import re, sys
 
 import pyworkflow.utils as pwutils
 import pyworkflow.em as em
@@ -52,21 +53,21 @@ BP_3F = 1
 BP_RP = 2
 BP_3N = 3
 
+
 class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     """ Iterative reference-based refinement of particles orientations, 
     based on the Spider AP SHC and AP REF programs.
-    
-    Two different workflows are suggested: with defocus groups or
-    without (gold-standard refinement).
     
     Iterative refinement improves the accuracy in the determination of orientations.
     This improvement is accomplished by successive use of
     more finely-sampled reference projections.
     
+    Two different workflows are suggested: with defocus groups or
+    without (gold-standard refinement).
+    
     For more information, see:
     [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html]
     [SPIDER documentation on projection-matching]]
-    
     """
     _label = 'refinement'
 
@@ -257,7 +258,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                   '[sel_group_orig]': path('sel_group'),
                   '[sel_particles_orig]': path('group{***[grp]}_selfile'),
                   '[group_align_orig]': path('group{***[grp]}_align'),
-                  '[unaligned_images_orig]': path('group{***[grp]}_stack')
+                  '[unaligned_images_orig]': path('group{***[grp]}_stack'),
+                  '[out_align]': path('stack_alignment')
                   }
 
         if self._protGoldStdIsSupported() and self.protType == GOLD_STD:
@@ -324,7 +326,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             numProcs = self.numberOfMpi.get()
             # explicitly set a minimum of 4 groups
             # GS: maybe not necessary?
-            numGroups = 4 if numProcs <4 else numProcs
+            numGroups = 4 if numProcs < 4 else numProcs
             d, r = divmod(len(partSet), numGroups)
             numParts = d + 1 if r > 0 else d
             groupId = 1
@@ -362,6 +364,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         """ Just run the script that was generated in convertInputStep. """
         refPath = self._getExtraPath('Refinement')
         runScript(script, 'pam/stk', cwd=refPath, log=self._log)
+        self._outputSummary()
         
     def projectStep(self, volumeId):
         pass
@@ -447,12 +450,25 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         summary.append('Projection diameter: *%s* of window size' % self.winFrac)
 
         return summary
-        
+
+    def _outputSummary(self):
+        print >> sys.stdout, """Important outputs are listed here ('***' denotes group number, '##' denotes iteration number, and '@' denotes subset number
+        final/vol_##_s@_raw:	Unfiltered subset volumes   (two / iter)
+        final/vol_##_s@_unfilt:	Unfiltered, deconvolved subset volumes   (two / iter)
+        final/vol_##_s@:	Filtered, deconvolved subset volumes   (two / iter)
+        final/vol_##_unfilt :	Complete unfiltered volume   (one / iter)
+        final/vol_## :	Complete filtered volume   (one / iter)
+        final/vol_##_cent:	Complete filtered, centered volumes   (one / iter)
+        final/fscdoc_m_##	Masked FSC resolution curve doc files   (one / iter)
+        final/resolutions:	Doc file listing resolution at each iteration.   (one)
+        final/align_##_***_s@:	Alignment parameter doc file   (two / group / iter)
+        """
+
     def _citations(self):
         return ['Penczek1992']
     
     def _methods(self):
-        msg  = "\nInput particles %s " % self.getObjectTag('inputParticles')
+        msg = "\nInput particles %s " % self.getObjectTag('inputParticles')
         msg += "were subjected to refinement of orientations ([Penczek1992]) "
         msg += "for %s iterations " % self.numberOfIterations
         msg += "using %s as an initial reference. " % self.getObjectTag('input3DReference')

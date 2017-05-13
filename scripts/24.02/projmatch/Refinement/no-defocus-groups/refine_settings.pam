@@ -36,34 +36,34 @@
  ;
  ; ------------- Adjust these parameters for your project --------------- EDIT -----
 
- [qsub]        = 1     ; Specifies que (1 == use PBS, 2 == PBS with memory estimate, 0 == use PubSub, <0 == none)
+ [qsub]        = -1     ; Specifies que (1 == use PBS, 2 == PBS with memory estimate, 0 == use PubSub, <0 == none)
 
- [diam]        = 420   ; Diameter of the object (A), used to find radius for alignment.
+ [diam]        = 420    ; Diameter of the object (A), used to find radius for alignment.
 
- ;[sp_pixsiz]   = 1.68  ; Pixel size  from 'params.spi' file (A)
+ ;[sp_pixsiz]  = 1.68   ; Pixel size  from 'params.spi' file (A)
 
- ;[sp_winsiz]   = 280   ; Window size from 'params.spi' file (pixels)
+ ;[sp_winsiz]  = 280    ; Window size from 'params.spi' file (pixels)
 
- [win-frac]    = 0.95  ; Fraction of window diameter used in projection (0.95 == 95%)
+ [win-frac]    = 0.95   ; Fraction of window diameter used in projection (0.95 == 95%)
 
- [incore-yn]   = 1     ; Load input images into incore stack (>0 == yes we have enough memory)
+ [incore-yn]   = 1      ; Load input images into incore stack (>0 == yes we have enough memory)
 
- [alignsh]     = 8     ; Alignment shift (pixels) searched is +- this value
+ [alignsh]     = 8      ; Alignment shift (pixels) searched is +- this value
 
- [iter1]       = 1     ; Starting alignment step (iteration)
- [iter-end]    = 12    ; Ending alignment step   (iteration)
+ [iter1]       = 1      ; Starting alignment step (iteration)
+ [iter-end]    = 12     ; Ending alignment step   (iteration)
 
- [bp-type]     = 2     ; Backprojection method (1=='BP CG', 2=='BP 3F', 3=='BP RP', 4=='BP 3N')
+ [bp-type]     = 2      ; Backprojection method (1=='BP CG', 2=='BP 3F', 3=='BP RP', 4=='BP 3N')
 
- [sphdecon]    = 0     ; Spherical deconvolution angle in degreees (0 == Do not deconvolve)
+ [sphdecon]    = 0      ; Spherical deconvolution angle in degreees (0 == Do not deconvolve)
 
- [gold-std]    = 1     ; Use 'gold-standard resolution' work-flow (1 == use gold, 0 == use legacy)
+ [gold-std]    = 1      ; Use 'gold-standard resolution' work-flow (1 == use gold, 0 == use legacy)
 
  ; Following two string variables are used during usual refinement (one value / iteration) (Set for up to: 20 iterations)
-!GLO [ang-steps]  = '15,10,3.3,3,2,2,2,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5'      ; Angular separation (degrees)
- GLO [ang-steps]  = '15,3.3,3,2,2,2,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5' ; Angular separation (degrees)
+!GLO [ang-steps]  = '15,10,3.3,3,2,2,2,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5'       ; Angular separation (degrees)
+ GLO [ang-steps]  = '15,3.3,3,2,2,2,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5'     ; Angular separation (degrees)
 
-!GLO [ang-limits] = '0,0,0,0,15,8,6,5,5,5,5,5,5,5,5,5,5,5,5,5'      ; Angular separation limits (degrees)
+!GLO [ang-limits] = '0,0,0,0,15,8,6,5,5,5,5,5,5,5,5,5,5,5,5,5'       ; Angular separation limits (degrees)
  GLO [ang-limits] = '0,0,0,15,8,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5'    ; Angular separation limits (degrees)
 
  ; Following string variable is used to activate OPTIONAL amplitude enhancement (Set for up to: 20 iterations)
@@ -77,37 +77,39 @@
 
  ; ----------------- Original input files ---  May have to EDIT these names, These files must exist ------
 
- GLO [params]                = '../params'                          ; Parameter doc file  (REQUIRED input file)
+ GLO [params]              = '../params'                           ; Parameter doc file  (REQUIRED input file)
 
  GLO [in_dir]              = 'input'                               ; Dir. for starting selection files
  GLO [out_dir]             = 'final'                               ; Dir. for significant output files
 
- GLO [sel_group]           = '[in_dir]/sel_group'                         ; Group selection doc file         (one)
+ GLO [sel_group]           = '[in_dir]/sel_group'                  ; Group selection doc file         (one)
 
- GLO [sel_parts]           = '[in_dir]/group{***[grp]}_selfile'           ; Particle selection doc files     (one/group)
+ GLO [sel_parts]           = '[in_dir]/group{***[grp]}_selfile'    ; Particle selection doc files     (one/group)
 
- GLO [vol_orig]            = '../ref_vol'                     ; Initial reference volume         (one)
+ GLO [vol_orig]            = '../ref_vol'                          ; Initial reference volume         (one)
 
  ; This variable: [unaligned_images] must be an absolute path to images or a link to an absolute path!
- GLO [unaligned_images]    = '../group{***[grp]}_stack'             ; Original unaligned images stack  (one/group)
+ GLO [unaligned_images]    = '[in_dir]/group{***[grp]}_stack'      ; Original unaligned images stack  (one/group)
 
  ; OPTIONAL files needed if using amplitude enhancement
- GLO [scattering_doc]      = '[in_dir]/scattering'                  ; OPTIONAL enhancement doc file    (one)
- GLO [mask]                = '[in_dir]/mask'                        ; OPTIONAL mask for enhancement    (one)
+ GLO [scattering_doc]      = '[in_dir]/scattering'                 ; OPTIONAL enhancement doc file    (one)
+ GLO [mask]                = '[in_dir]/mask'                       ; OPTIONAL mask for enhancement    (one)
 
  ; OPTIONAL local dir for speeding up parallel use
- GLO [local_work_dir]      = '/scratch'                             ; OPTIONAL local scratch dir for parallel use (one)
+ GLO [local_work_dir]      = '/scratch'                            ; OPTIONAL local scratch dir for parallel use (one)
 
  ; OPTIONAL doc file needed if using symmetry
- GLO [symmetry_doc]        = '*'                                    ; OPTIONAL symmetry doc file for 'back projection' (one)
+ GLO [symmetry_doc]        = '*'                                   ; OPTIONAL symmetry doc file for 'back projection' (one)
 
  ; OPTIONAL initial alignment parameter doc file if starting from reconstruction
- GLO [group_align_orig]    = '[in_dir]/group{***[grp]}_align'             ; OPTIONAL Initial alignment parameter file (one/group)
- !GLO [group_align_orig]    = '*'                                    ; OPTIONAL Initial alignment parameter file (one/group)
+ GLO [group_align_orig]    = '[in_dir]/group{***[grp]}_align'      ; OPTIONAL Initial alignment parameter file (one/group)
+ !GLO [group_align_orig]    = '*'                                   ; OPTIONAL Initial alignment parameter file (one/group)
 
  ; -------------- Output files -- Usually no need to edit for default refinement ---------------------
 
- GLO [work_dir]            = 'work'                                      ; Work dir                           (one)
+ GLO [work_dir]            = 'work'                                       ; Work dir                           (one)
+
+ GLO [out_align]           = '../stack_alignment'                         ; Output global alignment doc file   (one)
 
  GLO [sel_parts_s]         = '[sel_parts]_s{*[s]}'                        ; Particle subset selection doc file (two/group)
 
@@ -133,7 +135,7 @@
  GLO [iter_refangs]        = '[work_dir]/ref_angs_{**[iter]}'             ; Reference angle file               (one/iter)
  GLO [iter_refangs_grp]    = '[work_dir]/ref_angs_{**[iter]}_{***[grp]}'  ; Reference projection angles doc file  (one/group/iter) (deleted)
 
- GLO [ref_projs]         = '[work_dir]/ref_projs_{**[iter]}'    ; Subset reference projections       (one/iter)
+ GLO [ref_projs]           = '[work_dir]/ref_projs_{**[iter]}'            ; Subset reference projections       (one/iter)
  GLO [ref_projs_s]         = '[work_dir]/ref_projs_{**[iter]}_s{*[s]}'    ; Subset reference projections       (two/iter)
  GLO [ref_projs_s_grp]     = '[ref_projs_s]_{***[grp]}@'                  ; Subset group reference projections (two/group/iter) (deleted)
 

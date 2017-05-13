@@ -58,7 +58,7 @@
  ; ----------------- END BATCH HEADER -------------------------------------
 
  SYS
-   echo -n "  Starting: small-angle refine loop  Iteration: {%I0%[iter]}  Group:{%I3%[grp]} --- " ; date '+ %x  %X'
+   echo -n " Starting: small-angle refine loop  Iteration: {%I0%[iter]}  Group:{%I3%[grp]} --- " ; date '+ %x  %X'
 
  [r1]        = 5.0                   ; First radius for 'AP REF' (Can alter this)
  [big_move]  = 1.5 * [ang-step]      ; Angular distance for big moves.

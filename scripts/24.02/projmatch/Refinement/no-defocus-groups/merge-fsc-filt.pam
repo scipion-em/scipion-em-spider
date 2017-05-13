@@ -86,13 +86,13 @@
    ELSE
      ; Serial deconvolution
      [s] = 1
-     @sphdecon([iter],[sph],[s])
+     @sphdecon([iter],[sphdecon],[s])
      [s] = 2
-     @sphdecon([iter],[sph],[s])
+     @sphdecon([iter],[sphdecon],[s])
    ENDIF                           ; End of: IF ( [qsub] >= 0
 
    SYS
-     echo ; echo "  Deconvolution finished for iteration: {%I0%[iter]}"
+     echo ; echo " Deconvolution finished for iteration: {%I0%[iter]}"
 
  ELSE
    ; Just copy subset volumes into: [next_vol_s]_unfilt (unfilt same as raw)
@@ -112,7 +112,7 @@
    [falloff] = 10                 ; Falloff half width
 
    SYS
-     echo ; echo "  Creating FSC mask volume: [fsc_mask]   Falloff: {%I0%[falloff]}"
+     echo ; echo " Creating FSC mask volume: [fsc_mask]   Falloff: {%I0%[falloff]}"
 
    [s] = 1
    FI H [nx]                      ; Find volume dimensions
@@ -140,7 +140,7 @@
 
    ; Display mask central slice
    ;SYS
-   ;  echo "  Displaying FSC mask volume slice: [fsc_mask]_mid"
+   ;  echo " Displaying FSC mask volume slice: [fsc_mask]_mid"
    ;
    ;[zcen] = [nx] / 2
    ;PS Z                           ; Pick slices
@@ -177,7 +177,7 @@
  IF ( [gold-std] > 0 ) THEN
      ; Report the gold-std resolution
    SYS
-     echo "  Iteration: {%I0%[iter]}  Gold Resolution, masked:{%f6.2%[mresg]}  unmasked:{%f6.2%[uresg]}  Spfrq:{%f7.2%[mspfrg]}" ; echo
+     echo " Iteration: {%I0%[iter]}  Gold Resolution, masked:{%f6.2%[mresg]}  unmasked:{%f6.2%[uresg]}  Spfrq:{%f7.2%[mspfrg]}" ; echo
 
    SD [key],[iter],[mresg],[uresg] ; Save resolutions in doc file
      [iter_resol]                  ; Resolution doc file      (output)
@@ -186,7 +186,7 @@
  ELSE
      ; Report the legacy resolution
    SYS
-     echo "  Iteration: {%I0%[iter]}  Legacy Resolution, masked:{%f6.2%[mresl]}  unmasked:{%f6.2%[uresl]}  Spfrq:{%f7.2%[mspfrl]}" ; echo
+     echo " Iteration: {%I0%[iter]}  Legacy Resolution, masked:{%f6.2%[mresl]}  unmasked:{%f6.2%[uresl]}  Spfrq:{%f7.2%[mspfrl]}" ; echo
 
    SD [key],[iter],[mresl],[uresl] ; Save resolutions in doc file
      [iter_resol]                  ; Resolution doc file      (output)
@@ -216,7 +216,7 @@
 
      IF ( [s] == 1) THEN
        SYS
-         echo "  Filtering subset volumes with Pass-band: {%f6.2%[pass-band]}  Stop-band:{%f6.2%[stop-band]} "; echo
+         echo " Filtering subset volumes with Pass-band: {%f6.2%[pass-band]}  Stop-band:{%f6.2%[stop-band]} "; echo
      ENDIF
 
      ; Filter subset output volume to limit resolution
@@ -231,7 +231,7 @@
      ; Using gold-standard  resolution cuttoff, filter subset volume using FSC doc file
      IF ( [s] == 1) THEN
        SYS
-         echo "  Filtering subset volumes using masked FSC doc file: [next_m_fsc]" ; echo
+         echo " Filtering subset volumes using masked FSC doc file: [next_m_fsc]" ; echo
      ENDIF
 
      FD C                        ; Fourier filter using FSC doc file
@@ -252,14 +252,14 @@
    [zsh] = -[zcg]
 
    SYS
-     echo  "  Volume: [next_vol_s]  Off center: ({%F4.1%[xsh]}, {%F4.1%[ysh]}, {%F4.1%[zsh]})"
+     echo  " Volume: [next_vol_s]  Off center: ({%F4.1%[xsh]}, {%F4.1%[ysh]}, {%F4.1%[zsh]})"
 
  ENDDO                           ; End loop over resolution subsets -----------
 
 
  ; Combine the two subset volumes into overall unfiltered volume
  SYS
-   echo ; echo "  Combining two unfiltered subset volumes into overall volume: [next_vol]_unfilt"
+   echo ; echo " Combining two unfiltered subset volumes into overall volume: [next_vol]_unfilt"
 
  AD S                            ; Add two subset volumes
    [next_vol]_s*_unfilt          ; Subset volume template     (input)
@@ -268,7 +268,7 @@
 
  ; Combine the two subset volumes into overall filtered volume
  SYS
-   echo "  Combining two filtered subset volumes into overall volume:   [next_vol]"
+   echo " Combining two filtered subset volumes into overall volume:   [next_vol]"
 
  AD S                            ; Add two subset volumes
    [next_vol]_s*                 ; Subset volume template     (input)
@@ -294,7 +294,7 @@
    [next_vol]_cent               ; Centered filtered volume   (output)
    [xsh],[ysh],[zsh]             ; Shift distances for CofG
  SYS
-   echo  "  Volume: [next_vol]_cent    Shifted: ({%F4.1%[xsh]}, {%F4.1%[ysh]}, {%F4.1%[zsh]})" ; echo
+   echo  " Volume: [next_vol]_cent    Shifted: ({%F4.1%[xsh]}, {%F4.1%[ysh]}, {%F4.1%[zsh]})" ; echo
 
  IF ( [gold-std] == 0 ) THEN
    ; Replace subset volumes with overall volume to serve as next reference volumes

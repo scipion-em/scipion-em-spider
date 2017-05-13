@@ -67,7 +67,7 @@
      [run1]                     ; Script that runs projection in parallel
 
    SYS
-     echo "  Consolidate group reference projection stacks into single stack for each subvolume"
+     echo " Consolidate group reference projection stacks into single stack for each subvolume"
 
    DO [s] = 1,2                ; Loop over subvolumes
      CP TO STK                 ; Merge stacks into single stack

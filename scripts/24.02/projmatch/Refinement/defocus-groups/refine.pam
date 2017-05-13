@@ -150,9 +150,7 @@
 
      SYS
        echo " Iteration: {%I0%[iter]}   Images with large proj. ang. changes: {%I0%[per-big]}%"
-   ELSE
-     SYS
-       echo " Iteration: {%I0%[iter]}"
+
    ENDIF
 
    ; Consolidate data for CTF corrections
@@ -160,6 +158,9 @@
 
    DE                       ; Delete vft file.
      [iter_vft]             ; Current iteration Fourier vol   (removed)
+
+   SYS
+     echo "-------------------------------------------------------------------------------"
 
    MY FL                    ; Flush results file
  ENDDO

@@ -23,7 +23,7 @@
 ; '***' denotes group number
 ; INPUT FILES:
 ;   [params]                ../params                            Params file
-;   [vol_orig]              ../vol01                             Initial volume file
+;   [vol_orig]              ../ref_vol                           Initial volume file
 ;   [sel_group_orig]        ../sel_group                         Group selection file
 ;   [sel_particles_orig]    ../group***_selfile                  Group particle selection files
 ;   [group_align_orig]      ../group***_align                    Alignment parameter files
@@ -56,7 +56,7 @@
 
  ; Copy group selection doc file to input dir.
  SYS                                   ; Copy group selection file to input dir.
-   \cp -p [sel_group_orig].$DATEXT   [sel_group].$DATEXT
+   mv [sel_group_orig].$DATEXT   [sel_group].$DATEXT
 
  ; Sort defocus groups by number of particles
  DOC SORT                    ; Sort doc file in descending order

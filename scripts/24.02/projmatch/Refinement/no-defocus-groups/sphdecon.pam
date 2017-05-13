@@ -26,7 +26,7 @@
  [next-iter] = [iter] + 1
 
  SYS
-   echo ; echo "  Starting spherical deconvolution on: [next_vol_s]_raw"
+   echo ; echo " Starting spherical deconvolution on: [next_vol_s]_raw"
  MY FL
 
  SPH DECON                   ; Spherical deconvolution
