@@ -35,10 +35,10 @@ import ttk
 from pyworkflow.utils.path import cleanPath
 from pyworkflow.em.constants import UNIT_PIXEL
 from pyworkflow.em.convert import ImageHandler
-from pyworkflow.em.wizard import (EmWizard, ParticleMaskRadiusWizard,
-                                  ParticlesMaskRadiiWizard,
-                                  FilterParticlesWizard, DownsampleDialog,
-                                  ImagePreviewDialog, ListTreeProvider)
+
+from pyworkflow.em.wizard import (EmWizard, ParticleMaskRadiusWizard, ParticlesMaskRadiiWizard,
+                                  FilterParticlesWizard, DownsampleDialog, ImagePreviewDialog,
+                                  ListTreeProvider, VolumeMaskRadiiWizard)
 import pyworkflow.gui.dialog as dialog
 from pyworkflow.gui.widgets import LabelSlider, HotButton
 
@@ -53,6 +53,31 @@ from protocol import (SpiderProtCAPCA, SpiderProtAlignAPSR,
 #===============================================================================
 # MASKS
 #===============================================================================
+
+class SpiderProtAlignRadiusWizard(VolumeMaskRadiiWizard):
+    _targets = [(SpiderProtRefinement, ['radius', 'alignmentShift'])]
+
+    def _getParameters(self, protocol):
+        label, value = self._getInputProtocol(self._targets, protocol)
+        # outer radius = radius + alignmentShift
+        value[1] = value[0] + value[1]
+
+        protParams = {}
+        protParams['input'] = protocol.input3DReference
+        protParams['label'] = label
+        protParams['value'] = value
+        return protParams
+
+    def _getProvider(self, protocol):
+        _objs = self._getParameters(protocol)['input']
+        return VolumeMaskRadiiWizard._getListProvider(self, _objs)
+
+    def show(self, form):
+        params = self._getParameters(form.protocol)
+        _value = params['value']
+        _label = params['label']
+        VolumeMaskRadiiWizard.show(self, form, _value, _label, UNIT_PIXEL)
+
 
 class SpiderProtMaskWizard(ParticleMaskRadiusWizard):
     _targets = [(SpiderProtCAPCA, ['radius']),

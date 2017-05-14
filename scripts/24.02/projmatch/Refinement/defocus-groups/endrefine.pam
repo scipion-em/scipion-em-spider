@@ -77,6 +77,17 @@
  SD [iter],[iter],[gr],[res]  ; Save resolution  
    [iter_resol]               ; Resolution doc file        (output)
 
+ UD N [num-grps]            ; Get number of defocus groups
+   [sel_group]              ; Group selection doc file         (input)
+
+  DOC COMBINE
+   [final_dir]/align_{**[iter]}_***
+   1-[num-grps]
+   [out_align]
+
+  SYS ; insert 2nd header line
+   sed -i '2 i\ ; PSI, THE, PHI, REF, EXP, ANG, SX, SY, NPROJ, DIFF, CCROT, ANG, SX, SY, MIR-CC' [out_align].$DATEXT
+
  RE
 
 ; </body></pre></html>

@@ -97,7 +97,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                       help='Select the input particles.\n')  
         
         form.addParam('input3DReference', params.PointerParam,
-                      pointerClass='Volume', 
+                      pointerClass='Volume', important=True,
                       label='Initial 3D reference volume:',
                       help='Input 3D reference reconstruction.\n')
         
@@ -363,8 +363,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         """ Just run the script that was generated in convertInputStep. """
         refPath = self._getExtraPath('Refinement')
         runScript(script, 'pam/stk', cwd=refPath, log=self._log)
-        self._outputSummary()
-        
+
     def projectStep(self, volumeId):
         pass
      
@@ -447,26 +446,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
 
         return summary
 
-    def _outputSummary(self):
-        print >> sys.stdout, """Important outputs are listed here ('***' denotes group number, '##' denotes iteration number, and '@' denotes subset number
-        final/vol_##_s@_raw:	Unfiltered subset volumes   (two / iter)
-        final/vol_##_s@_unfilt:	Unfiltered, deconvolved subset volumes   (two / iter)
-        final/vol_##_s@:	Filtered, deconvolved subset volumes   (two / iter)
-        final/vol_##_unfilt :	Complete unfiltered volume   (one / iter)
-        final/vol_## :	Complete filtered volume   (one / iter)
-        final/vol_##_cent:	Complete filtered, centered volumes   (one / iter)
-
-        --- with def groups:
-
-    	final/val##:	Unfiltered volume
-    	final/vol##:	Filtered volume from all images
-    	final/vol##_sub@:	Filtered volume from a subset of images
-    	final/bpr##:	Final volume from all images
-    	final/bpr##_sub@:	Final volume from a subset of images
-        """
-
     def _citations(self):
-        return ['Penczek1992', 'Shaikh2008']
+        return ['Penczek1992']
     
     def _methods(self):
         msg = "\nInput particles %s " % self.getObjectTag('inputParticles')

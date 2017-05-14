@@ -37,6 +37,7 @@ from spider import *
 from protocol import *
 
 from wizard import (SpiderProtMaskWizard, SpiderParticlesMaskRadiiWizard,
+                    SpiderProtAlignRadiusWizard,
                     SpiderFilterParticlesWizard, SpiderCustomMaskWizard)
 
 from viewer import SpiderViewer

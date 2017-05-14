@@ -139,6 +139,8 @@
        
  GLO [bpr]                    = '[final_dir]/bpr{**[next-iter]}'                ; Refined output volume
 
+ GLO [out_align]           = '../stack_alignment'                         ; Output global alignment doc file   (one)
+
  GLO [enhance_doc]            = '[temp_work_dir]/enhance_doc_{**[next-iter]}'          ; OPTIONAL Enhancement doc file output
  GLO [ref_rings]              = '[temp_work_dir]/SCR_{**[iter]}_{***[grp]}'                    ; OPTIONAL Reference rings files output
 

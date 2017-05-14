@@ -210,6 +210,7 @@ Examples:
             volTemplate = VOLNAMES_GOLDSTD[self.showVolumes.get()]
         else:
             volTemplate = VOLNAMES_DEFGROUPS[self.showVolumes.get()]
+
         volumes = [self._getFinalPath(volTemplate % i) + '.stk'
                    for i in iterations]
 
