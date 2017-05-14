@@ -42,9 +42,9 @@
  ;
  ; '##' denotes iteration,  '##+' denotes next iteration,  '***' denotes group,  '%' denotes subset
  ; INPUT FILES:
- ;    [sel_parts_s]         ../group***_selfile_s%      Group particle selection files (two/group)
+ ;    [sel_parts_s]         input/group***_selfile_s%      Group particle selection files (two/group)
  ;    [iter_refangs]        work/ref_angs_##      Reference angles doc file      (one/iteration)
- ;    [unaligned_images]    ../group***_stack        Unaligned stacked image files  (one-stack/group)
+ ;    [unaligned_images]    input/group***_stack        Unaligned stacked image files  (one-stack/group)
  ;    [ref_projs_s]         work/ref_projs_##_s%  Reference projections          (two/iteration)
  ;    [group_align_s]       final/align##_***_s%  Alignment parameter doc files  (two/iteration/group)
  ;

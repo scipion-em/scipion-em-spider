@@ -31,11 +31,11 @@
 ;
 ; '##' denotes iteration,  '##+' denotes next iteration, and '***' denotes group
 ; INPUT FILES:
-;   [sel_particles]         input/select_***       Particle selection doc file
+;   [sel_particles]         input/group***_selfile       Particle selection doc file
 ;   [iter_vft]              final/vft##            Current filtered volume (From refine)
 ;   [temp_ctf_file]         work/ctf***            CTF corrected volume (From prepare)
 ;   [group_align]           final/align##+_***     Alignment parameter doc file
-;   [unaligned_images]      input/data***@         Unaligned stacked image file
+;   [unaligned_images]      input/group***_stack@         Unaligned stacked image file
 ;   [iter_refangs]          work/ang_refs_##       Reference angles doc    file
 ;
 ; OUTPUT FILES:

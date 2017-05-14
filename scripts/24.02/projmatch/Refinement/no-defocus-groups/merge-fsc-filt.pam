@@ -35,7 +35,7 @@
  ;               '##'  denotes iteration, '##+' denotes next iteration)
  ;
  ; INPUT FILES:
- ;   [sel_group]          ../sel_group         List of groups                  (one)
+ ;   [sel_group]          input/sel_group         List of groups                  (one)
  ;   [next_group_vol]_s@  work/vol_##+_***_s@     Group subset volume             (one/group)
  ;
  ; OUTPUT FILES: ('[out] denotes output directory)

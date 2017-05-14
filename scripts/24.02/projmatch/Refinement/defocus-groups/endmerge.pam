@@ -18,7 +18,7 @@
 ;
 ;  '##' denotes iteration,  '##+' denotes next iteration,  '***' denotes group
 ; INPUT FILES:
-;   [sel_particles]        input/select_***        Group particle selection doc file
+;   [sel_particles]        input/group***_selfile        Group particle selection doc file
 ;   [next_group_align]     final/align##+***       Alignment parameter doc file 
 ;
 ; OUTPUT FILES:

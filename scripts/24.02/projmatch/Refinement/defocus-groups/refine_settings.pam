@@ -38,10 +38,10 @@
 
  [alignsh]   = 6      ; Alignment shift (pixels) searched is +- this value
 
- [iter1]     = 1      ; Starting alignment step   (iteration)
- [iter-end]  = 8      ; Ending   alignment step   (iteration)
+ [iter1]     = 1        ; Starting alignment step   (iteration)
+ [iter-end]  = 8     ; Ending   alignment step   (iteration)
 
- [diam]      = 349    ; Diameter of the structure (A) used in alignment search.
+ [diam]      = 349   ; Diameter of the structure (A) used in alignment search.
                       ;   Diameter is used to find radius for last alignment ring.
                       ;   This default is for a ribosome. EDIT as needed!
   
@@ -56,8 +56,8 @@
    GLO [ang-limits] =  '0,0,15,15,8,6,5,5,5,5,5,5,5,5,5,5,5,5,5,5'           ; Angular limits
  ELSE
    ; For SMALL angle refinement
-   GLO [ang-step-sm]  = '(0.5)'      ; Angular degree steps      
-   GLO [theta-range]  = '(2.0)'      ; Theta range  
+   GLO [ang-step-sm]  = '0.5'      ; Angular degree steps
+   GLO [theta-range]  = '2.0'      ; Theta range
  ENDIF
 
  ; Following flag variables are used to activate OPTIONAL amplitude enhancement on each step
@@ -68,95 +68,96 @@
 
  GLO [params]                = '../params'                                  ; Parameter doc file  (REQUIRED input file)
 
- GLO [input_dir]             = 'input/'                                     ; Main dir. for input files (Used in prepare)
+ GLO [input_dir]             = 'input'                                         ; Main dir. for input files (Used in prepare)
 
- GLO [vol_orig]              = '../ref_vol'                                 ; Initial reconstructed volume (reference volume)
+ GLO [vol_orig]              = '../ref_vol'                                   ; Initial reconstructed volume (reference volume)
 
- GLO [sel_group_orig]        = '../sel_group'                               ; Group selection doc file
+ GLO [sel_group_orig]        = '../sel_group'                        ; Group selection doc file
 
- GLO [sel_particles_orig]    = '../group{***[grp]}_selfile'                 ; Particle selection doc file
+ GLO [sel_particles_orig]    = '../group{***[grp]}_selfile'              ; Particle selection doc file
 
- GLO [group_align_orig]      = '../group{***[grp]}_align'                   ; Initial alignment parameter file (Used in prepare)
+ GLO [group_align_orig]      = '../group{***[grp]}_align'               ; Initial alignment parameter file (Used in prepare)
 
- GLO [unaligned_images_orig] = '../group{***[grp]}_stack'                   ; Original unaligned images stack
+ GLO [unaligned_images_orig] = '../group{***[grp]}_stack'          ; Original unaligned images stack
 
  ; Following file is OPTIONAL - Only needed if using amplitude enhancement
- GLO [scattering_doc]        = 'input/scattering'                           ; OPTIONAL enhancement doc file
+ GLO [scattering_doc]        = '[input_dir]scattering'                          ; OPTIONAL enhancement doc file
 
  ; -------------- Output files -- No need to edit for default refinement ----------
 
  GLO [final_dir]              = 'final/'                                    ; Main dir. for output files
- GLO [temp_work_dir]          = 'work/'                                     ; Temp work dir
- GLO [temp_local_dir]         = '/scratch/'                                 ; OPTIONAL local disk scratch dir for PubSub use
+ GLO [temp_work_dir]          = 'work/'                           ; Temp work dir
+ GLO [temp_local_dir]         = '/scratch/'                       ; OPTIONAL local disk scratch dir for PubSub use
 
- GLO [sel_group]              = 'input/sel_group'                           ; Group selection doc file
- GLO [sel_group_sorted]       = 'input/sel_group_sort'                      ; Sorted group selection doc file
+ GLO [sel_group]              = '[input_dir]/sel_group'                       ; Group selection doc file
+ GLO [sel_group_sorted]       = '[input_dir]/sel_group_sort'        ; Sorted group selection doc file
 
- GLO [sel_particles]          = 'input/sel_particles_{***[grp]}'            ; Particle selection doc file
+ GLO [sel_particles]          = '[input_dir]/group{***[grp]}_selfile'            ; Particle selection doc file
 
- GLO [unaligned_images]       = 'input/data{***[grp]}'                      ; Unaligned images stack (usually links)
+ GLO [unaligned_images]       = '[input_dir]/group{***[grp]}_stack'       ; Unaligned images stack (usually links)
 
- GLO [current_vol]            = 'final/vol{**[iter]}'                       ; Produced by 'AP SH' or previous iter.   
- GLO [next_vol]               = 'final/vol{**[next-iter]}'                  ; Made for next iter.   
+ GLO [current_vol]            = '[final_dir]/vol{**[iter]}'                       ; Produced by 'AP SH' or previous iter.
+ GLO [next_vol]               = '[final_dir]/vol{**[next-iter]}'               ; Made for next iter.
 
- GLO [next_val]               = 'final/val{**[next-iter]}'                  ; Volumes
+ GLO [next_val]               = '[final_dir]/val{**[next-iter]}'                ; Volumes
 
- GLO [group_align]            = 'final/align_{**[iter]}_{***[grp]}'         ; Aignment parameter input file 
- GLO [next_group_align]       = 'final/align_{**[next-iter]}_{***[grp]}'    ; Alignment parameter output file 
+ GLO [group_align]            = '[final_dir]/align_{**[iter]}_{***[grp]}'                   ; Aignment parameter input file
+ GLO [next_group_align]       = '[final_dir]/align_{**[next-iter]}_{***[grp]}'    ; Alignment parameter output file
 
- GLO [group_vol]              = 'work/vol_{**[iter]}_{***[grp]}'            ; Current group volumes   
- GLO [next_group_vol]         = 'work/vol_{**[next-iter]}_{***[grp]}'       ; Next group volumes   
- GLO [next_group_vol_template]= 'work/vol_{**[next-iter]}_***'              ; Group volume template  
+ GLO [group_vol]              = '[temp_work_dir]/vol_{**[iter]}_{***[grp]}'            ; Current group volumes
+ GLO [next_group_vol]         = '[temp_work_dir]/vol_{**[next-iter]}_{***[grp]}'       ; Next group volumes
+ GLO [next_group_vol_template]= '[temp_work_dir]/vol_{**[next-iter]}_***'           ; Group volume template
 
  IF ([small-ang] == 0) THEN
-   GLO [temp_ref_projs]       = '[temp_local_dir]/refproj{**[iter]}_{***[grp]}' ; For temp. local scratch file (deleted)
+   GLO [temp_ref_projs]       = '[temp_local_dir]/refproj{**[iter]}_{***[grp]}'        ; For temp. local scratch file (deleted)
  ELSE
-   GLO [img_ang_vora]         = 'final/angvora_{**[iter]}_{***[grp]}'       ; For Small angles use only  
+   GLO [img_ang_vora]         = '[final_dir]/angvora_{**[iter]}_{***[grp]}'               ; For Small angles use only
 
    GLO [temp_ref_projs]       = '_5@'                                       ; For Small angles temp. local scratch file (deleted)
  ENDIF
 
- GLO [temp_ctf_file]          = 'input/ctf{***[grp]}'                       ; CTF correction files
- GLO [temp_ctf_file_template] = 'input/ctf***'                              ; CTF correction file template
+ GLO [temp_ctf_file]          = '[input_dir]/ctf{***[grp]}'              ; CTF correction files
+ GLO [temp_ctf_file_template] = '[input_dir]/ctf***'                 ; CTF correction file template
 
- GLO [iter_vft]               = 'final/vft{**[iter]}'                       ; Temp. vft file template
+ GLO [iter_vft]               = '[final_dir]/vft{**[iter]}'                       ; Temp. vft file template
 
- GLO [group_bpr]              = 'final/bpr{**[iter]}_{***[grp]}'            ; Group volume file
- GLO [group_bpr_template]     = 'final/bpr{**[next-iter]}_***'              ; Group volume template
- GLO [next_group_bpr]         = 'final/bpr{**[next-iter]}_{***[grp]}'       ; Group volume file
+ GLO [group_bpr]              = '[final_dir]/bpr{**[iter]}_{***[grp]}'                     ; Group volume file
+ GLO [group_bpr_template]     = '[final_dir]/bpr{**[next-iter]}_***'              ; Group volume template
+ GLO [next_group_bpr]         = '[final_dir]/bpr{**[next-iter]}_{***[grp]}'      ; Group volume file
 
- GLO [iter_refangs]           = 'work/ang_refs_{**[iter]}'                  ; Iter. ref. angle file
- GLO [iter_sel_refangs]       = 'work/sel_ang_refs_{**[iter]}'              ; Iter. ref. angle selection file
+ GLO [iter_refangs]           = '[temp_work_dir]/ang_refs_{**[iter]}'                   ; Iter. ref. angle file
+ GLO [iter_sel_refangs]       = '[temp_work_dir]/sel_ang_refs_{**[iter]}'         ; Iter. ref. angle selection file
    
- GLO [next_fsc]               = 'final/fscdoc_{**[next-iter]}'              ; FSC doc file
- GLO [next_group_fsc]         = 'final/fscdoc_{**[next-iter]}_{***[grp]}'   ; Group FSC doc file
+ GLO [next_fsc]               = '[final_dir]/fscdoc_{**[next-iter]}'                                  ; FSC doc file
+ GLO [next_group_fsc]         = '[final_dir]/fscdoc_{**[next-iter]}_{***[grp]}'       ; Group FSC doc file
 
- GLO [ofsc]                   = 'final/ofscdoc_{**[next-iter]}'             ; Overall FSC doc file  from 'BP R'
- GLO [next_group_ofsc]        = 'final/ofscdoc_{**[next-iter]}_{***[grp]}'  ; Group   FSC doc files from 'BP R'
+ GLO [ofsc]                   = '[final_dir]/ofscdoc_{**[next-iter]}'                                    ; Overall FSC doc file  from 'BP R'
+ GLO [next_group_ofsc]        = '[final_dir]/ofscdoc_{**[next-iter]}_{***[grp]}'    ; Group   FSC doc files from 'BP R'
 
- GLO [grp_resol]              = 'final/group_resolutions'                   ; Group resolution doc file
- GLO [iter_resol]             = 'final/resolutions'                         ; Overall resolution doc file
+ GLO [grp_resol]              = '[final_dir]/group_resolutions'            ; Group resolution doc file
+ GLO [iter_resol]             = '[final_dir]/resolutions'                         ; Overall resolution doc file
        
- GLO [bpr]                    = 'final/bpr{**[next-iter]}'                  ; Refined output volume
+ GLO [bpr]                    = '[final_dir]/bpr{**[next-iter]}'                ; Refined output volume
 
- GLO [enhance_doc]            = 'work/enhance_doc_{**[next-iter]}'          ; OPTIONAL Enhancement doc file output
- GLO [ref_rings]              = 'work/SCR_{**[iter]}_{***[grp]}'            ; OPTIONAL Reference rings files output
+ GLO [enhance_doc]            = '[temp_work_dir]/enhance_doc_{**[next-iter]}'          ; OPTIONAL Enhancement doc file output
+ GLO [ref_rings]              = '[temp_work_dir]/SCR_{**[iter]}_{***[grp]}'                    ; OPTIONAL Reference rings files output
 
+ ; ----------------- END BATCH HEADER ---------------------------------
  ; <b> ------------ Should not need to alter following parameters retrieved from 'params' file --------------- </b>
 
- UD 5,[sp_pixsiz]                      ; Get pixelsize (A)   
+ UD 5,[sp_pixsiz]                 ; Get pixelsize (A)
    [params]                            ; Parameter doc file
 
- UD 6,[sp_kev]                         ; Electron energy (kV)
+ UD 6,[sp_kev]                     ; Electron energy (kV)
    [params]                            ; Parameter doc file
 
- UD 17,[sp_winsiz]                     ; Get window size (pixels), used to find projection radius 
+ UD 17,[sp_winsiz]              ; Get window size (pixels), used to find projection radius
    [params]                            ; Parameter doc file
 
- UD 18,[nummps]                        ; Get number of threads to use (0=all)
-   [params]                            ; Parameter doc. file
+ UD 18,[nummps]                ; Get number of threads to use (0=all)
+   [params]                             ; Parameter doc. file
 
- UD E                                  ; End params doc file usage
+ UD E                                     ; End params doc file usage
 
  ; Calculate lambda (A) from electron voltage  
  [sp_lambda] = 12.398 / SQR([sp_kev] * (1022.0 + [sp_kev]))
@@ -164,7 +165,7 @@
  [r2]  = INT([diam]/(2.0*[sp_pixsiz])) ; Alignment radius (pixels) used in alignment search
 
  ; Ensure that sum of alignment radius + translation are within window dimensions 
- [ring-sh] = [r2] + [alignsh]          ; Last ring + translation step
+ [ring-sh] = [r2] + [alignsh]                  ; Last ring + translation step
  [maxrad]  = INT([sp_winsiz]/2) - 1    ; Max. radius of object in window
 
  IF ([ring-sh] .GE. [maxrad]) THEN
@@ -173,8 +174,6 @@
  ENDIF
 
  [prj-radius] = INT(([win-frac]*[sp_winsiz])/2.0 )  ; Convert fraction to radius in pixels 
-
- ; ----------------- END BATCH HEADER ---------------------------------
 
  RE
  ; </body></pre></html>

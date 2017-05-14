@@ -38,9 +38,9 @@
  ;
  ;   '##' denotes iteration,  '##+' denotes next iteration, and '***' denotes group
  ; INPUT FILES:
- ;    [sel_parts_s]          ../group***_selfile_s@        Group particle selection files  (one/group)
+ ;    [sel_parts_s]          input/group***_selfile_s@        Group particle selection files  (one/group)
  ;    [iter_refangs]         work/ref_angs_##        Ref. angles doc file            (one/iteration)
- ;    [unaligned_images]     ../group***_stack          Unaligned stacked image files   (one-stack/group)
+ ;    [unaligned_images]     input/group***_stack          Unaligned stacked image files   (one-stack/group)
  ;    [ang_voea]                    final/angvoea    Reference projections           (one/iteration)
  ;    [group_align_s]        final/align##_***_s@    Alignment parameter doc files   (two/iteration/group)
  ;

@@ -28,10 +28,10 @@
  ;   [small-ang]           Small angle refinement flag (1 == true)
  ;
  ; INPUT FILES: ('***' denotes group here)
- ;   [vol_orig]              ../Reconstruction/vol_01                 Initial volume file   (one)
- ;   [sel_group_orig]        ../Reconstruction/input/bp_sel_group     Group selection file  (one)
- ;   [sel_parts_orig]        ../Reconstruction/input/bp_sel_part_***  Group particle selection files (one/group)
- ;   [unaligned_images_orig] ../Reconstruction/input/bp_data_ctfd_*** Unaligned image stacks         (one/group)
+ ;   [vol_orig]              ../ref_vol                 Initial volume file   (one)
+ ;   [sel_group_orig]        ../sel_group     Group selection file  (one)
+ ;   [sel_parts_orig]        ../group***_selfile          Group particle selection files (one/group)
+ ;   [unaligned_images_orig] ../group***_align   Unaligned image stacks         (one/group)
  ;
  ; PROCEDURES CALLED:
  ;    refine-settings        <a href="refine-settings.spi">     refine-settings.spi</a>
@@ -64,7 +64,7 @@
  SYS
    echo "  Projection radius: {%I0%[prj-radius]}" ; echo
 
- SYS                         ; Create output directories if not present
+ SYS  ; Create output directories if not present
    mkdir -p [out_dir] [work_dir] [in_dir]
 
  ; Move group selection doc file to input dir.
@@ -199,7 +199,7 @@
    [out_align]
 
  SYS ; insert 2nd header line
-   sed -i '2 i\ ; PSI, THE, PHI, REF, EXP, ANG, SX, SY, NPROJ, DIFF, CCROT, ANG, SX, SY, MIR-CC' [glob_align]
+   sed -i '2 i\ ; PSI, THE, PHI, REF, EXP, ANG, SX, SY, NPROJ, DIFF, CCROT, ANG, SX, SY, MIR-CC' [out_align].$DATEXT
 
  CP TO STK
    [in_dir]/group***_stack@

@@ -53,13 +53,21 @@ VOL = 0
 VOL_HALF1 = 1
 VOL_HALF2 = 2
 VOL_FILTERED = 3
+VOL_CENTERED = 4
 
 # Template volume names depending on the iteration
-VOLNAMES = {
-    VOL: 'vol%02d',
-    VOL_HALF1: 'vol%02d_sub1',
-    VOL_HALF2: 'vol%02d_sub2',
-    VOL_FILTERED: 'vol%02d_filtered'
+VOLNAMES_GOLDSTD = {
+    VOL: 'vol_%02d_unfilt',
+    VOL_HALF1: 'vol_%02d_s1',
+    VOL_HALF2: 'vol_%02d_s2',
+    VOL_FILTERED: 'vol_%02d',
+    VOL_CENTERED: 'vol_%02d_cent'
+}
+
+VOLNAMES_DEFGROUPS = {
+    VOL: 'bpr%02d',
+    VOL_HALF1: 'bpr%02d_sub1',
+    VOL_HALF2: 'bpr%02d_sub2',
 }
 
 
@@ -111,7 +119,7 @@ Examples:
                        help='*slices*: display volumes as 2D slices along z axis.\n'
                             '*chimera*: display volumes as surface with Chimera.')
         group.addParam('showVolumes', params.EnumParam, default=VOL,
-                       choices=['reconstructed', 'half1', 'half2', 'filtered'],
+                       choices=self.volList(),
                        label='Volume to visualize',
                        help='Select the volume to visualize')
 
@@ -121,21 +129,32 @@ Examples:
                        important=True,
                        label='Display resolution plots (FSC)',
                        help='')
-        group.addParam('groupFSC', params.EnumParam, default=1,
+        group.addParam('groupFSC', params.EnumParam, default=0,
                        choices=['iterations', 'defocus groups'],
+                       condition='not isGoldStdProt',
                        display=params.EnumParam.DISPLAY_HLIST,
                        label='Group FSC plots by',
                        help='Select which FSC curve you want to '
                             'show together in the same plot.')
         group.addParam('groupSelection', params.NumericRangeParam,
-                       condition='groupFSC==%d' % 1,
+                       condition='not isGoldStdProt and groupFSC==%d' % 1,
                        label="Groups list",
                        help="Write the group list to visualize. See examples in iteration list")
-        group.addParam('resolutionThresholdFSC', params.FloatParam, default=0.5,
+        group.addParam('resolutionThresholdFSC', params.FloatParam, default=0.143,
                        expertLevel=params.LEVEL_ADVANCED,
                        label='Threshold in resolution plots',
-                       help='')
+                       help='Use 0.5 for refinement with defocus groups, otherwise '
+                       'for gold-standard refinement use 0.143')
 
+    def isGoldStdProt(self):
+        # True = gold std refinement
+        return self.protocol.protType == 1
+
+    def volList(self):
+        if self.isGoldStdProt():
+            return ['reconstructed', 'half1', 'half2', 'filtered', 'filtered & centered']
+        else:
+            return ['reconstructed', 'half1', 'half2']
 
     def _getVisualizeDict(self):
         # self._load()
@@ -187,7 +206,10 @@ Examples:
         else:
             iterations = [it]
 
-        volTemplate = VOLNAMES[self.showVolumes.get()]
+        if self.isGoldStdProt():
+            volTemplate = VOLNAMES_GOLDSTD[self.showVolumes.get()]
+        else:
+            volTemplate = VOLNAMES_DEFGROUPS[self.showVolumes.get()]
         volumes = [self._getFinalPath(volTemplate % i) + '.stk'
                    for i in iterations]
 
@@ -251,17 +273,24 @@ Examples:
         iterations = self._getIterations()
         groups = self._getGroups()
 
+        if self.isGoldStdProt():
+            template = 'fscdoc_m_%02d.stk'
+            title = 'Masked FSC'
+        else:
+            template = 'fscdoc_%02d.stk'
+            title = 'FSC'
+
         if self.groupFSC == 0:  # group by iterations
-            files = [(it, self._getFinalPath('fscdoc_%02d.stk' % it)) for it in iterations]
+            files = [(it, self._getFinalPath(template % it)) for it in iterations]
             legendPrefix = 'iter'
         else:
-            it = iterations[-1]
+            it = iterations[-1]  # show only last iteration
             legendPrefix = 'group'
 
             def group(f):  # retrieve the group number
                 return int(f.split('_')[-1].split('.')[0])
 
-            groupFiles = glob(self._getFinalPath('fscdoc_%02d_???.stk' % it))
+            groupFiles = glob(self._getFinalPath('ofscdoc_%02d_???.stk' % it))
             groupFiles.sort()
             files = [(group(f), f) for f in groupFiles if group(f) in groups]
             if not files:  # empty files
@@ -269,8 +298,7 @@ Examples:
                                           title="Wrong groups selection")]
 
         plotter = EmPlotter(x=1, y=1, windowTitle='Resolution FSC')
-        a = plotter.createSubPlot("FSC", 'Angstroms^-1', 'FSC', yformat=False)
-        # fscFile = self._getFinalPath('fscdoc_%02d.stk' % iterations[0])
+        a = plotter.createSubPlot(title, 'Angstroms^-1', 'FSC', yformat=False)
         legends = []
         for it, fscFile in files:
             if os.path.exists(fscFile):
@@ -278,6 +306,16 @@ Examples:
                 legends.append('%s %d' % (legendPrefix, it))
             else:
                 print "Missing file: ", fscFile
+
+        # plot final FSC curve (from BP)
+        if self.groupFSC == 0 and not self.isGoldStdProt():
+            lastIter = self.protocol._getLastIterNumber()
+            if lastIter in iterations:
+                fscFinalFile = self._getFinalPath('ofscdoc_%02d.stk' % lastIter)
+                if os.path.exists(fscFinalFile):
+                    self._plotFSC(a, fscFinalFile)
+                    legends.append('final')
+
 
         if threshold < self.maxfsc:
             a.plot([self.minInv, self.maxInv], [threshold, threshold],
@@ -291,10 +329,15 @@ Examples:
     def _iterAngles(self, it):
         """ Iterate over the angular distribution for a given iteration. """
         # Get the alignment files of each group for this iteration
-        files = glob(self._getFinalPath('align_%02d_???.stk' % it))
+        if self.isGoldStdProt():
+            template = 'align_%02d_???_s?.stk'
+        else:
+            template = 'align_%02d_???.stk'
+
+        files = glob(self._getFinalPath(template % it))
         for anglesFile in files:
-            fscDoc = SpiderDocFile(anglesFile)
-            for values in fscDoc:
+            alignDoc = SpiderDocFile(anglesFile)
+            for values in alignDoc:
                 theta = values[1]
                 phi = values[2]
 
@@ -302,7 +345,7 @@ Examples:
                     theta = abs(180. - theta)
                     phi += 180
                 yield phi, theta
-            fscDoc.close()
+            alignDoc.close()
 
     def _displayAngDist(self, *args):
         iterations = self._getIterations()

@@ -26,7 +26,7 @@
 ;
 ; INPUT FILES:
 ;   [params]                ../params                             Input params file
-;   [vol_orig]              ../vol01                              Input volume file
+;   [vol_orig]              ../ref_vol                              Input volume file
 ;   [sel_group_orig]        ../sel_group                          Group selection file
 ;   [sel_particles_orig]    ../group***_selfile                   Particle selection files
 ;   [group_align_orig]      ../group***_align                     Alignment parameter files
@@ -71,7 +71,6 @@
    SD /     ITERATION       GROUP        RESOLUTION
      [grp_resol]           ; Resolution doc file               (output)
  ENDIF
-
 
  MY FL
 
@@ -179,7 +178,6 @@
  UD ICE                     ; End doc file 'UD IC' use
   [sel_group]               ; Group selection doc file        (finished)
 
-
  ; Prepare final resolution files
  @endrefine([r2],[pixsiz],[iter])
 
@@ -187,5 +185,4 @@
    echo  ; echo -n  " FINISHED REFINEMENT    " ; date '+ TIME: %x  %X'
 
  EN
-
 ; </body></pre></html>

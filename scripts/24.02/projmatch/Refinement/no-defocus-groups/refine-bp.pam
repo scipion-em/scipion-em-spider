@@ -17,7 +17,7 @@
  ;
  ; '##' denotes iteration, '##+' denotes next iteration, '@' denotes subset,  '***' denotes group
  ; INPUT FILES:
- ;    [sel_parts_s]         ../group***_selfile_s@   Group particle selection file   (one for this invocation)
+ ;    [sel_parts_s]         input/group***_selfile_s@   Group particle selection file   (one for this invocation)
  ;    [next_group_align_s]  final/align##+_***_s@    Alignment parameter doc file    (one for this invocation)
  ;    [temp_out_images]     work/dala_***@ or _8@    Current aligned images template (one for this invocation)
  ;

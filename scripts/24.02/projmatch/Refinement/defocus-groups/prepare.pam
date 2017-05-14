@@ -87,16 +87,19 @@
      [sel_group]                        ; Group sel. doc file (input)
 
    ; Copy starting alignment parameter files to final dir.
+    SYS
+     cp [group_align_orig].$DATEXT [group_align].$DATEXT
+
    SYS
-     \cp -p [group_align_orig].$DATEXT [group_align].$DATEXT
+     mv [group_align_orig].$DATEXT [input_dir]/
 
    ; Link starting unaligned images to input dir  (large files)
    SYS
-     ln -sf  ../[unaligned_images_orig].$DATEXT  [unaligned_images].$DATEXT
+     mv  [unaligned_images_orig].$DATEXT  [input_dir]/
 
    ; Copy particle selection files to input dir. (one/group)
    SYS
-     \cp -p [sel_particles_orig].$DATEXT  [sel_particles].$DATEXT
+     mv [sel_particles_orig].$DATEXT  [input_dir]/
 
    ; Create group CTF correction file
    [maxspfreq] = 1.0 / (2.0 * [pixsiz])

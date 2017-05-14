@@ -32,7 +32,6 @@ import re, sys
 
 import pyworkflow.utils as pwutils
 import pyworkflow.em as em
-import pyworkflow.em.metadata as md
 import pyworkflow.protocol.params as params
 from pyworkflow.em.protocol import ProtRefine3D
 from pyworkflow.em.constants import ALIGN_PROJ
@@ -324,9 +323,9 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                 groupInfo.addParticle(part)
         else:
             numProcs = self.numberOfMpi.get()
-            # explicitly set a minimum of 4 groups
+            # explicitly set a minimum of 2 groups
             # GS: maybe not necessary?
-            numGroups = 4 if numProcs < 4 else numProcs
+            numGroups = 2 if numProcs < 3 else numProcs
             d, r = divmod(len(partSet), numGroups)
             numParts = d + 1 if r > 0 else d
             groupId = 1
@@ -399,12 +398,9 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         self._defineTransformRelation(self.inputParticles, outImgSet)
 
         fsc = FSC(objLabel=self.getRunName())
-        #blockName = 'model_class_%d@' % 1
-        #fn = blockName + self._getExtraPath("Refinement/final/fscdoc_m_%02d" % lastIter)
-        #mData = md.MetaData(fn)
-        #fsc.loadFromMd(mData,
-        #               md.RLN_RESOLUTION,
-        #               md.RLN_MLMODEL_FSC_HALVES_REF)
+        resolution, fscData = self._getFscData(iter=lastIter)
+        fsc.setData(resolution, fscData)
+
         self._defineOutputs(outputFSC=fsc)
         self._defineSourceRelation(vol, fsc)
     
@@ -459,13 +455,18 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         final/vol_##_unfilt :	Complete unfiltered volume   (one / iter)
         final/vol_## :	Complete filtered volume   (one / iter)
         final/vol_##_cent:	Complete filtered, centered volumes   (one / iter)
-        final/fscdoc_m_##	Masked FSC resolution curve doc files   (one / iter)
-        final/resolutions:	Doc file listing resolution at each iteration.   (one)
-        final/align_##_***_s@:	Alignment parameter doc file   (two / group / iter)
+
+        --- with def groups:
+
+    	final/val##:	Unfiltered volume
+    	final/vol##:	Filtered volume from all images
+    	final/vol##_sub@:	Filtered volume from a subset of images
+    	final/bpr##:	Final volume from all images
+    	final/bpr##_sub@:	Final volume from a subset of images
         """
 
     def _citations(self):
-        return ['Penczek1992']
+        return ['Penczek1992', 'Shaikh2008']
     
     def _methods(self):
         msg = "\nInput particles %s " % self.getObjectTag('inputParticles')
@@ -482,11 +483,14 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def _getLastIterNumber(self):
         """ Return the list of iteration files, give the iterTemplate. """
         result = None
-        template = self._getExtraPath('Refinement/final/vol_??.stk')
+        if self.protType == 0:
+            template = self._getExtraPath('Refinement/final/bpr??.stk')
+        else:
+            template = self._getExtraPath('Refinement/final/vol_??.stk')
         files = sorted(glob(template))
         if files:
             f = files[-1]
-            s = re.compile('vol_(\d{2})').search(f)
+            s = re.compile('(\d{2}).stk').search(f)
             if s:
                 result = int(s.group(1))
         return result
@@ -507,6 +511,20 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def _protGoldStdIsSupported(self):
         return True if getVersion() != '21.03' else False
 
+    def _getFscData(self, iter):
+        if self.protType == 1:  # gold std
+            fn = self._getExtraPath("Refinement/final/fscdoc_m_%02d.stk" % iter)
+        else:  # def groups
+            fn = self._getExtraPath("Refinement/final/ofscdoc_%02d.stk" % iter)
+
+        resolution = []
+        fscData = []
+        fscDoc = SpiderDocFile(fn)
+        for values in fscDoc:
+            resolution.append(1 / values[1])
+            fscData.append(values[2])
+
+        return resolution, fscData
     
 class DefocusGroupInfo():
     """ Helper class to store some information about 
