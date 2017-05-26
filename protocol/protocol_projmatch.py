@@ -342,7 +342,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                         groupInfo = DefocusGroupInfo(groupId, template, ih)
                         groupDict[groupId] = groupInfo
 
-                    groupInfo.addParticle(part)
+                groupInfo.addParticle(part)
 
         # Write the docfile with the group information
         # like the number of particles (and the defocus)
@@ -381,15 +381,20 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         imgSet = self.inputParticles.get()
         vol = Volume()
         lastIter = self._getLastIterNumber()
-        vol.setFileName(self._getExtraPath('Refinement/final/vol_%02d.stk' % lastIter))
+        if self.protType == GOLD_STD:
+            vol.setFileName(self._getExtraPath('Refinement/final/vol_%02d.stk' % lastIter))
+            half1 = self._getExtraPath('Refinement/final/vol_%02d_s1.stk' % lastIter)
+            half2 = self._getExtraPath('Refinement/final/vol_%02d_s2.stk' % lastIter)
+        else:
+            vol.setFileName(self._getExtraPath('Refinement/final/vol%02d.stk' % lastIter))
+            half1 = self._getExtraPath('Refinement/final/vol%02d_sub1.stk' % lastIter)
+            half2 = self._getExtraPath('Refinement/final/vol%02d_sub2.stk' % lastIter)
         vol.setSamplingRate(imgSet.getSamplingRate())
-        half1 = self._getExtraPath('Refinement/final/vol_%02d_s1.stk' % lastIter)
-        half2 = self._getExtraPath('Refinement/final/vol_%02d._s2.stk' % lastIter)
         vol.setHalfMaps([half1, half2])
 
         outImgSet = self._createSetOfParticles()
         outImgSet.copyInfo(imgSet)
-        #self._fillDataFromDoc(outImgSet)
+        self._fillDataFromDoc(outImgSet)
 
         self._defineOutputs(outputVolume=vol)
         self._defineSourceRelation(self.inputParticles, vol)
@@ -442,7 +447,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         diam = int(self.radius.get() * 2 * self.inputParticles.get().getSamplingRate())
         summary.append('Particle diameter: *%s* Angstroms' % diam)
         summary.append('Shift range: *%s* pixels' % self.alignmentShift)
-        summary.append('Projection diameter: *%s* of window size' % self.winFrac)
+        #summary.append('Projection diameter: *%s* of window size' % self.winFrac)
 
         return summary
 
@@ -451,9 +456,13 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     
     def _methods(self):
         msg = "\nInput particles %s " % self.getObjectTag('inputParticles')
-        msg += "were subjected to refinement of orientations ([Penczek1992]) "
+        msg += "were subjected to 3D refinement by projection matching ([Penczek1992]) "
         msg += "for %s iterations " % self.numberOfIterations
         msg += "using %s as an initial reference. " % self.getObjectTag('input3DReference')
+        if self.protType == GOLD_STD:
+            msg += "\nUsing gold-standard refinement procedure."
+        else:
+            msg += "\nUsing defocus group-based procedure."
         
         return [msg]
         
@@ -464,7 +473,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def _getLastIterNumber(self):
         """ Return the list of iteration files, give the iterTemplate. """
         result = None
-        if self.protType == 0:
+        if self.protType == DEF_GROUPS:
             template = self._getExtraPath('Refinement/final/bpr??.stk')
         else:
             template = self._getExtraPath('Refinement/final/vol_??.stk')
@@ -477,10 +486,11 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         return result
 
     def _fillDataFromDoc(self, imgSet):
-        outImgsFn = self._getExtraPath('img_orig.stk')
-        outDocFn = SpiderDocAliFile(self._getExtraPath('img_aligned_doc.stk'))
+        outDocFn = SpiderDocAliFile(self._getExtraPath('stack_alignment.stk'))
         imgSet.setAlignmentProj()
-        imgSet.copyItems(self.inputParticles.get(),
+        initPartSet = self.inputParticles.get()
+        partIter = iter(initPartSet.iterItems(orderBy=['id'], direction='ASC'))
+        imgSet.copyItems(partIter,
                         updateItemCallback=self._createItemMatrix,
                         itemDataIterator=iter(outDocFn))
 
@@ -493,7 +503,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         return True if getVersion() != '21.03' else False
 
     def _getFscData(self, iter):
-        if self.protType == 1:  # gold std
+        if self.protType == GOLD_STD:  # gold std
             fn = self._getExtraPath("Refinement/final/fscdoc_m_%02d.stk" % iter)
         else:  # def groups
             fn = self._getExtraPath("Refinement/final/ofscdoc_%02d.stk" % iter)
@@ -506,7 +516,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             fscData.append(values[2])
 
         return resolution, fscData
-    
+
 class DefocusGroupInfo():
     """ Helper class to store some information about 
     defocus groups like the number of particles

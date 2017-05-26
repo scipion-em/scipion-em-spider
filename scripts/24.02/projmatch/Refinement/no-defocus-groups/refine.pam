@@ -201,11 +201,6 @@
  SYS ; insert 2nd header line
    sed -i '2 i\ ; PSI, THE, PHI, REF, EXP, ANG, SX, SY, NPROJ, DIFF, CCROT, ANG, SX, SY, MIR-CC' [out_align].$DATEXT
 
- CP TO STK
-   [in_dir]/group***_stack@
-   1-[num-grps]
-   1
-   ../stack@
 
  SYS                          ; Echo current time
    echo -n " Refinement finished   " ; date '+ TIME: %x  %X' ; echo

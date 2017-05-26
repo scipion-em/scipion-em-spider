@@ -64,8 +64,8 @@ REGEX_KEYVALUE = re.compile("(?P<prefix>\s+GLO\s|[^[a-zA-Z0-9_-]*)(?P<var>\[?[a-
 # just before a 'fr l' line
 REGEX_KEYFRL = re.compile("(?P<var>\[?[a-zA-Z0-9_-]+\]?)(?P<value>\S+)(?P<suffix>\s+.*)")
 
-HEADER_COLUMNS = ['ANGLE_PSI', 'ANGLE_THE',
-                  'ANGLE_PHI', 'REF', 'EXP', 'ROT', 'SHIFTX',
+HEADER_COLUMNS = ['ANGLE_PSI2', 'ANGLE_THE',
+                  'ANGLE_PHI', 'REF', 'EXP', 'ANGLE_PSI', 'SHIFTX',
                   'SHIFTY', 'NPROJ', 'DIFF', 'CCROT', 'ROT',
                   'SX', 'SY', 'MIR-CC']
 

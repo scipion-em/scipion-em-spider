@@ -157,12 +157,12 @@ def rowToAlignment(alignmentRow, alignType):
     alignment = Transform()
     angles = numpy.zeros(3)
     shifts = numpy.zeros(3)
-    angles[2] = alignmentRow.getValue(ANGLE_PSI, 0.)
-    shifts[0] = alignmentRow.getValue(SHIFTX, 0.)
-    shifts[1] = alignmentRow.getValue(SHIFTY, 0.)
+    angles[2] = alignmentRow.get('ANGLE_PSI')
+    shifts[0] = alignmentRow.get('SHIFTX')
+    shifts[1] = alignmentRow.get('SHIFTY')
     if not is2D:
-        angles[0] = alignmentRow.getValue(ANGLE_PHI, 0.)
-        angles[1] = alignmentRow.getValue(ANGLE_THE, 0.)
+        angles[0] = alignmentRow.get('ANGLE_PHI')
+        angles[1] = alignmentRow.get('ANGLE_THE')
 
     M = matrixFromGeometry(shifts, angles, inverseTransform)
     alignment.setMatrix(M)
