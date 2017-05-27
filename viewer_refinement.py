@@ -65,9 +65,9 @@ VOLNAMES_GOLDSTD = {
 }
 
 VOLNAMES_DEFGROUPS = {
-    VOL: 'bpr%02d',
-    VOL_HALF1: 'bpr%02d_sub1',
-    VOL_HALF2: 'bpr%02d_sub2',
+    VOL: 'vol%02d',
+    VOL_HALF1: 'vol%02d_sub1',
+    VOL_HALF2: 'vol%02d_sub2',
 }
 
 
@@ -131,13 +131,13 @@ Examples:
                        help='')
         group.addParam('groupFSC', params.EnumParam, default=0,
                        choices=['iterations', 'defocus groups'],
-                       condition='not isGoldStdProt',
+                       condition='not isGoldStdProt and viewIter==0',
                        display=params.EnumParam.DISPLAY_HLIST,
                        label='Group FSC plots by',
                        help='Select which FSC curve you want to '
                             'show together in the same plot.')
         group.addParam('groupSelection', params.NumericRangeParam,
-                       condition='not isGoldStdProt and groupFSC==%d' % 1,
+                       condition='not isGoldStdProt and groupFSC==1 and viewIter==0',
                        label="Groups list",
                        help="Write the group list to visualize. See examples in iteration list")
         group.addParam('resolutionThresholdFSC', params.FloatParam, default=0.143,

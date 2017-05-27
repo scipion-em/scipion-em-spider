@@ -38,7 +38,7 @@ from pyworkflow.em.convert import ImageHandler
 
 from pyworkflow.em.wizard import (EmWizard, ParticleMaskRadiusWizard, ParticlesMaskRadiiWizard,
                                   FilterParticlesWizard, DownsampleDialog, ImagePreviewDialog,
-                                  ListTreeProvider, VolumeMaskRadiiWizard)
+                                  ListTreeProvider, VolumeMaskRadiiWizard, MaskPreviewDialog)
 import pyworkflow.gui.dialog as dialog
 from pyworkflow.gui.widgets import LabelSlider, HotButton
 
@@ -55,17 +55,15 @@ from protocol import (SpiderProtCAPCA, SpiderProtAlignAPSR,
 #===============================================================================
 
 class SpiderProtAlignRadiusWizard(VolumeMaskRadiiWizard):
-    _targets = [(SpiderProtRefinement, ['radius', 'alignmentShift'])]
+    _targets = [(SpiderProtRefinement, ['radius', 'alignmentShift', 'winFrac'])]
 
     def _getParameters(self, protocol):
         label, value = self._getInputProtocol(self._targets, protocol)
-        # outer radius = radius + alignmentShift
-        value[1] = value[0] + value[1]
-
         protParams = {}
         protParams['input'] = protocol.input3DReference
         protParams['label'] = label
         protParams['value'] = value
+
         return protParams
 
     def _getProvider(self, protocol):
@@ -73,10 +71,19 @@ class SpiderProtAlignRadiusWizard(VolumeMaskRadiiWizard):
         return VolumeMaskRadiiWizard._getListProvider(self, _objs)
 
     def show(self, form):
-        params = self._getParameters(form.protocol)
-        _value = params['value']
-        _label = params['label']
-        VolumeMaskRadiiWizard.show(self, form, _value, _label, UNIT_PIXEL)
+        protocol = form.protocol
+        provider = self._getProvider(protocol)
+
+        if provider is not None:
+            d = SpiderAlignRadiusDialog(form.root, provider,
+                                        protocolParent=protocol)
+            if d.resultYes():
+                    form.setVar('radius', d.getRadius())
+                    form.setVar('alignmentShift', d.getAliShift())
+                    form.setVar('winFrac', d.getPrjDiam())
+        else:
+            dialog.showWarning("Input volume",
+                               "Select volume first", form.root)
 
 
 class SpiderProtMaskWizard(ParticleMaskRadiusWizard):
@@ -187,7 +194,59 @@ class SpiderFilterParticlesWizard(FilterParticlesWizard):
 #===============================================================================
     
 #--------------- Dialogs used by Wizards --------------------------        
-       
+
+
+class SpiderAlignRadiusDialog(MaskPreviewDialog):
+
+    def _createPreview(self, frame):
+        from pyworkflow.gui.matplotlib_image import MaskPreview
+        self.innerRadius = self.protocolParent.radius.get()
+        self.outerRadius = self.innerRadius + self.protocolParent.alignmentShift.get()
+        self.projDiam = int(self.protocolParent.winFrac.get() * float(self.dim_par / 2))
+        print "vars= ", self.innerRadius, self.outerRadius, self.projDiam
+
+        if self.outerRadius is None or self.outerRadius > self.dim_par/2:
+            self.outerRadius = int(self.dim_par/2)
+        self.preview = MaskPreview(frame, self.dim, label=self.previewLabel,
+                                   outerRadius=int(self.outerRadius)*self.ratio,
+                                   innerRadius=int(self.innerRadius)*self.ratio,
+                                   projDiam=self.projDiam*self.ratio)
+        self.preview.grid(row=0, column=0)
+
+    def _createControls(self, frame):
+        self.radSlider = LabelSlider(frame, 'Particle radius (px)',
+                                     from_=1, to=int(self.dim_par/2),
+                                     value=self.protocolParent.radius.get(), step=1,
+                                     callback=lambda a, b, c: self.updateRadius())
+        self.radSlider.grid(row=0, column=0, padx=5, pady=5)
+
+        self.aliShSlider = LabelSlider(frame, 'Alignment shift (px)',
+                                       from_=1, to=int(self.dim_par/2),
+                                       value=self.protocolParent.alignmentShift.get(), step=1,
+                                       callback=lambda a, b, c: self.updateRadius())
+        self.radSlider.grid(row=1, column=0, padx=5, pady=5)
+
+        self.prjDiamSlider = LabelSlider(frame, 'Projection diameter (frac)',
+                                         from_=0.01, to=1,
+                                         value=self.protocolParent.winFrac.get(), step=0.01,
+                                         callback=lambda a, b, c: self.updateRadius())
+        self.prjDiamSlider.grid(row=2, column=0, padx=5, pady=5)
+
+    def updateRadius(self):
+        self.preview.updateMask(self.radSlider.get() * self.ratio,
+                                self.aliShSlider.get() * self.ratio,
+                                self.prjDiamSlider.get() * self.ratio)
+
+    def getRadius(self):
+        return self.radSlider.get()
+
+    def getAliShift(self):
+        return self.aliShSlider.get()
+
+    def getPrjDiam(self):
+        return self.prjDiamSlider.get()
+
+
 class SpiderFilterDialog(DownsampleDialog):
     
     def _beforePreview(self):

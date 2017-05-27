@@ -386,9 +386,9 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             half1 = self._getExtraPath('Refinement/final/vol_%02d_s1.stk' % lastIter)
             half2 = self._getExtraPath('Refinement/final/vol_%02d_s2.stk' % lastIter)
         else:
-            vol.setFileName(self._getExtraPath('Refinement/final/vol%02d.stk' % lastIter))
-            half1 = self._getExtraPath('Refinement/final/vol%02d_sub1.stk' % lastIter)
-            half2 = self._getExtraPath('Refinement/final/vol%02d_sub2.stk' % lastIter)
+            vol.setFileName(self._getExtraPath('Refinement/final/bpr%02d.stk' % lastIter))
+            half1 = self._getExtraPath('Refinement/final/bpr%02d_sub1.stk' % lastIter)
+            half2 = self._getExtraPath('Refinement/final/bpr%02d_sub2.stk' % lastIter)
         vol.setSamplingRate(imgSet.getSamplingRate())
         vol.setHalfMaps([half1, half2])
 
