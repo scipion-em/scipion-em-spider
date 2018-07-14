@@ -1,6 +1,6 @@
     # **************************************************************************
 # *
-# * Authors:     J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es)
+# * Authors:     J.M. De la Rosa Trevin (delarosatrevin@scilifelab.se)
 # *
 # * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
 # *
@@ -126,8 +126,7 @@ def getVersion():
 
 
 def getSupportedVersions():
-    return ['21.13', '24.02']
->>>>>>> 20f6b0733b... add multi-version support
+    return ['24.03']
 
 
 def _getFile(*paths):

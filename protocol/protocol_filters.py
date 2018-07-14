@@ -1,6 +1,6 @@
 # **************************************************************************
 # *
-# * Authors:     J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es)
+# * Authors:     J.M. De la Rosa Trevin (delarosatrevin@scilifelab.se)
 # *              Tapu Shaikh            (shaikh@ceitec.muni.cz)
 # *
 # * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC

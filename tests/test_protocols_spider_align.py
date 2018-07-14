@@ -1,6 +1,6 @@
 # **************************************************************************
 # *
-# * Authors:     J.M. de la Rosa Trevin (jmdelarosa@cnb.csic.es)
+# * Authors:     J.M. de la Rosa Trevin (delarosatrevin@scilifelab.se)
 # *
 # * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
 # *

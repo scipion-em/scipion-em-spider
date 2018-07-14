@@ -1,6 +1,6 @@
 # **************************************************************************
 # *
-# * Authors:     J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es)
+# * Authors:     J.M. De la Rosa Trevin (delarosatrevin@scilifelab.se)
 #                Tapu Shaikh            (shaikh@ceitec.muni.cz)
 # *              Grigory Sharov         (gsharov@mrc-lmb.cam.ac.uk)
 # *
@@ -261,7 +261,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                   '[out_align]': path('stack_alignment')
                   }
 
-        if self._protGoldStdIsSupported() and self.protType == GOLD_STD:
+        if self.protType == GOLD_STD:
             params.update({'sphdecon': self.sphDeconAngle.get(),
                            'bp-type': self.bpType.get() + 1})
 
@@ -411,9 +411,6 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     #--------------------------- INFO functions -------------------------------------------- 
     def _validate(self):
         errors = []
-        if self.protType == GOLD_STD and getVersion() == '21.03':
-            errors.append('Gold-standard refinement is supported only '
-                          'for newer Spider versions. Please update your installation.')
         if self.smallAngle:
             if not self.inputParticles.get().hasAlignmentProj():
                 errors.append('*Small angle* option can only be used if '
@@ -498,9 +495,6 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         from pyworkflow.em.packages.spider.convert import createItemMatrix
         from pyworkflow.em import ALIGN_PROJ
         createItemMatrix(item, row, align=ALIGN_PROJ)
-
-    def _protGoldStdIsSupported(self):
-        return True if getVersion() != '21.03' else False
 
     def _getFscData(self, iter):
         if self.protType == GOLD_STD:  # gold std
