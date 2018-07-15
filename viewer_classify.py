@@ -346,4 +346,3 @@ class SpiderViewerDiday(SpiderViewerClassify):
 
         return [ClassesView(self.getProject(), prot.strId(),
                             classes2D.getFileName(), particles.strId())]
- 

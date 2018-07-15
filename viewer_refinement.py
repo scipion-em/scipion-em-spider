@@ -245,7 +245,7 @@ Examples:
             return self._showVolumesChimera()
 
         elif self.displayVol == VOLUME_SLICES:
-            return self._createVolumesSqlite()  # self._createVolumesMd()
+            return self._createVolumesSqlite()
 
             # ===============================================================================
             # plotFSC
@@ -375,4 +375,3 @@ Examples:
                                               spheresDistance=2))  # self.spheresScale.get()))
 
         return views
-    

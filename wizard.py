@@ -36,7 +36,8 @@ from pyworkflow.utils.path import cleanPath
 from pyworkflow.em.constants import UNIT_PIXEL
 from pyworkflow.em.convert import ImageHandler
 
-from pyworkflow.em.wizard import (EmWizard, ParticleMaskRadiusWizard, ParticlesMaskRadiiWizard,
+from pyworkflow.em.wizard import (EmWizard, ParticleMaskRadiusWizard,
+                                  ParticlesMaskRadiiWizard,
                                   FilterParticlesWizard, DownsampleDialog, ImagePreviewDialog,
                                   ListTreeProvider, VolumeMaskRadiiWizard, MaskPreviewDialog)
 import pyworkflow.gui.dialog as dialog
@@ -487,5 +488,3 @@ class CustomMaskDialog(ImagePreviewDialog):
             else:
                 self.rightImage.read('%d@%s/stkmask.%s' % (i, tmp, ext))
             preview.updateData(self.rightImage.getData())
-        
-    
