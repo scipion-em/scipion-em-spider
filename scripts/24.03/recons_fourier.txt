@@ -1,7 +1,7 @@
  [nummps]                     = 0            ; Use all available OMP processors
  GLO [unaligned_images]       = 'particles'  ; Unaligned images stack (usually links)
  GLO [next_group_align]       = 'docfile'    ; Alignment parameter output file
- GLO [next_group_vol]         = 'volume'     ; Next group volumes
+ GLO [aligned_images]           = 'aligned_particles' ; Aligned images stack
 
 ; ----------------- END BATCH HEADER ---------------------------------
 
@@ -28,22 +28,14 @@
    6,0,7,8                      ; Reg. #s for angle, scale, & shift
    [next_group_align]           ; Alignment parameter doc file       (input)
    _8@******                    ; Current aligned images             (output)
- 
- ; Calculate new, refined volume using centered projections and 
- ; angles from align doc. file.  Creates two additional volumes from 
- ; random half subsets of images for use in resolution calculation.
 
- ; (If you have large images which give problems allocating memory in 'BP 32F', 
- ;     substitute operation 'BP 3F'.  Use that operation three times (with 3 
- ;     appropriate selection files for the images to be included) to create 
- ;     the three output volumes one by one.)
- BP 32F                         ; Back Projection - 3D Fourier
-   _8@******                    ; Current aligned images template     (input)
-   1-[maxim]              ; Particle selection doc file         (input)
-   [next_group_align]           ; Alignment parameter doc file        (input)
-   *                            ; No symmetries  
-   [next_group_vol]             ; Reconstructed group vol - overall   (output)
-   [next_group_vol]_sub1        ; Reconstructed group vol - subset 1  (output)
-   [next_group_vol]_sub2        ; Reconstructed group vol - subset 2  (output)
+ ; Save output to disk
+ CP
+   _8@
+   [aligned_images]@
+   [maxim]
+
+  DE
+   _8
 
 EN

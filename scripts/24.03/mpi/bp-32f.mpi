@@ -1,0 +1,26 @@
+ GLO [next_group_align]       = 'docfile'    ; Alignment parameter output file
+ GLO [next_group_vol]            = 'volume'
+ GLO [aligned_images]           = 'aligned_particles' ; Aligned images stack
+
+ ; Calculate new, refined volume using centered projections and
+ ; angles from align doc. file.  Creates two additional volumes from
+ ; random half subsets of images for use in resolution calculation.
+
+ ; Get number of images
+ FI H [maxim],[nx],[ny]             ; Find total number of images (not [numparts])
+   [aligned_images]@;             ; Input file needed                 (input)
+   MAXIM,NX,NY                      ; Max. image number, image size
+
+ BP 32F                         ; Back Projection - 3D Fourier
+   [aligned_images]@******                    ; Current aligned images template     (input)
+   1-[maxim]              ; Particle selection doc file         (input)
+   [next_group_align]           ; Alignment parameter doc file        (input)
+   *                            ; No symmetries
+   [next_group_vol]             ; Reconstructed group vol - overall   (output)
+   [next_group_vol]_sub1        ; Reconstructed group vol - subset 1  (output)
+   [next_group_vol]_sub2        ; Reconstructed group vol - subset 2  (output)
+
+ DE
+  [aligned_images]
+
+ EN

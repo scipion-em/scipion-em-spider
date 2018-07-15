@@ -50,7 +50,8 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
         self._params = {'ext': 'stk',
                         'particles': 'input_particles',
                         'particlesSel': 'input_particles_sel',
-                        'average': join(self._alignDir, 'rfreeavg001'), # If change the name, change it in template batch
+                        'average': join(self._alignDir, 'rfreeavg001'), # If you change the name,
+                        # change it also in template batch
                         'particlesAligned': join(self._alignDir, 'stkaligned')
                         }  
         
@@ -88,8 +89,6 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
     #--------------------------- STEPS functions --------------------------------------------       
 
     def createOutputStep(self):
-        """ Register the output (the alignment and the aligned particles.)
-        """
         outputStk = self._getFileName('particlesAligned')
         if not exists(outputStk):
             raise Exception('Ouptput stack %s not produced. ' % outputStk)
@@ -135,5 +134,3 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
     def _updateItem(self, item, index):
         item.setLocation(index, self._getFileName('particlesAligned'))
         item.setTransform(Transform())
-    
-

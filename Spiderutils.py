@@ -16,16 +16,16 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 
-import os, re, time
-import struct, sys
+import os, re, datetime
+import struct
 from commands import getoutput
 from types import *
-from spider import SPIDER
+#from spider import SPIDER
 
 WRITE_SPIREOUT = "WRITE_SPIREOUT"   # environmental variable for Spire
 
 def fileReadLines(filename):
-    "read a text file, return a list of lines"
+    """read a text file, return a list of lines"""
     try:
         fp = open(filename,'r')
         B = fp.readlines()
@@ -36,7 +36,7 @@ def fileReadLines(filename):
         return None
 
 def fileWriteLines(filename, lines, append=0, mode='w'):
-    "write a list of lines to a text file"
+    """write a list of lines to a text file"""
     mode = 'w'
     if append != 0 or mode != 'w':
         mode = 'a'
@@ -53,7 +53,7 @@ def fileWriteLines(filename, lines, append=0, mode='w'):
 #
 #     readdoc 
 #     writedoc
-#     nowisthetime, makeDocfileHeader, fixHeaders : functiones used by writedoc
+#     nowisthetime, makeDocfileHeader, fixHeaders : functions used by writedoc
 
 # Usage: readdoc(file, column=2) or readdoc(file, columns=[2,3])
 #
@@ -70,8 +70,9 @@ def fileWriteLines(filename, lines, append=0, mode='w'):
 # If keys=1, returns a dictionary indexed by keys, uses column keyword.
 # If keys='all', returns dictionary of all values, ignores column keyword.
 # Only works for Spider Version 11.0 format, with spaces between columns.
+
 def readdoc(filename, column=1, columns=None, line=None, lines=None, keys=0):
-    "Read a SPIDER document file; return a list or a dictionary"
+    """Read a SPIDER document file; return a list or a dictionary"""
     # first, figure out the which keyword (columns, line, lines) is used
     columnlist = None
     linelist = None
@@ -232,11 +233,11 @@ def readdoc(filename, column=1, columns=None, line=None, lines=None, keys=0):
 
 # included for compatibility		
 def readSpiderDocFile(filename, col_list=None):
-    "Read a SPIDER document file; return a dictionary"
+    """Read a SPIDER document file; return a dictionary"""
     return readdoc(filename, keys='all')
 
 def numberOfColumns(docfile):
-    " find the number of columns in a doc file"
+    """ find the number of columns in a doc file"""
     B = fileReadLines(docfile)
     for line in B:
      line = line.strip()
@@ -254,7 +255,7 @@ def numberOfColumns(docfile):
 onespace = re.compile("\S+ \S+")
 
 def combineHeaderSpaces(g,s,ncolumns):
-    " g is list, s is string. Convert ['HAS', 'SPACE'] -> ['HAS SPACE']"
+    """g is list, s is string. Convert ['HAS', 'SPACE'] -> ['HAS SPACE']"""
     m = onespace.search(s)
     # if an item with a space is found AND there are more headers than columns..
     if m and len(g) > ncolumns:
@@ -283,7 +284,7 @@ def combineHeaderSpaces(g,s,ncolumns):
         return g
 
 def getDocfileHeaders(filename, output='list'):
-    " tries to get the column headers from a doc file"
+    """ tries to get the column headers from a doc file"""
     try:
         fp = open(filename,'r')
     except:
@@ -328,22 +329,22 @@ def getDocfileHeaders(filename, output='list'):
 # returns e.g., ('16-OCT-2003 AT 13:08:16')
 def nowisthetime(dt=None, format='%d-%b-%Y AT %H:%M:%S'):
     if dt is None:
-        dt = datetime.now()
+        dt = datetime.datetime.now()
     return dt.strftime(format).upper()
 
 def makeDocfileHeader(filename, batext=None):
-    "create the comment line used at the top of SPIDER document files"
+    """create the comment line used at the top of SPIDER document files"""
     filename = os.path.basename(filename)
     fn, ext = os.path.splitext(filename)
     ext = ext[1:]
     if batext == None:
         batext = 'spl'   # Spider Python Library
-    date,time,idstr = nowisthetime()
-    h = " ;%s/%s   %s AT %s   %s\n" % (batext,ext,date,time,filename)
+    timestr = nowisthetime()
+    h = " ;%s/%s   %s   %s\n" % (batext,ext,timestr,filename)
     return h
 
 def fixHeaders(headers):
-    "make all headers 11 characters in width; return doc string"
+    """make all headers 11 characters in width; return doc string"""
     w = 11
     docstr = " ; /    "
     for h in headers:
@@ -359,7 +360,7 @@ def fixHeaders(headers):
 # type-checking functions
 
 def checkInteger(x):
-    " returns int if input can be converted to an integer, else None"
+    """ returns int if input can be converted to an integer, else None"""
     try:
         i = int(x)  # works for 5, 5.0, '5'
         return i
@@ -372,18 +373,18 @@ def checkInteger(x):
     return None
 
 def isListorTuple(x):
-    "returns 1 if input is a list or a tuple"
+    """returns 1 if input is a list or a tuple"""
     if isinstance(x, ListType) or isinstance(x, TupleType) : return 1
     else: return 0
     
 def isDictionary(d):
-    "returns 1 if input is a Python dictionary"
+    """returns 1 if input is a Python dictionary"""
     if isinstance(d, DictType): return 1
     else: return 0
 
 def isListofLists(d):
-    "returns 1 if input is a list, and 1st item in input is also a list"
-    "actually works for tuples as well. Only checks 1st element "
+    """returns 1 if input is a list, and 1st item in input is also a list.
+    Actually works for tuples as well. Only checks 1st element """
     if not isListorTuple(d):
         return 0
     if len(d) < 1:
@@ -394,7 +395,7 @@ def isListofLists(d):
         return 0
     
 def getLastDocfileKey(docfile):
-    "return the last key of a doc file"
+    """return the last key of a doc file"""
     if not os.path.exists(docfile):
         return None
     cmd = 'tail %s' % docfile
@@ -422,7 +423,7 @@ def getLastDocfileKey(docfile):
 #
 # todo: check if columns have different lengths
 def writedoc(filename, columns=None, lines=None, headers=None, keys=None, mode='w'):
-    "write data to a file in SPIDER document file format"
+    """write data to a file in SPIDER document file format"""
     if not isListofLists(columns) and not isListofLists(lines):
         if isDictionary(columns):
             return writeSpiderDocFile(filename, columns, headers=headers, mode=mode)
@@ -497,7 +498,7 @@ def writedoc(filename, columns=None, lines=None, headers=None, keys=None, mode='
 #included for compatibiity:
 # data must be in dictionary form: D[key] = [list of column values]
 def writeSpiderDocFile(filename, data, headers=None, append=0, mode='w'):
-    "write data (in dictionary form) to a file in SPIDER document file format"
+    """write data (in dictionary form) to a file in SPIDER document file format"""
     if append > 0: mode = 'a'
     if mode == 'a': _APPEND = 1
     else: _APPEND = 0
@@ -577,11 +578,11 @@ def writeSpireoutFile(filename):
 # convenience functions
 #
 def list2int(a):
-    " converts a list of strings to integers"
+    """ converts a list of strings to integers"""
     return map(int, map(float,a))
 
 def list2float(a):
-    " converts a list of strings to floats"
+    """ converts a list of strings to floats"""
     return map(float,a)
 
 # given ("mic****", 89) returns "mic0089"
@@ -589,7 +590,7 @@ def list2float(a):
 # If number of *'s too small for number, filename is extended.
 # asterisks can be replaced by another char
 def makeFilename(filename, n, char='*'):
-    "substitutes asterisks for number: ('mic****', 89) returns 'mic0089'"
+    """substitutes asterisks for number: ('mic****', 89) returns 'mic0089'"""
     try:
         n = int(float(n))
     except:
@@ -613,7 +614,7 @@ re_asterisk = re.compile('[*]+')
 
 # old version of makeFilename included for compatibility
 def makeSpiderFilename(filename, n):
-    "substitutes asterisks for number: ('mic****', 89) returns 'mic0089'"
+    """substitutes asterisks for number: ('mic****', 89) returns 'mic0089'"""
     try:
         n = int(float(n))
     except:
@@ -644,7 +645,7 @@ def makeSpiderFilename(filename, n):
 #re_nums = re.compile('\d+\D?')  # ints followed by one non-int char
 
 def filenumber(file):
-    "returns file number (integer nearest the file extension)"
+    """returns file number (integer nearest the file extension)"""
     if len(file) == 0: return None
     n = getfilenumber(file)
     if n:
@@ -653,7 +654,7 @@ def filenumber(file):
         return None
 
 def getfilenumber(filename):
-    "returns file number as a string with leading zeroes "
+    """returns file number as a string with leading zeroes """
     filename = os.path.basename(filename)
     fname,ext = os.path.splitext(filename)
 
@@ -672,7 +673,7 @@ def getfilenumber(filename):
     return numstr
             
 def name2template(filename, all=0):
-    " given 'mic021.dat' --> returns mic***.dat "
+    """ given 'mic021.dat' --> returns mic***.dat """
     " by default, only replaces number nearest extension. all !=0 replaces all"
     if len(filename) == 0: return ""
     path, basename = os.path.split(filename)
@@ -709,7 +710,7 @@ def name2template(filename, all=0):
 # template should have asterisks, num can be int or a numbered filename.
 # Like makeSpiderFilename, but it can accept a filename instead of a number.
 def template2filename(template, n=0):  #numfile=None, n=None):
-    "replaces asterisks with number: (pic***.dat, doc003.dat) returns pic003.dat"
+    """replaces asterisks with number: (pic***.dat, doc003.dat) returns pic003.dat"""
     if type(n) == type(1):
         pass
     elif type(n) == type("string"):
@@ -731,7 +732,7 @@ def template2filename(template, n=0):  #numfile=None, n=None):
 #     input: list [1,2,3,6,7,8,9,10,11,17]
 #     output: list with strings ['1-3', '6-11', '17']
 def list2range(f):
-    " input is a list of integers "
+    """ input is a list of integers """
     fn = []
     for item in f:
         try:
@@ -781,7 +782,7 @@ def list2range(f):
 # input: list of strings (output from list2range)
 # output: string of concatenated items
 def range2string(n): 
-    " converts ['1-4','7'] to '1-4,7' "
+    """ converts ['1-4','7'] to '1-4,7' """
     if n == None or len(n) == 0:
         return ""
     s = ""
@@ -791,13 +792,13 @@ def range2string(n):
     return s
 
 def numberlist2string(numberlist):
-    " a list of integers is converted to a string, "
-    " hyphenating consecutive numbers. [1,2,3,4] -> '1-4' "
+    """ a list of integers is converted to a string,
+     hyphenating consecutive numbers. [1,2,3,4] -> '1-4' """
     d = list2range(numberlist)
     return range2string(d)
 
 def range2list(numberstring):
-    "input string: '1-4' -> output list: [1,2,3,4] "
+    """input string: '1-4' -> output list: [1,2,3,4] """
     if numberstring == "" or None:
         return []
     L = numberstring.split(',')
@@ -834,7 +835,7 @@ _null_trans = maketrans("", "")
 # istextfile returns 1 for text, 0 for binary, 0 for error (not found?)
 # pdf test added, cos they can get either answer.
 def istextfile(filename, blocksize = 512):
-    "returns 1 if input is a text file (pdf's and zero-length files are binary)" 
+    """returns 1 if input is a text file (pdf's and zero-length files are binary)"""
     if os.path.isdir(filename):
         return 0
     name,ext = os.path.splitext(filename)
@@ -847,7 +848,7 @@ def istextfile(filename, blocksize = 512):
         return 0
 
 def istext(s):
-    "returns 1 if input is a text file (pdf's and zero-length files are binary)" 
+    """returns 1 if input is a text file (pdf's and zero-length files are binary)"""
     if "\0" in s:
         return 0
 
@@ -868,7 +869,7 @@ def istext(s):
 # Quits as soon as it gets a good data line, i.e.,
 # int1 int2 [floats], where no. floats = int2
 def isSpiderDocfile(file):
-    "returns 1 if input is a SPIDER document file"
+    """returns 1 if input is a SPIDER document file"""
     try:
         fp = open(file, 'r')
     except:
@@ -923,7 +924,7 @@ def isSpiderDocfile(file):
     return isDoc
 
 def stripComment(line, strip=1):
-    "removes all text after and including the 1st semicolon in a string"
+    """removes all text after and including the 1st semicolon in a string"""
     n = line.find(";")
     if n > -1:
         line = line[:n].rstrip()
@@ -944,7 +945,7 @@ re_nam1 = re.compile('(\[[ a-zA-Z0-9_-]+\])')  # named reg in proc hdr
 # This is not really dependable - there are just too many variants to
 # catch them all. Plus it may return with false positives.
 def isSpiderBatchfile(file):
-    "returns 1 if input is a SPIDER batch file"
+    """returns 1 if input is a SPIDER batch file"""
     """ only checks first few lines of text.
         Returns 1 if finds any of the following:
             ; --- End batch header ---
@@ -1026,7 +1027,7 @@ def isSpiderBatchfile(file):
     return 0
 
 def isSpiderProcedurefile(file):
-    "returns 1 if input is a SPIDER procedure file"
+    """returns 1 if input is a SPIDER procedure file"""
     if isSpiderBatchfile(file) == 2:
         return 1
     else:
@@ -1035,7 +1036,7 @@ def isSpiderProcedurefile(file):
 # ------ binary file functions -------------
 
 def isInt(f):
-    "returns 1 if input is an integer"
+    """returns 1 if input is an integer"""
     try:
         i = int(f)
         if f-i == 0: return 1
@@ -1048,7 +1049,7 @@ iforms = [1,3,-11,-12,-21,-22]
 # returns header tuple, if t is a valid Spider header,
 # otherwise returns 0
 def isSpiderHeader(t):
-    "returns tuple of values from a valid SPIDER header, else 0"
+    """returns tuple of values from a valid SPIDER header, else 0"""
     h = (99,) + t   # add 1 value so can use spider header index start=1
     # header values 1,2,5,12,13,22,23 should be integers
     for i in [1,2,5,12,13,22,23]:
@@ -1067,7 +1068,7 @@ def isSpiderHeader(t):
 
 # returns "image","volume","Fourier"  or 0
 def isSpiderBin(filename):
-    "returns nonzero value if input is a SPIDER binary file"
+    """returns nonzero value if input is a SPIDER binary file"""
     if not os.path.exists(filename):
         return 0
     minsize =  27 * 4  # 27 floating points
@@ -1104,17 +1105,17 @@ def isSpiderBin(filename):
         return 0
 
 def isSpiderImage(file):
-    "returns 1 if input is a SPIDER 2D image"
+    """returns 1 if input is a SPIDER 2D image"""
     if isSpiderBin(file) == "image": return 1
     else: return 0
 
 def isSpiderVolume(file):
-    "returns 1 if input is a SPIDER 3D volume"
+    """returns 1 if input is a SPIDER 3D volume"""
     if isSpiderBin(file) == "volume": return 1
     else: return 0
 
 def isSpiderStack(file):
-    "returns 1 if input is a SPIDER stack file"
+    """returns 1 if input is a SPIDER stack file"""
     if isSpiderBin(file) == "stack": return 1
     else: return 0
     
@@ -1123,7 +1124,7 @@ def isSpiderStack(file):
 # Utilities for finding and testing SPIDER
 
 def testSpider(spider):
-    "returns 1 if input is a working path to SPIDER"
+    """returns 1 if input is a working path to SPIDER"""
     file = 'test6637'
     ext = ".bat"
     filename = file + ext
@@ -1143,7 +1144,7 @@ def testSpider(spider):
     return success
 
 def programExists(prog):
-    "a wrapper for os.path.exists that won't crash"
+    """a wrapper for os.path.exists that won't crash"""
     try:
         if os.path.exists(prog): return 1
         else: return 0
@@ -1151,7 +1152,7 @@ def programExists(prog):
         return 0
 
 def findProgram(prog):
-    "Use the Unix 'which' command to find a program"
+    """Use the Unix 'which' command to find a program"""
     if os.name != 'posix':
         print 'not a posix system: no "which" command?'
 
@@ -1182,7 +1183,7 @@ def findProgram(prog):
     return ""
 
 def findSpider():
-    "returns path to SPIDER, or else an empty string"
+    """returns path to SPIDER, or else an empty string"""
     spider = findProgram(SPIDER)
     if spider != "" and testSpider(spider):
         return spider
@@ -1238,7 +1239,7 @@ class SpiderHeaderClass:
 
 # Create a SPIDER header for binary files
 def makeSpiderHeader(dims):
-    " dims must be (nsam, nrow), or (nsam, nrow, nslice) "
+    """dims must be (nsam, nrow), or (nsam, nrow, nslice) """
     if len(dims) == 2:
         nsam, nrow = dims[0], dims[1]
         nslice = 1.0
@@ -1282,7 +1283,7 @@ def makeSpiderHeader(dims):
     return hdrstr
 
 def getSpiderHeader(filename, n=27):
-    " returns first n numbers, with Spider indices (starting at 1)"
+    """ returns first n numbers, with Spider indices (starting at 1)"""
     " if n = 'all', returns entire header "
     if not os.path.exists(filename):
         return 0
@@ -1338,7 +1339,7 @@ def spiderInfo(filename):
 
 # return [ (dimensions), (stats) ]  
 def getSpiderInfo(h):
-    " assumes its a valid header "
+    """ assumes its a valid header """
     #h = (99,) + t   
     nsam = int(h[12])
     nrow = int(h[2])
@@ -1362,4 +1363,3 @@ def getSpiderInfo(h):
         return [dims, stats]
     else:
         return [dims]
-   

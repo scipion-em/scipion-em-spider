@@ -64,7 +64,7 @@ class SpiderProtocol(EMProtocol):
     def getScript(self):
         return getattr(self, '_script', None)
     
-    def runTemplate(self, inputScript, ext, paramsDict):
+    def runTemplate(self, inputScript, ext, paramsDict, nummpis=1):
         """ This function will create a valid Spider script
         by copying the template and replacing the values in dictionary.
         After the new file is read, the Spider interpreter is invoked.
@@ -72,9 +72,9 @@ class SpiderProtocol(EMProtocol):
         self._enterWorkingDir()
         
         log = getattr(self, '_log', None)
-        mpi = getattr(self, 'numberOfMpi', None)
-        program = SPIDER_MPI if mpi > 1 else SPIDER
-        runTemplate(inputScript, ext, paramsDict, program=program, log=log)
+        program = SPIDER_MPI if nummpis > 1 else SPIDER
+        runTemplate(inputScript, ext, paramsDict, nummpis=nummpis,
+                    program=program, log=log)
         self._leaveWorkingDir()
     
         f = open(self.getLogPaths()[0], 'r')

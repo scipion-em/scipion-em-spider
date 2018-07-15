@@ -163,4 +163,3 @@ class SpiderViewerCAPCA(ProtocolViewer):
         a.plot(xFactors, yFactors, 'o')
         
         return [xplotter]
-        

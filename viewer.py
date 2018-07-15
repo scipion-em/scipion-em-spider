@@ -28,7 +28,7 @@ This module implements viewers for Spider protocols.
 """
 
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
-from pyworkflow.em.viewer import DataView, ObjectView
+from pyworkflow.em.viewer import DataView
 from pyworkflow.em.packages.xmipp3.viewer import XmippViewer
 
 from spider import PcaFile

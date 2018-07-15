@@ -31,23 +31,23 @@ import subprocess
 import re
 
 from pyworkflow.object import String
-from pyworkflow.protocol.package import Package
 from pyworkflow.utils import runJob, Environ
 from pyworkflow.utils.path import replaceBaseExt, removeBaseExt
 from pyworkflow.em.data import EMObject
 
-# Config variable names
-# From scipion config
-SPIDER_DIR = 'SPIDER_DIR'
+from Spiderutils import fixHeaders, makeDocfileHeader
+
+
 SPIDER_HOME = 'SPIDER_HOME'
-# From environment
+SPIDER_DIR = 'SPIDER_DIR'
+
 SPPROC_DIR = 'SPPROC_DIR'
 SPMAN_DIR = 'SPMAN_DIR'
 SPBIN_DIR = 'SPBIN_DIR'
 
-
 END_HEADER = 'END BATCH HEADER'
 SPIDER = 'spider_linux_mp_intel64'
+SPIDER_MPI = 'spider_linux_mpi_opt64'
 
 PATH = abspath(dirname(__file__))
 TEMPLATE_DIR = 'templates'
@@ -86,15 +86,17 @@ def getEnviron():
         if len(errors):
             print "ERRORS: " + errors
     else: 
-        env.update({SPBIN_DIR: join(SPIDER_PATH, 'bin') + '/', # Spider needs this extra slash at the end
-                    SPMAN_DIR: join(SPIDER_PATH, 'man') + '/',
-                    SPPROC_DIR: join(SPIDER_PATH, 'proc') + '/'
+        env.update({SPBIN_DIR: join(SPIDER_DIR, 'bin') + '/', # Spider needs this extra slash at the end
+                    SPMAN_DIR: join(SPIDER_DIR, 'man') + '/',
+                    SPPROC_DIR: join(SPIDER_DIR, 'proc') + '/'
                     })
     
     # Get the executable or 'spider' by default
     SPIDER = join(env[SPBIN_DIR], env.get('SPIDER', 'spider_linux_mp_intel64'))
+    SPIDER_MPI = join(env[SPBIN_DIR], env.get('SPIDER_MPI', 'spider_linux_mpi_opt64'))
     # expand ~ and vars
     SPIDER = abspath(os.path.expanduser(os.path.expandvars(SPIDER)))
+    SPIDER_MPI = abspath(os.path.expanduser(os.path.expandvars(SPIDER_MPI)))
         
     env.set('PATH', env[SPBIN_DIR], env.END)
     
@@ -118,7 +120,7 @@ def validateInstallation():
 
 def getVersion():
     env = Environ(os.environ)
-    path = env.getFirst(('SPIDER_HOME', 'SPIDER_DIR'), mandatory=True)
+    path = env.getFirst((SPIDER_HOME, SPIDER_DIR), mandatory=True)
     for v in getSupportedVersions():
         if v in path or v in os.path.realpath(path):
             return v
@@ -151,7 +153,7 @@ def writeScript(inputScript, outputScript, paramsDict):
     """
     fIn = open(getScript(inputScript), 'r')
     fOut = open(outputScript, 'w')
-    inHeader = True # After the end of header, not more value replacement
+    inHeader = True # After the end of header, no more value replacement
     inFrL = False
 
     for i, line in enumerate(fIn):
@@ -167,7 +169,7 @@ def writeScript(inputScript, outputScript, paramsDict):
                 if newLine:
                     line = newLine
             except Exception, ex:
-                print ex, "on line (%d): %s" % (i+1, line)
+                print ex, "in line (%d): %s" % (i+1, line)
                 raise ex
             inFrL = line.lower().startswith("fr ")
         fOut.write(line)
@@ -175,7 +177,7 @@ def writeScript(inputScript, outputScript, paramsDict):
     fOut.close()    
      
     
-def runTemplate(inputScript, ext, paramsDict, program=SPIDER, log=None, cwd=None):
+def runTemplate(inputScript, ext, paramsDict, nummpis=1, program=SPIDER, log=None, cwd=None):
     """ This function will create a valid Spider script
     by copying the template and replacing the values in dictionary.
     After the new file is read, the Spider interpreter is invoked.
@@ -190,13 +192,13 @@ def runTemplate(inputScript, ext, paramsDict, program=SPIDER, log=None, cwd=None
     # First write the script from the template with the substitutions
     writeScript(inputScript, outputScript, paramsDict)
     # Then proceed to run the script
-    runScript(outputScript, ext, program, log, cwd)
+    runScript(outputScript, ext, program, nummpis, log, cwd)
     
 
-def runScript(inputScript, ext, log=None, cwd=None):
+def runScript(inputScript, ext, program, nummpis, log=None, cwd=None):
     scriptName = removeBaseExt(inputScript)
     args = " %s @%s" % (ext, scriptName)
-    runJob(log, SPIDER, args, env=dict(environment), cwd=cwd)
+    runJob(log, program, args, numberOfMpi=nummpis, env=dict(environment), cwd=cwd)
     
 
 def runCustomMaskScript(filterRadius1, sdFactor,
@@ -265,9 +267,15 @@ class SpiderDocFile(object):
         self._file = open(filename, mode)
         self._count = 0
         
-    def writeComment(self, comment):
-        line = ' ;%s' % comment
-        print >> self._file, line 
+    def writeComment(self, filename, batext='spi'):
+        line = makeDocfileHeader(filename, batext)
+
+        print >> self._file, line
+
+    def writeHeader(self, fields):
+        line = fixHeaders(fields)
+
+        print  >> self._file, line
         
     def writeValues(self, *values):
         """ Write values in spider docfile. """

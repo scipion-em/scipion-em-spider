@@ -51,3 +51,6 @@ CG_NONE = 0
 CG_PH = 1
 CG_RT180 = 2
 
+# BP type
+BP_32F = 0
+BP_3F = 1
