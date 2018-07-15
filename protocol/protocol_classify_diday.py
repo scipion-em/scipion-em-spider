@@ -38,7 +38,7 @@ class SpiderProtClassifyDiday(SpiderProtClassifyCluster):
     def __init__(self, **kwargs):
         SpiderProtClassifyCluster.__init__(self, 'mda/cluster.msa', 'CLA',  **kwargs)
 
-    #--------------------------- INFO functions -------------------------------------------- 
+    #--------------------------- INFO functions -------------------------------
     
     def _validate(self):
         errors = []
@@ -63,6 +63,3 @@ class SpiderProtClassifyDiday(SpiderProtClassifyCluster):
         msg += "(SPIDER command [[http://spider.wadsworth.org/spider_doc/spider/docs/man/clcla.html][CL CLA]]) "
         msg += "using %s factors. " % self.numberOfFactors
         return [msg]
-#        # I don't know what's he's talking about.  The summary is totally empty as of now.
-#        return self._summary()  # summary is quite explicit and serve as methods
-    

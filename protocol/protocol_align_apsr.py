@@ -74,7 +74,8 @@ class SpiderProtAlignAPSR(SpiderProtAlign):
     
     def _summary(self):
         summary = []
-        summary.append('Radius range (px): *%s - %s*' % (self.innerRadius, self.outerRadius))
+        summary.append('Radius range (px): *%s - %s*' %
+                       (self.innerRadius, self.outerRadius))
         
         return summary
     

@@ -32,6 +32,7 @@ from pyworkflow.em import ProtAlign2D, Particle, NO_INDEX
 from pyworkflow.em.data import Transform
 
 from ..constants import *
+from ..spider import getDocsLink
 from protocol_base import SpiderProtocol
 
 
@@ -50,15 +51,14 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
         self._params = {'ext': 'stk',
                         'particles': 'input_particles',
                         'particlesSel': 'input_particles_sel',
-                        'average': join(self._alignDir, 'rfreeavg001'), # If you change the name,
-                        # change it also in template batch
+                        'average': join(self._alignDir, 'rfreeavg001'),
                         'particlesAligned': join(self._alignDir, 'stkaligned')
                         }  
         
     def getAlignDir(self):
         return self._alignDir 
 
-    #--------------------------- DEFINE param functions --------------------------------------------
+    #--------------------------- DEFINE param functions -----------------------
     
     def _defineAlignParams(self, form):
         line = form.addLine('Radius (px):', 
@@ -71,27 +71,30 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
         form.addParam('cgOption', EnumParam, default=CG_PH, 
                       choices=['None', 'CG PH', 'RT180'], 
                       label='Center of gravity option',
-                      help='The penultimate average will be centered before a a final alignment. '
-                           'One centering strategy uses the SPIDER command '
-                           '[[http://spider.wadsworth.org/spider_doc/spider/docs/man/cgph.html][CG PH]]'
-                           'This command sometimes fails, '
-                           'so another strategy is to rotate the particle by 180 degrees and align it to itself.'
-                           'Sometimes, both of these strategies are worse than doing nothing.')
+                      help='The penultimate average will be centered before '
+                           'a a final alignment. One centering strategy uses '
+                           'the SPIDER command %s. This command sometimes '
+                           'fails, so another strategy is to rotate the particle '
+                           'by 180 degrees and align it to itself.'
+                           'Sometimes, both of these strategies are worse '
+                           'than doing nothing.' %
+                           getDocsLink('cgph', 'CG PH'))
         
     def _insertAllSteps(self):
         # Insert processing steps
         self._insertFunctionStep('convertInput', 'inputParticles', 
-                                 self._getFileName('particles'), self._getFileName('particlesSel'))
+                                 self._getFileName('particles'),
+                                 self._getFileName('particlesSel'))
         self._insertFunctionStep('alignParticlesStep', 
                                  self.innerRadius.get(), self.outerRadius.get())
         self._insertFunctionStep('createOutputStep')
 
-    #--------------------------- STEPS functions --------------------------------------------       
+    #--------------------------- STEPS functions ------------------------------
 
     def createOutputStep(self):
         outputStk = self._getFileName('particlesAligned')
         if not exists(outputStk):
-            raise Exception('Ouptput stack %s not produced. ' % outputStk)
+            raise Exception('Output stack %s not produced. ' % outputStk)
         particles = self.inputParticles.get()
         # Create the output average image
         avg = Particle()

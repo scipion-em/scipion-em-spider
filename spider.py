@@ -334,6 +334,6 @@ class PcaFile(EMObject):
         
      
 def getDocsLink(op, label):
-    """ Return a label for documentation url of a given command. """
     from constants import SPIDER_DOCS
+    """ Return a label for documentation url of a given command. """
     return '[[%(SPIDER_DOCS)s/%(op)s.html][%(label)s]]' % locals()

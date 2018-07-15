@@ -41,7 +41,6 @@ class SpiderProtClassifyWard(SpiderProtClassifyCluster):
         SpiderProtClassifyCluster.__init__(self, 'mda/hierarchical.msa', 'HC', **kwargs)
         
     #--------------------------- INFO functions -------------------------------------------- 
-    
     def _validate(self):
         errors = []
         return errors
@@ -61,5 +60,3 @@ class SpiderProtClassifyWard(SpiderProtClassifyCluster):
         msg += "(SPIDER command [[http://spider.wadsworth.org/spider_doc/spider/docs/man/clhc.html][CL HC]]) "
         msg += "using %s factors. " % self.numberOfFactors
         return [msg]
-#        return self._summary()  # summary is quite explicit and serve as methods
-    

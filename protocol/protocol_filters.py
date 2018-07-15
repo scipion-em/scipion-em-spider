@@ -29,10 +29,12 @@ Particle filter operations.
 """
 
 from pyworkflow.em.protocol import ProtFilterParticles  
-from pyworkflow.protocol.params import EnumParam, BooleanParam, DigFreqParam, FloatParam
+from pyworkflow.protocol.params import (EnumParam, BooleanParam,
+                                        DigFreqParam, FloatParam)
 from pyworkflow.utils.path import removeBaseExt
 
-from ..constants import FILTER_SPACE_REAL, FILTER_FERMI, FILTER_BUTTERWORTH, FILTER_LOWPASS, FILTER_HIGHPASS
+from ..constants import (FILTER_SPACE_REAL, FILTER_FERMI,
+                         FILTER_BUTTERWORTH, FILTER_LOWPASS)
 from ..spider import SpiderShell
 from protocol_base import SpiderProtocol
         
@@ -61,9 +63,10 @@ class SpiderProtFilter(ProtFilterParticles, SpiderProtocol):
                         'particles': 'particles_filtered',
                         'particlesSel': 'particles_filtered_sel'}
 
-    #--------------------------- DEFINE param functions --------------------------------------------   
+    #--------------------------- DEFINE param functions -----------------------
     def _defineProcessParams(self, form):
-        form.addParam('filterType', EnumParam, choices=['Top-hat', 'Gaussian', 'Fermi', 'Butterworth', 'Raised cosine'],
+        form.addParam('filterType', EnumParam,
+                      choices=['Top-hat', 'Gaussian', 'Fermi', 'Butterworth', 'Raised cosine'],
                       label="Filter type", default=FILTER_BUTTERWORTH,
                       help="""Select what type of filter do you want to apply.
                       
@@ -87,8 +90,7 @@ if Flow < F < Fup, 1 if F < Flow, and 0 if F > Fup
 See detailed description of the filter at [[http://spider.wadsworth.org/spider_doc/spider/docs/man/fq.html][SPIDER's FQ online manual]]
                            """)
         form.addParam('filterMode', EnumParam, choices=['low-pass', 'high-pass'],
-                      label='Filter mode', default=FILTER_LOWPASS,
-                      )
+                      label='Filter mode', default=FILTER_LOWPASS)
         form.addParam('usePadding', BooleanParam, default=True, 
                       label='Use padding?',
                       help='If set to *Yes*, to improve boundary quality\n'
@@ -98,7 +100,8 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
                            'artifacts near boundary of image.')
         form.addParam('filterRadius', DigFreqParam, default=0.12, 
                       label='Filter radius (0 < f < 0.5)',
-                      condition='filterType <= %d or filterType == %d' % (FILTER_SPACE_REAL,FILTER_FERMI),
+                      condition='filterType <= %d or filterType == %d' %
+                                (FILTER_SPACE_REAL,FILTER_FERMI),
                       help='Low frequency cutoff to apply the filter.\n')  
         
         line = form.addLine('Frequency', 
@@ -113,7 +116,7 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
                       help='Enter a temperature parameter T The filter falls off roughly within \n'
                            'this reciprocal distance (in terms of frequency units).')     
         
-    #--------------------------- INSERT steps functions --------------------------------------------  
+    #--------------------------- INSERT steps functions -----------------------
     def _insertAllSteps(self):
         # Define some names
         self.particlesStk = self._getPath('%(particles)s.%(ext)s' % self._params)
@@ -123,7 +126,7 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
         self._insertFunctionStep('filterStep', self.filterType.get())
         self._insertFunctionStep('createOutputStep')
 
-    #--------------------------- STEPS functions --------------------------------------------       
+    #--------------------------- STEPS functions ------------------------------
     def filterStep(self, filterType):
         """ Apply the selected filter to particles. 
         Create the set of particles.
@@ -144,7 +147,7 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
         if filterType == FILTER_FERMI:
             args.append(self.temperature.get())
         
-        # Map to spected filter number in Spider for operation FQ    
+        # Map to expected filter number in Spider for operation FQ
         filterNumber = filterType * 2 + 1
         # Consider low-pass or high-pass
         filterNumber += self.filterMode.get()
@@ -179,7 +182,7 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
         self._defineOutputs(outputParticles=imgSet)
         self._defineTransformRelation(particles, imgSet)
         
-#--------------------------- INFO functions -------------------------------------------- 
+#--------------------------- INFO functions -----------------------------------
     def _validate(self):
         errors = []
         return errors
@@ -192,7 +195,8 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
         pixelSize = self.inputParticles.get().getSamplingRate()
         
         summary = []
-        summary.append('Used filter: *%s %s*' % (self.getEnumText('filterType'), self.getEnumText('filterMode')))
+        summary.append('Used filter: *%s %s*' %
+                    (self.getEnumText('filterType'), self.getEnumText('filterMode')))
  
         if self.filterType <= FILTER_FERMI:
             summary.append('Filter radius: *%s px^-1*' % self.filterRadius)
@@ -209,14 +213,16 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
     
     def _methods(self):
         methods = []
-        msg = '\nInput particles %s were %s filtered using a %s filter' % (self.getObjectTag('inputParticles'),
-                                                                          self.getEnumText('filterMode'),
-                                                                          self.getEnumText('filterType'))
+        msg = '\nInput particles %s were %s filtered using a %s filter' %\
+              (self.getObjectTag('inputParticles'),
+               self.getEnumText('filterMode'),
+               self.getEnumText('filterType'))
 
         if self.filterType <= FILTER_FERMI:
             msg += ', using a radius of %s px^-1' % self.filterRadius
         else:
-            msg += ', using a frequency range of %s to %s px^-1' % (self.lowFreq, self.highFreq)
+            msg += ', using a frequency range of %s to %s px^-1' %\
+                   (self.lowFreq, self.highFreq)
 
         if self.filterType == FILTER_FERMI: 
             msg += ' and a temperature factor of of %s px^-1' % self.temperature
@@ -227,6 +233,7 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
             msg += ' with no padding.'
 
         methods.append(msg)
-        methods.append('Output particles: %s' % self.getObjectTag('outputParticles'))
+        methods.append('Output particles: %s' %
+                       self.getObjectTag('outputParticles'))
 
         return methods

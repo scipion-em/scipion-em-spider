@@ -40,8 +40,7 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
     def __init__(self, **kwargs):
         SpiderProtClassify.__init__(self, 'mda/kmeans.msa', 'KM', **kwargs)
         
-    #--------------------------- DEFINE param functions --------------------------------------------  
-     
+    #--------------------------- DEFINE param functions -----------------------
     def _defineBasicParams(self, form):
         SpiderProtClassify._defineBasicParams(self, form)
 
@@ -52,8 +51,7 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
     def getNumberOfClasses(self):
         return self.numberOfClasses.get()
             
-    #--------------------------- STEPS functions --------------------------------------------    
-       
+    #--------------------------- STEPS functions ------------------------------
     def _updateParams(self):
         self._params.update({'x20': self.getNumberOfClasses(),
                              '[particles]': self._params['particles'] + '@******',
@@ -77,8 +75,7 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
         self._defineOutputs(outputClasses=classes2D)
         self._defineSourceRelation(particles, classes2D)
          
-    #--------------------------- INFO functions -------------------------------------------- 
-    
+    #--------------------------- INFO functions -------------------------------
     def _validate(self):
         errors = []
         return errors
@@ -100,8 +97,7 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
         msg += "using %s factors. " % self.numberOfFactors
         return [msg]
     
-    #--------------------------- UTILS functions --------------------------------------------
-
+    #--------------------------- UTILS functions ------------------------------
     def _updateParticle(self, item, row):
         _, classNum = row
         item.setClassId(classNum)

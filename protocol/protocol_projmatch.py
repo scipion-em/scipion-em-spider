@@ -28,7 +28,7 @@
 
 from os.path import join
 from glob import glob
-import re, sys
+import re
 
 import pyworkflow.utils as pwutils
 import pyworkflow.em as em
@@ -37,9 +37,10 @@ from pyworkflow.em.protocol import ProtRefine3D
 from pyworkflow.em.constants import ALIGN_PROJ
 from pyworkflow.em.data import Volume, FSC
 
-from ..spider import SpiderDocFile, SpiderDocAliFile, writeScript, getScript, runScript, getVersion
-from ..Spiderutils import nowisthetime
-from ..convert import ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX, SHIFTY, convertEndian, alignmentToRow
+from ..spider import (SpiderDocFile, SpiderDocAliFile,
+                      writeScript, getScript, runScript, SPIDER)
+from ..convert import (ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX,
+                       SHIFTY, convertEndian, alignmentToRow)
 from protocol_base import SpiderProtocol
 
 # Protocol type
@@ -70,7 +71,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     """
     _label = 'refinement'
 
-    #--------------------------- DEFINE param functions --------------------------------------------   
+    #--------------------------- DEFINE param functions -----------------------
     def _defineParams(self, form):
         form.addSection(label='Input')
 
@@ -123,19 +124,14 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                       label='Projection diameter',
                       help="Fraction of window diameter used in projection\n"
                            " (.95= use 95% window size)\n")
-        form.addParam('convergence', params.FloatParam, default=0.05,
-                      expertLevel=params.LEVEL_ADVANCED,
-                      condition='protType == 0 and not _protGoldStdIsSupported',
-                      label='Convergence criterion fraction',
-                      help="Refinement has converged when this fraction of all images move < 1.5 * stepsize.")
         form.addParam('sphDeconAngle', params.IntParam, default=0,
                       expertLevel=params.LEVEL_ADVANCED,
-                      condition='_protGoldStdIsSupported and protType == 1',
+                      condition='protType == 1',
                       label='Spherical deconvolution angle (deg)',
                       help="Spherical deconvolution angle in degreees (0 == Do not deconvolve)")
         form.addParam('bpType', params.EnumParam,
                       expertLevel=params.LEVEL_ADVANCED,
-                      condition='_protGoldStdIsSupported and protType == 1',
+                      condition='protType == 1',
                       choices=['BP CG', 'BP 3F', 'BP RP', 'BP 3N'],
                       default=BP_3F,
                       display=params.EnumParam.DISPLAY_HLIST,
@@ -188,7 +184,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
 
         form.addParallelSection(threads=4, mpi=1)
     
-    #--------------------------- INSERT steps functions --------------------------------------------  
+    #--------------------------- INSERT steps functions -----------------------
     def _insertAllSteps(self):        
         # Create new stacks and selfiles per groups
         self._insertFunctionStep('convertInputStep', self.inputParticles.get().getObjId())
@@ -197,7 +193,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                 
         self._insertFunctionStep('createOutputStep')
     
-    #--------------------------- STEPS functions --------------------------------------------
+    #--------------------------- STEPS functions ------------------------------
     
     def convertInputStep(self, particlesId):
         """ Convert all needed inputs before running the refinement script. """
@@ -246,7 +242,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                   '[iter-end]': self.numberOfIterations.get(),
                   '[diam]': diam,
                   '[win-frac]': self.winFrac.get(),
-                  '[converg]': self.convergence.get(),
+                  #'[converg]': self.convergence.get(),
                   '[small-ang]': '1' if self.smallAngle else '0',
                   '[ang-steps]': getListStr(self.angSteps.get()),
                   '[ang-limits]': getListStr(self.angLimits.get()),
@@ -362,7 +358,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def runScriptStep(self, script):
         """ Just run the script that was generated in convertInputStep. """
         refPath = self._getExtraPath('Refinement')
-        runScript(script, 'pam/stk', cwd=refPath, log=self._log)
+        runScript(script, 'pam/stk', program=SPIDER, nummpis=1, cwd=refPath, log=self._log)
 
     def projectStep(self, volumeId):
         pass
@@ -408,7 +404,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         self._defineOutputs(outputFSC=fsc)
         self._defineSourceRelation(vol, fsc)
     
-    #--------------------------- INFO functions -------------------------------------------- 
+    #--------------------------- INFO functions -------------------------------
     def _validate(self):
         errors = []
         if self.smallAngle:
@@ -418,9 +414,6 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         return errors
         
     def _warnings(self):
-        print
-        print "protocol_projmatch._warning"
-        print
         warns = []
         if not self.smallAngle:
             niter = self.numberOfIterations.get()
@@ -463,7 +456,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         
         return [msg]
         
-    #--------------------------- UTILS functions --------------------------------------------
+    #--------------------------- UTILS functions ------------------------------
     def _getDefocusGroup(self, img):
         return img.getMicId()
 
@@ -526,10 +519,11 @@ class DefocusGroupInfo():
 
         self.sel = SpiderDocFile(self.selfile, 'w+')
         self.doc = SpiderDocFile(self.docfile, 'w+')
-        date, time, _ = nowisthetime()
-        self.doc.writeComment("spi/dat   Generated by Scipion on %s AT %s" % (date, time))
-        self.doc.writeComment("  KEY       PSI,    THE,    PHI,   REF#,    EXP#,  CUM.{ROT,   SX,    SY},  NPROJ,   DIFF,      CCROT,    ROT,     SX,     SY,   MIR-CC")
-        
+        self.doc.writeComment(self.docfile)
+        header = ['KEY', 'PSI', 'THE', 'PHI', 'REF#', 'EXP#', 'CUM.{ROT',
+                  'SX', 'SY}', 'NPROJ', 'DIFF', 'CCROT', 'ROT', 'SX', 'SY', 'MIR-CC']
+        self.doc.writeHeader(header)
+
     def addParticle(self, img):
         self.counter += 1
         if self.counter == 1:

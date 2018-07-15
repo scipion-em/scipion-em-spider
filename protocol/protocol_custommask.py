@@ -59,8 +59,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
                         'outputMask': 'output_mask'
                         }
     
-    #--------------------------- DEFINE param functions --------------------------------------------  
-     
+    #--------------------------- DEFINE param functions -----------------------
     def _defineParams(self, form):
         form.addSection(label='Input')
         form.addParam('inputImage', PointerParam, label="Input image", important=True, 
@@ -80,8 +79,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
                       label='Mask threshold (range: approx. 0 - 1)',
                       help='The filtered intermediate mask will be thresholded to generate the final mask.')
         
-    #--------------------------- INSERT steps functions --------------------------------------------  
-    
+    #--------------------------- INSERT steps functions -----------------------
     def _insertAllSteps(self):
         # Store references of input converted image filename
         # and the input image object
@@ -97,8 +95,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
         # Create the output Mask object
         self._insertFunctionStep('createOutputStep')
         
-    #--------------------------- STEPS functions --------------------------------------------    
-       
+    #--------------------------- STEPS functions ------------------------------
     def convertInputStep(self, inputLoc, outputFn):
         """ Convert the input image to a Spider (with stk extension). """
         ImageHandler().convert(inputLoc, (1, outputFn))
@@ -121,8 +118,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
         self._defineOutputs(outputMask=mask)
         self._defineSourceRelation(self.inputImage, mask)
             
-    #--------------------------- INFO functions -------------------------------------------- 
-    
+    #--------------------------- INFO functions -------------------------------
     def _summary(self):
         summary = []
         
@@ -135,7 +131,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
             summary.append('              On the object scale: *%s Angstroms*' % filter1Angstroms )
             summary.append('Threshold for filtered image: *avg + %s s.d.*' % self.sdFactor)
             summary.append('Radius for Fourier filter for intermediate mask: *%s px^-1*' % self.filterRadius2)
-            summary.append('                            On the object scale: *%s Angstroms*' % filter2Angstroms )
+            summary.append('               On the object scale: *%s Angstroms*' % filter2Angstroms )
             summary.append('Threshold for filtered mask: *%s*' % self.maskThreshold)
         else:
             summary.append('Input image not selected yet.')
@@ -148,13 +144,16 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
             pixelSize = self.inputImage.get().getSamplingRate()
             filter1Angstroms = pixelSize/self.filterRadius1.get()
             filter2Angstroms = pixelSize/self.filterRadius2.get()
-            msg  = "We low-pass filtered the average image %s" % self.getObjectTag('inputImage')
+            msg  = "We low-pass filtered the average image %s" %\
+                   self.getObjectTag('inputImage')
             msg += "to 1/%s Angstroms^-1, " % filter1Angstroms
-            msg += "thresholded it at its average plus %s * s.d., " % self.sdFactor
+            msg += "thresholded it at its average plus %s * s.d., "\
+                   % self.sdFactor
             msg += "low-pass filtered this intermediate mask "
             msg += "to 1/%s Angstroms^-1, " % filter2Angstroms
             msg += "and finally thresholded this filtered mask at a value of %s." % self.maskThreshold
-            msg += 'For multivariate data analysis, a custom mask was generated: %s.' % self.getObjectTag('outputMask')
+            msg += 'For multivariate data analysis, a custom mask was generated: %s.' %\
+                   self.getObjectTag('outputMask')
         else:
             msg = 'Input image not selected yet.'
             

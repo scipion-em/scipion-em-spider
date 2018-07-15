@@ -29,7 +29,7 @@ This modules contains constants related to Spider protocols
 
 #------------------ Constants values --------------------------------------
 # spider documentation url
-SPIDER_DOCS = 'http://spider.wadsworth.org/spider_doc/spider/docs/man/'
+SPIDER_DOCS = 'https://spider.wadsworth.org/spider_doc/spider/docs/man/'
 
 # Filter types
 FILTER_TOPHAT = 0

@@ -71,15 +71,15 @@ class SpiderProtCAPCA(SpiderProtocol):
                         'reconstituted': join(self._caDir, 'stkreconstituted')
                         }
     
-    #--------------------------- DEFINE param functions --------------------------------------------  
-     
+    #--------------------------- DEFINE param functions -----------------------
     def _defineParams(self, form):
         form.addSection(label='Input')
         
         form.addParam('inputParticles', PointerParam, label="Input particles", important=True, 
                       pointerClass='SetOfParticles',
                       help='Select the input particles to perform CA, PCA, or IPCA.')        
-        form.addParam('analysisType', EnumParam, default=CA, choices=['CA', 'PCA', 'IPCA'],
+        form.addParam('analysisType', EnumParam, default=CA,
+                      choices=['CA', 'PCA', 'IPCA'],
                       label='Analysis type',
                       help='Select which type of analysis you want to perform: \n'
                            'correspondence analysis (CA), principal component analysis (PCA), '
@@ -107,14 +107,14 @@ class SpiderProtCAPCA(SpiderProtocol):
         form.addParam('radius', IntParam, default=-1,
                       label='Mask radius (px)', condition='maskType==0',
                       help='If -1, the entire image (in pixels) will be considered.')
-        form.addParam('maskImage', PointerParam, label="Mask image", condition='maskType==1',
+        form.addParam('maskImage', PointerParam, label="Mask image",
+                      condition='maskType==1',
                       pointerClass='Mask', 
                       help="Select a mask file")
 
         form.addParallelSection(threads=1, mpi=0)
         
-    #--------------------------- INSERT steps functions --------------------------------------------  
-    
+    #--------------------------- INSERT steps functions -----------------------
     def _insertAllSteps(self):
         # Insert processing steps
         self._insertFunctionStep('convertInput', 'inputParticles',
@@ -128,12 +128,9 @@ class SpiderProtCAPCA(SpiderProtocol):
                                  self.numberOfFactors.get(), self.maskType.get())
         self._insertFunctionStep('createOutputStep')
         
-    #--------------------------- STEPS functions --------------------------------------------    
-       
+    #--------------------------- STEPS functions ------------------------------
     def convertMaskStep(self, maskType):
-        """ Convert the input mask if needed and
-        copy some spider needed scripts. 
-        """
+        """ Convert the input mask if needed."""
         # Copy mask if selected
         if maskType > 0: # mask from file
             maskFn = self._getFileName('mask')
@@ -174,9 +171,7 @@ class SpiderProtCAPCA(SpiderProtocol):
         self._defineSourceRelation(self.inputParticles, imc)
         self._defineSourceRelation(self.inputParticles, seq)
         
-            
-    #--------------------------- INFO functions -------------------------------------------- 
-    
+    #--------------------------- INFO functions -------------------------------
     def _summary(self):
         summary = []
         
@@ -204,11 +199,8 @@ class SpiderProtCAPCA(SpiderProtocol):
         return summary
     
     def _methods(self):
-        #print
-        #print "protocol_ca_pca._methods.analysisType: %s" % self.analysisType 
-        #print 
-        
-        msg  = "\nInput particles %s were subjected to " % self.getObjectTag('inputParticles')
+        msg  = "\nInput particles %s were subjected to " %\
+               self.getObjectTag('inputParticles')
         
         if self.analysisType == 0:
             msg += "correspondence analysis, "
@@ -228,5 +220,3 @@ class SpiderProtCAPCA(SpiderProtocol):
             msg += "custom mask %s." % self.getObjectTag('maskImage')
         
         return [msg]
-
-        

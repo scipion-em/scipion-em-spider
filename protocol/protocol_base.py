@@ -70,7 +70,7 @@ class SpiderProtocol(EMProtocol):
         After the new file is read, the Spider interpreter is invoked.
         """
         self._enterWorkingDir()
-        
+
         log = getattr(self, '_log', None)
         program = SPIDER_MPI if nummpis > 1 else SPIDER
         runTemplate(inputScript, ext, paramsDict, nummpis=nummpis,

@@ -87,12 +87,9 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
                       help='After running, examine the eigenimages and decide '
                            'which ones to use. \n'
                            'Typically all but the first few are noisy.')
-        
 
-    
     #--------------------------- INSERT steps functions -----------------------
-    
-    def _insertAllSteps(self):    
+    def _insertAllSteps(self):
         
         pcaFile = self.pcaFile.get().filename.get()
         
@@ -107,8 +104,7 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
         self._insertFunctionStep('createOutputStep')
         
     #--------------------------- STEPS functions ------------------------------
-
-    def _updateParams(self):   
+    def _updateParams(self):
         pass 
         
     def classifyStep(self, imcFile, numberOfFactors, numberOfClasses):
@@ -143,12 +139,10 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
         SpiderProtClassify.__init__(self, script, classDir, **kwargs)
 
     #--------------------------- STEPS functions ------------------------------
-       
     def createOutputStep(self):
         self.buildDendrogram(True)
          
     #--------------------------- UTILS functions ------------------------------
-    
     def _fillClassesFromNodes(self, classes2D, nodeList):
         """ Create the SetOfClasses2D from the images of each node
         in the dendrogram.

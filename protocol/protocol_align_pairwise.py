@@ -42,14 +42,15 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
     Compared to [[http://spider.wadsworth.org/spider_doc/spider/docs/man/apsr.html][AP SR]], this alignment 
     scheme appears to be less random, which chooses seed images as alignment references.
     
-    For more information, see Step 2b at [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/MSA/index.html#pairwise][SPIDER's MDA online manual]]
+    For more information, see Step 2b at
+    [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/MSA/index.html#pairwise][SPIDER's MDA online manual]]
     """
     _label = 'align pairwise'
     
     def __init__(self, **args):
         SpiderProtAlign.__init__(self, 'mda/pairwise.msa', 'pairwise', **args)
     
-    #--------------------------- DEFINE param functions --------------------------------------------
+    #--------------------------- DEFINE param functions -----------------------
     
     def _defineAlignParams(self, form):
         SpiderProtAlign._defineAlignParams(self, form)
@@ -64,11 +65,10 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
                            '(in pixel units) up to a maximum of +/- _searchRange_.')        
         form.addParallelSection(threads=2, mpi=0)    
     
-    #--------------------------- STEPS functions --------------------------------------------       
+    #--------------------------- STEPS functions ------------------------------
     
     def alignParticlesStep(self, innerRadius, outerRadius):
-        """ Execute the pairwise.msa script to alignm the particles.
-        """
+        """ Execute the pairwise.msa script to align the particles. """
         particles = self.inputParticles.get()
         xdim = particles.getDimensions()[0]
         
@@ -99,7 +99,8 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
     
     def _summary(self):
         summary = []
-        summary.append('Radius range (px): *%s - %s*' % (self.innerRadius, self.outerRadius))
+        summary.append('Radius range (px): *%s - %s*' %
+                       (self.innerRadius, self.outerRadius))
         summary.append('Search range (px): *%s*' % self.searchRange)
         summary.append('Step size (px): *%s*' % self.stepSize)
         
@@ -112,8 +113,8 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
         msg += "using radii %s to %s pixels. " % (self.innerRadius, self.outerRadius)
         msg += "Particles were then aligned to this initial reference-free average "
         msg += "using SPIDER command _AP SH_ using a "
-        msg += "search range of %s pixels and a step size of %s pixels. " % (self.searchRange, 
-                                                                            self.stepSize)
+        msg += "search range of %s pixels and a step size of %s pixels. " %\
+               (self.searchRange, self.stepSize)
         if self.hasAttribute('outputParticles'):
             msg += "Output particles: %s" % self.getObjectTag('outputParticles')
         

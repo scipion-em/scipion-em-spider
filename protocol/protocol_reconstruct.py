@@ -29,7 +29,6 @@
 
 import pyworkflow.em as em
 import pyworkflow.protocol.params as params
-from pyworkflow.em.protocol import ProtRefine3D
 from pyworkflow.protocol.constants import LEVEL_ADVANCED, STEPS_SERIAL
 from pyworkflow.em.constants import ALIGN_PROJ
 from pyworkflow.em.data import Volume
@@ -42,7 +41,7 @@ from protocol_base import SpiderProtocol
 
 
                                
-class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
+class SpiderProtReconstruct(SpiderProtocol):
     """
     Simple reconstruction protocol using Fourier back projection.
     Uses Spider BP 32F program.
@@ -52,6 +51,7 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
 
     def __init__(self, **kwargs):
         SpiderProtocol.__init__(self, **kwargs)
+        self.stepsExecutionMode = STEPS_SERIAL
         self.allowMpi = True
 
     #--------------------------- DEFINE param functions --------------------------------------------
@@ -132,7 +132,8 @@ class SpiderProtReconstruct(ProtRefine3D, SpiderProtocol):
                   '[next_group_align]': "'docfile'",
                   '[next_group_vol]': "'volume'"}
         self.runTemplate(scriptName, 'stk', params,
-                         nummpis=self.numberOfMpi.get())
+                        nummpis=self.numberOfMpi.get())
+        #self.runJob('hostname', '', numberOfMpi=3)
 
     def createOutputStep(self):
         imgSet = self.inputParticles.get()
