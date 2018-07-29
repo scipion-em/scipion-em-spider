@@ -25,6 +25,8 @@
 # **************************************************************************
 
 import os
+from os.path import abspath
+
 import pyworkflow.em
 from pyworkflow.utils import Environ, join
 
@@ -52,7 +54,6 @@ class Plugin:
         If SPIDER_HOME is defined, the bin, man and proc folders will be
         defined from it. If not, each of them should be defined separately.
         """
-        #global SPIDER, SPIDER_MPI
         env = Environ(os.environ)
         SPIDER_HOME = os.environ[('%s' % SPIDER_HOME_VAR)]
         if SPIDER_HOME is None:
@@ -67,13 +68,6 @@ class Plugin:
                         SPMAN_DIR: join(SPIDER_HOME, 'man') + '/',
                         SPPROC_DIR: join(SPIDER_HOME, 'proc') + '/'
                         })
-
-        # Get the executable or 'spider' by default
-        #SPIDER = join(env[SPBIN_DIR], SPIDER)
-        #SPIDER_MPI = join(env[SPBIN_DIR], SPIDER_MPI)
-        # expand ~ and vars
-        #SPIDER = abspath(os.path.expanduser(os.path.expandvars(SPIDER)))
-        #SPIDER_MPI = abspath(os.path.expanduser(os.path.expandvars(SPIDER_MPI)))
 
         env.set('PATH', env[SPBIN_DIR], env.END)
 
@@ -108,5 +102,11 @@ class Plugin:
         cmd = join(__path__[0], 'scripts', cls.getVersion(), *paths)
         return str(cmd)
 
+    @classmethod
+    def getProgram(cls, mpi=False):
+        program = SPIDER if mpi is False else SPIDER_MPI
+        cmd = abspath(join(cls.getEnviron()[SPBIN_DIR], program))
+
+        return str(cmd)
 
 pyworkflow.em.Domain.registerPlugin(__name__)

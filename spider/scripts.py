@@ -36,7 +36,6 @@ from pyworkflow.utils.path import replaceBaseExt, removeBaseExt
 from pyworkflow.em.data import EMObject
 
 import spider
-from spider import SPIDER, SPIDER_MPI
 from spider.Spiderutils import fixHeaders, makeDocfileHeader
 
 
@@ -103,7 +102,7 @@ def writeScript(inputScript, outputScript, paramsDict):
     fOut.close()    
      
     
-def runTemplate(inputScript, ext, paramsDict, nummpis=1, program=SPIDER, log=None, cwd=None):
+def runTemplate(inputScript, ext, paramsDict, nummpis=1, program=spider.Plugin.getProgram(), log=None, cwd=None):
     """ This function will create a valid Spider script
     by copying the template and replacing the values in dictionary.
     After the new file is read, the Spider interpreter is invoked.
@@ -158,7 +157,7 @@ class SpiderShell(object):
         cwd = kwargs.get('cwd', None)
         
         FNULL = open(os.devnull, 'w')
-        self._proc = subprocess.Popen(SPIDER, shell=True, 
+        self._proc = subprocess.Popen(spider.Plugin.getProgram(), shell=True,
                                       stdin=subprocess.PIPE,
                                       stdout=FNULL, stderr=FNULL,
                                       env=spider.Plugin.getEnviron(),

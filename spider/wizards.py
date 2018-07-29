@@ -302,7 +302,7 @@ class SpiderFilterDialog(DownsampleDialog):
         using the self.lastObj that was selected
         """
         # FIXME Remove this dependency from xmipp plugin
-        from xmipp import locationToXmipp
+        from xmipp3 import locationToXmipp
         
         # Copy image to filter to Tmp project folder
         outputName = os.path.join("Tmp", "filtered_particle")

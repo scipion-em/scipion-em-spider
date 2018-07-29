@@ -79,7 +79,7 @@ class SpiderViewerClassify(ProtocolViewer):
 
     def _plotDendrogram(self, e=None):
         # FIXME Remove this dependency from xmipp plugin
-        from xmipp.plotter import XmippPlotter
+        from xmipp3.plotter import XmippPlotter
         xplotter = XmippPlotter()
         self.plt = xplotter.createSubPlot("Dendrogram", "", "")
         self.step = 0.25

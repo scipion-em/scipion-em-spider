@@ -34,7 +34,7 @@ from pyworkflow.em import Transform
 from pyworkflow.em.constants import NO_INDEX, ALIGN_2D, ALIGN_3D, ALIGN_PROJ
 from pyworkflow.utils.path import moveFile
 
-from spider import SPIDER
+import spider
 from spider.scripts import SpiderDocFile, runTemplate
 
     
@@ -101,7 +101,7 @@ def convertEndian(stackFn, stackSize):
               {'[particles]': fnBase + '@******',
                '[particles_big]': fnBase + '_big@******',
                '[numberOfParticles]': stackSize
-               }, nummpis=1, program=SPIDER, cwd=fnDir)
+               }, cwd=fnDir)
     moveFile(fn + '_big' + ext, stackFn)
     
     

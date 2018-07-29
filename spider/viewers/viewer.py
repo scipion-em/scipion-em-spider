@@ -30,7 +30,7 @@ This module implements viewers for Spider protocols.
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
 from pyworkflow.em.viewer import DataView
 # FIXME Remove this dependency from xmipp plugin
-from xmipp.viewers import XmippViewer
+from xmipp3.viewers import XmippViewer
 
 from spider.scripts import PcaFile
 from spider.protocols.protocol_custommask import SpiderProtCustomMask

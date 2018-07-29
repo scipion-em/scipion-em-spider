@@ -39,7 +39,7 @@ from pyworkflow.em.data import Volume, FSC
 
 import spider
 from spider.scripts import (SpiderDocFile, SpiderDocAliFile,
-                       writeScript, runScript, SPIDER)
+                       writeScript, runScript)
 from spider.convert import (ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX,
                        SHIFTY, convertEndian, alignmentToRow)
 from protocol_base import SpiderProtocol
@@ -359,7 +359,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def runScriptStep(self, script):
         """ Just run the script that was generated in convertInputStep. """
         refPath = self._getExtraPath('Refinement')
-        runScript(script, 'pam/stk', program=SPIDER, nummpis=1, cwd=refPath, log=self._log)
+        runScript(script, 'pam/stk', program=spider.Plugin.getProgram(), nummpis=1, cwd=refPath, log=self._log)
 
     def projectStep(self, volumeId):
         pass
@@ -486,7 +486,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                         itemDataIterator=iter(outDocFn))
 
     def _createItemMatrix(self, item, row):
-        from pyworkflow.em.packages.spider.convert import createItemMatrix
+        from spider.convert import createItemMatrix
         from pyworkflow.em import ALIGN_PROJ
         createItemMatrix(item, row, align=ALIGN_PROJ)
 
