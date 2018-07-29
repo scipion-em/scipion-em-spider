@@ -244,19 +244,6 @@ class SpiderDocAliFile(object):
     def close(self):
         self._file.close()
         
-        
-class PcaFile(EMObject):
-    """ This is a container of files produced by CA PCA Spider protocol.
-    It is possible to use the cas_IMC or cas_SEQ files.
-    """
-    def __init__(self, **args):
-        EMObject.__init__(self, **args)
-        
-        self.filename = String()
-        
-    def getFileName(self):
-        return self.filename.get()
-        
      
 def getDocsLink(op, label):
     from spider.constants import SPIDER_DOCS

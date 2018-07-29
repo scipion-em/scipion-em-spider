@@ -23,24 +23,23 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module implements viewers for Spider protocols.
-"""
-
-from pyworkflow.viewer import ProtocolViewer, DESKTOP_TKINTER, WEB_DJANGO
-
-from spider.objects import PcaFile
 
 
-    
-class SpiderViewer(ProtocolViewer):
-    """ Wrapper to visualize different type of objects
-    with the Xmipp program xmipp_showj. """
-    
-    _environments = [DESKTOP_TKINTER, WEB_DJANGO]
-    _targets = [PcaFile]
-    _label = 'viewer'
+from pyworkflow.em.data import EMObject
+from pyworkflow.object import String
 
-    def _visualize(self, obj, **args):
-        self._views.append(self.textView([obj.getFileName()], "PCA file"))
-        return self._views
+
+class PcaFile(EMObject):
+    """ This is a container of files produced by CA PCA Spider protocol.
+    It is possible to use the cas_IMC or cas_SEQ files.
+    """
+
+    def __init__(self, **args):
+        EMObject.__init__(self, **args)
+
+        self.filename = String()
+
+    def getFileName(self):
+        return self.filename.get()
+
+

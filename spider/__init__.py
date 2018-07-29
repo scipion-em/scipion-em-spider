@@ -29,6 +29,7 @@ from os.path import abspath
 
 import pyworkflow.em
 from pyworkflow.utils import Environ, join
+import objects
 
 _logo = "spider_logo.png"
 _references = ['Shaikh2008', 'Frank1996b']
