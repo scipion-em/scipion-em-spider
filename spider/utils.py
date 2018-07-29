@@ -175,7 +175,6 @@ class SpiderShell(object):
     
     def runCmd(self, cmd):
         if self._debug:
-            #print "SPIDER: ", cmd
             print >> self._log, cmd
         print >> self._proc.stdin, cmd
         self._proc.stdin.flush()
@@ -184,7 +183,7 @@ class SpiderShell(object):
         if end:
             self.runCmd("end")
         self._proc.wait()
-        # self._proc.kill() TODO: Check if necessary
+        #self._proc.kill() TODO: Check if necessary
         
 
 class SpiderDocFile(object):
@@ -206,7 +205,7 @@ class SpiderDocFile(object):
     def writeValues(self, *values):
         """ Write values in spider docfile. """
         self._count += 1
-            # write data lines
+        # write data lines
         line = "%5d %2d" % (self._count, len(values))
         for v in values:
             line += " %11g" % float(v)
@@ -260,6 +259,6 @@ class PcaFile(EMObject):
         
      
 def getDocsLink(op, label):
-    from constants import SPIDER_DOCS
+    from spider.constants import SPIDER_DOCS
     """ Return a label for documentation url of a given command. """
     return '[[%(SPIDER_DOCS)s/%(op)s.html][%(label)s]]' % locals()

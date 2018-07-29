@@ -38,7 +38,7 @@ from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO, ProtocolViewer
 from pyworkflow.em.plotter import EmPlotter
 
 from spider.protocols import SpiderProtRefinement
-from spider.scripts import SpiderDocFile
+from spider.utils import SpiderDocFile
 
 ITER_LAST = 0
 ITER_SELECTION = 1

@@ -24,23 +24,9 @@
 # *
 # **************************************************************************
 """
-This module implements viewers for Spider protocols.
+Import of all viewers included in spider.
 """
-
-from pyworkflow.viewer import ProtocolViewer, DESKTOP_TKINTER, WEB_DJANGO
-
-from spider.utils import PcaFile
-
-
-    
-class SpiderViewer(ProtocolViewer):
-    """ Wrapper to visualize different type of objects
-    with the Xmipp program xmipp_showj. """
-    
-    _environments = [DESKTOP_TKINTER, WEB_DJANGO]
-    _targets = [PcaFile]
-    _label = 'viewer'
-
-    def _visualize(self, obj, **args):
-        self._views.append(self.textView([obj.getFileName()], "PCA file"))
-        return self._views
+from viewer import SpiderViewer
+from viewer_capca import SpiderViewerCAPCA
+from viewer_classify import SpiderViewerClassify, SpiderViewerWard, SpiderViewerDiday
+from viewer_refinement import SpiderViewerRefinement

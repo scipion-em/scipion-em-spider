@@ -32,7 +32,7 @@ from pyworkflow.em import ProtAlign2D, Particle, NO_INDEX
 from pyworkflow.em.data import Transform
 
 from spider.constants import *
-from spider.scripts import getDocsLink
+from spider.utils import getDocsLink
 from protocol_base import SpiderProtocol
 
 

@@ -23,9 +23,8 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-Some Spider protocol base classes.
-"""
+
+
 from os.path import basename
 
 from pyworkflow.em import ProtClassify2D, Particle, Class2D
@@ -34,7 +33,7 @@ from pyworkflow.protocol.params import PointerParam, IntParam
 from pyworkflow.utils import removeExt, copyFile
 import pyworkflow.utils.graph as graph
 
-from spider.scripts import SpiderDocFile
+from spider.utils import SpiderDocFile
 from protocol_base import SpiderProtocol
 
 

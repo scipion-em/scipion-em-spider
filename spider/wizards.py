@@ -43,7 +43,7 @@ from pyworkflow.em.wizard import (EmWizard, ParticleMaskRadiusWizard,
 import pyworkflow.gui.dialog as dialog
 from pyworkflow.gui.widgets import LabelSlider, HotButton
 
-from spider.scripts import SpiderShell, runCustomMaskScript
+from spider.utils import SpiderShell, runCustomMaskScript
 from spider.constants import FILTER_FERMI
 from spider.convert import locationToSpider
 from spider.protocols import (SpiderProtCAPCA, SpiderProtAlignAPSR,
@@ -301,9 +301,6 @@ class SpiderFilterDialog(DownsampleDialog):
         """ This function should compute the right preview
         using the self.lastObj that was selected
         """
-        # FIXME Remove this dependency from xmipp plugin
-        from xmipp3 import locationToXmipp
-        
         # Copy image to filter to Tmp project folder
         outputName = os.path.join("Tmp", "filtered_particle")
         outputPath = outputName + ".spi"
@@ -334,7 +331,7 @@ class SpiderFilterDialog(DownsampleDialog):
         
         # Get output image and update filtered image
         img = ImageHandler()._img
-        locXmippStr = locationToXmipp(1, outputPath)
+        locXmippStr = ImageHandler.locationToXmipp((1, outputPath))
         img.read(locXmippStr)
         self.rightImage = img
         self.updateFilteredImage()

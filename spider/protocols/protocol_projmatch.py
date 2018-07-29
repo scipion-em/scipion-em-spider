@@ -38,8 +38,8 @@ from pyworkflow.em.constants import ALIGN_PROJ
 from pyworkflow.em.data import Volume, FSC
 
 import spider
-from spider.scripts import (SpiderDocFile, SpiderDocAliFile,
-                       writeScript, runScript)
+from spider.utils import (SpiderDocFile, SpiderDocAliFile,
+                          writeScript, runScript)
 from spider.convert import (ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX,
                        SHIFTY, convertEndian, alignmentToRow)
 from protocol_base import SpiderProtocol

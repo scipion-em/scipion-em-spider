@@ -30,7 +30,7 @@ from pyworkflow.protocol.params import IntParam, PointerParam, EnumParam, FloatP
 from pyworkflow.em.convert import ImageHandler
 
 from spider.constants import CA
-from spider.scripts import PcaFile
+from spider.utils import PcaFile
 from protocol_base import SpiderProtocol
 
 
@@ -163,28 +163,28 @@ class SpiderProtCAPCA(SpiderProtocol):
         # Generate outputs
         imc = PcaFile()
         imc.filename.set(self._getFileName('imcFile'))
-        
+
         seq = PcaFile()
         seq.filename.set(self._getFileName('seqFile'))
         
-        self._defineOutputs(imcFile=imc, seqFile=seq)        
+        self._defineOutputs(imcFile=imc, seqFile=seq)
         self._defineSourceRelation(self.inputParticles, imc)
         self._defineSourceRelation(self.inputParticles, seq)
-        
+
     #--------------------------- INFO functions -------------------------------
     def _summary(self):
         summary = []
         
         if self.analysisType == 0:
-            summary.append(    'Analysis type: *Correspondence analysis*')
+            summary.append('Analysis type: *Correspondence analysis*')
             if self.addConstant != 0:
                 summary.append('    Additive constant: *%s*' % self.addConstant)
             else:
                 summary.append('    Additive constant: *Auto*')
         if self.analysisType == 1:
-            summary.append(    'Analysis type: *Principal component analysis*')
+            summary.append('Analysis type: *Principal component analysis*')
         if self.analysisType == 2:
-            summary.append(    'Analysis type: *Iterative principal component analysis*')
+            summary.append('Analysis type: *Iterative principal component analysis*')
 
         summary.append('Number of factors: *%s*' % self.numberOfFactors)
         

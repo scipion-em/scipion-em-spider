@@ -34,7 +34,7 @@ from pyworkflow.protocol.params import (EnumParam, BooleanParam,
 from pyworkflow.utils.path import removeBaseExt
 
 from spider.constants import *
-from spider.scripts import SpiderShell
+from spider.utils import SpiderShell
 from protocol_base import SpiderProtocol
         
       

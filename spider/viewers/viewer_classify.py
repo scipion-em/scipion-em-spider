@@ -33,6 +33,7 @@ from os.path import join
 import Tkinter as tk
 
 from pyworkflow.em import ProtUserSubSet, SetOfClasses2D
+from pyworkflow.em.plotter import EmPlotter
 from pyworkflow.protocol.params import IntParam, FloatParam, LabelParam
 from pyworkflow.protocol.constants import STATUS_FINISHED
 from pyworkflow.utils.properties import Icon
@@ -46,7 +47,7 @@ from pyworkflow.gui.canvas import Canvas, ImageBox
 from pyworkflow.em.viewer import ClassesView
 from pyworkflow.gui.dialog import askString
 
-from spider.scripts import SpiderDocFile
+from spider.utils import SpiderDocFile
 from spider.protocols import SpiderProtClassifyWard, SpiderProtClassifyDiday
 
 
@@ -78,9 +79,7 @@ class SpiderViewerClassify(ProtocolViewer):
                 }
 
     def _plotDendrogram(self, e=None):
-        # FIXME Remove this dependency from xmipp plugin
-        from xmipp3.plotter import XmippPlotter
-        xplotter = XmippPlotter()
+        xplotter = EmPlotter()
         self.plt = xplotter.createSubPlot("Dendrogram", "", "")
         self.step = 0.25
         self.rightMost = 0.0 # Used to arrange leaf nodes at the bottom

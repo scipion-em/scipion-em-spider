@@ -30,7 +30,7 @@ Some Spider protocol base classes.
 from pyworkflow.em import EMProtocol
 
 import spider
-from spider.scripts import runTemplate
+from spider.utils import runTemplate
 from spider.convert import writeSetOfImages
 
 

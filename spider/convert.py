@@ -34,8 +34,7 @@ from pyworkflow.em import Transform
 from pyworkflow.em.constants import NO_INDEX, ALIGN_2D, ALIGN_3D, ALIGN_PROJ
 from pyworkflow.utils.path import moveFile
 
-import spider
-from spider.scripts import SpiderDocFile, runTemplate
+from spider.utils import SpiderDocFile, runTemplate
 
     
 
