@@ -37,9 +37,10 @@ from pyworkflow.em.protocol import ProtRefine3D
 from pyworkflow.em.constants import ALIGN_PROJ
 from pyworkflow.em.data import Volume, FSC
 
-from ..spider import (SpiderDocFile, SpiderDocAliFile,
-                      writeScript, getScript, runScript, SPIDER)
-from ..convert import (ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX,
+import spider
+from spider.scripts import (SpiderDocFile, SpiderDocAliFile,
+                       writeScript, runScript, SPIDER)
+from spider.convert import (ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX,
                        SHIFTY, convertEndian, alignmentToRow)
 from protocol_base import SpiderProtocol
 
@@ -228,7 +229,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                 dirName = 'no-defocus-groups'
 
             outputScript=join(refPath, name)
-            writeScript(getScript('projmatch', 'Refinement', dirName, name), outputScript, paramsDict)
+            writeScript(spider.Plugin.getScript('projmatch', 'Refinement', dirName, name), outputScript, paramsDict)
             
         nIter = self.numberOfIterations.get()
         

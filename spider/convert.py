@@ -28,14 +28,15 @@ This module contains converter functions related to Spider
 """
 
 import numpy
+from os.path import splitext, split
 
 from pyworkflow.em import Transform
 from pyworkflow.em.constants import NO_INDEX, ALIGN_2D, ALIGN_3D, ALIGN_PROJ
 from pyworkflow.utils.path import moveFile
 
-from spider import SpiderDocFile, runTemplate, SPIDER
-from os.path import splitext, split
-   
+from spider import SPIDER
+from spider.scripts import SpiderDocFile, runTemplate
+
     
 
 SHIFTX = 'shiftx'

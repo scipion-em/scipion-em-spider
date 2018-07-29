@@ -44,10 +44,10 @@ from pyworkflow.gui.widgets import HotButton
 from pyworkflow.gui.graph import LevelTree
 from pyworkflow.gui.canvas import Canvas, ImageBox
 from pyworkflow.em.viewer import ClassesView
-from protocol import SpiderProtClassifyWard, SpiderProtClassifyDiday
 from pyworkflow.gui.dialog import askString
 
-from spider import SpiderDocFile
+from spider.scripts import SpiderDocFile
+from spider.protocols import SpiderProtClassifyWard, SpiderProtClassifyDiday
 
 
 class SpiderViewerClassify(ProtocolViewer):
@@ -78,7 +78,8 @@ class SpiderViewerClassify(ProtocolViewer):
                 }
 
     def _plotDendrogram(self, e=None):
-        from pyworkflow.em.packages.xmipp3.plotter import XmippPlotter
+        # FIXME Remove this dependency from xmipp plugin
+        from xmipp.plotter import XmippPlotter
         xplotter = XmippPlotter()
         self.plt = xplotter.createSubPlot("Dendrogram", "", "")
         self.step = 0.25

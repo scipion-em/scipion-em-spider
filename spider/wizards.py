@@ -43,10 +43,10 @@ from pyworkflow.em.wizard import (EmWizard, ParticleMaskRadiusWizard,
 import pyworkflow.gui.dialog as dialog
 from pyworkflow.gui.widgets import LabelSlider, HotButton
 
-from spider import SpiderShell, runCustomMaskScript
-from constants import FILTER_FERMI
-from convert import locationToSpider
-from protocol import (SpiderProtCAPCA, SpiderProtAlignAPSR,
+from spider.scripts import SpiderShell, runCustomMaskScript
+from spider.constants import FILTER_FERMI
+from spider.convert import locationToSpider
+from spider.protocols import (SpiderProtCAPCA, SpiderProtAlignAPSR,
                       SpiderProtAlignPairwise, SpiderProtFilter,
                       SpiderProtCustomMask, SpiderProtRefinement)
 
@@ -301,7 +301,8 @@ class SpiderFilterDialog(DownsampleDialog):
         """ This function should compute the right preview
         using the self.lastObj that was selected
         """
-        from pyworkflow.em.packages.xmipp3 import locationToXmipp
+        # FIXME Remove this dependency from xmipp plugin
+        from xmipp import locationToXmipp
         
         # Copy image to filter to Tmp project folder
         outputName = os.path.join("Tmp", "filtered_particle")
@@ -389,10 +390,10 @@ class SpiderCustomMaskWizard(EmWizard):
     
     def _getParameters(self, protocol):
         protParams = {}
-        protParams['input']= protocol.inputImage
-        protParams['label']= CUSTOMMASK_VARS.keys()
-        protParams['labelText']= MASKRESULT_LABELS
-        protParams['value']= [protocol.getAttributeValue(a) for a in protParams['label']]
+        protParams['input'] = protocol.inputImage
+        protParams['label'] = CUSTOMMASK_VARS.keys()
+        protParams['labelText'] = MASKRESULT_LABELS
+        protParams['value'] = [protocol.getAttributeValue(a) for a in protParams['label']]
         
         return protParams
     

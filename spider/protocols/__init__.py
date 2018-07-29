@@ -36,6 +36,5 @@ from protocol_classify_diday import SpiderProtClassifyDiday
 from protocol_classify_ward import SpiderProtClassifyWard
 from protocol_classify_kmeans import SpiderProtClassifyKmeans
 from protocol_align_pairwise import SpiderProtAlignPairwise
-
 from protocol_projmatch import SpiderProtRefinement
 from protocol_reconstruct import SpiderProtReconstruct

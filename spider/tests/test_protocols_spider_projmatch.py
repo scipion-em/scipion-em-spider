@@ -25,8 +25,9 @@
 # **************************************************************************
 
 from pyworkflow.tests import *
-from pyworkflow.em.packages.spider.protocol import SpiderProtRefinement
 from pyworkflow.em.protocol import ProtImportParticles, ProtImportVolumes
+
+from spider.protocols import SpiderProtRefinement
 
 
 class TestSpiderBase(BaseTest):
@@ -86,4 +87,5 @@ class TestSpiderRefinement(TestSpiderBase):
         protRefine.inputParticles.set(protImportPart.outputParticles)
         protRefine.input3DReference.set(protImportVol.outputVolume)
         self.launchProtocol(protRefine)
-        self.assertIsNotNone(protRefine.outputVolume, "There was a problem with Spider refinement protocol")
+        self.assertIsNotNone(protRefine.outputVolume,
+                             "There was a problem with Spider refinement protocol")

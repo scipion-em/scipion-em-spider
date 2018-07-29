@@ -29,8 +29,9 @@ Some Spider protocol base classes.
 
 from pyworkflow.em import EMProtocol
 
-from ..spider import runTemplate, SPIDER, SPIDER_MPI
-from ..convert import writeSetOfImages
+from spider import SPIDER, SPIDER_MPI
+from spider.scripts import runTemplate
+from spider.convert import writeSetOfImages
 
 
 

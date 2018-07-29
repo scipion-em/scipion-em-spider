@@ -25,11 +25,12 @@
 # **************************************************************************
 
 
-import pyworkflow.em.packages.spider as spider
 from pyworkflow.em.protocol import ProtImportParticles
-
 from pyworkflow.tests import setupTestProject, DataSet
 from pyworkflow.tests.em.workflows.test_workflow import TestWorkflow
+
+from spider.protocols import (SpiderProtFilter, SpiderProtAlignAPSR,
+                              SpiderProtAlignPairwise)
 
   
    
@@ -64,18 +65,19 @@ class TestSpiderAlign(TestWorkflow):
         if protImport.outputParticles is None:
             raise Exception('Import of images: %s, failed. outputParticles is None.' % self.particlesFn)
         
-        protFilter = self.newProtocol(spider.SpiderProtFilter)
+        protFilter = self.newProtocol(SpiderProtFilter)
         protFilter.inputParticles.set(protImport)
         protFilter.inputParticles.setExtended('outputParticles')
         self.launchProtocol(protFilter)
-        self.assertIsNotNone(protFilter.outputParticles, "There was a problem with the SpiderProtFilter outputParticles")
+        self.assertIsNotNone(protFilter.outputParticles,
+                             "There was a problem with the SpiderProtFilter outputParticles")
 
-        self.runAlignment(protFilter, spider.SpiderProtAlignAPSR,
+        self.runAlignment(protFilter, SpiderProtAlignAPSR,
                           objLabel='align apsr')
-        self.runAlignment(protFilter, spider.SpiderProtAlignAPSR,
-                          objLabel='align apsr - RT180', cgOption=2) # RT180
+        self.runAlignment(protFilter, SpiderProtAlignAPSR,
+                          objLabel='align apsr - RT180', cgOption=2)  # RT180
 
-        self.runAlignment(protFilter, spider.SpiderProtAlignPairwise,
+        self.runAlignment(protFilter, SpiderProtAlignPairwise,
                           objLabel='align pairwise')
-        self.runAlignment(protFilter, spider.SpiderProtAlignPairwise,
-                          objLabel='align pairwise - RT180', cgOption=2) # RT180
+        self.runAlignment(protFilter, SpiderProtAlignPairwise,
+                          objLabel='align pairwise - RT180', cgOption=2)  # RT180

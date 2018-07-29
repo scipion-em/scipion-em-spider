@@ -33,9 +33,8 @@ from pyworkflow.protocol.params import (EnumParam, BooleanParam,
                                         DigFreqParam, FloatParam)
 from pyworkflow.utils.path import removeBaseExt
 
-from ..constants import (FILTER_SPACE_REAL, FILTER_FERMI,
-                         FILTER_BUTTERWORTH, FILTER_LOWPASS)
-from ..spider import SpiderShell
+from spider.constants import *
+from spider.scripts import SpiderShell
 from protocol_base import SpiderProtocol
         
       

@@ -27,19 +27,13 @@
 This module implements visualization program for Spider CA-PCA protocol.
 """
 
-import Tkinter as tk
 from pyworkflow.protocol.params import *
-from pyworkflow.viewer import Viewer, ProtocolViewer, DESKTOP_TKINTER, WEB_DJANGO,\
-    TextView
-from pyworkflow.utils.graph import Graph
-from pyworkflow.gui.graph import LevelTree
-from pyworkflow.gui.canvas import Canvas, ImageBox
-from pyworkflow.em.packages.xmipp3.viewer import XmippViewer
+from pyworkflow.viewer import (Viewer, ProtocolViewer, DESKTOP_TKINTER,
+                               WEB_DJANGO,TextView)
 from pyworkflow.em.viewer import DataView
 from pyworkflow.em.plotter import EmPlotter
 
-from spider import PcaFile
-from protocol.protocol_ca_pca import SpiderProtCAPCA
+from spider.protocols.protocol_ca_pca import SpiderProtCAPCA
 
 
 

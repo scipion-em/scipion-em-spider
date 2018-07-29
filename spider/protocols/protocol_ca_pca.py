@@ -29,8 +29,8 @@ from os.path import join
 from pyworkflow.protocol.params import IntParam, PointerParam, EnumParam, FloatParam
 from pyworkflow.em.convert import ImageHandler
 
-from ..constants import CA
-from ..spider import PcaFile
+from spider.constants import CA
+from spider.scripts import PcaFile
 from protocol_base import SpiderProtocol
 
 

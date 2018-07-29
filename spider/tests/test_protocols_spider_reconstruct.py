@@ -24,10 +24,10 @@
 # *
 # **************************************************************************
 
-import unittest, sys
 from pyworkflow.tests import *
-from pyworkflow.em.packages.spider.protocol import SpiderProtReconstruct
 from pyworkflow.em.protocol import ProtImportParticles
+
+from spider.protocols import SpiderProtReconstruct
 
 
 class TestSpiderBase(BaseTest):
@@ -65,4 +65,5 @@ class TestSpiderReconstruct(TestSpiderBase):
         protReconstruct = self.newProtocol(SpiderProtReconstruct)
         protReconstruct.inputParticles.set(prot1.outputParticles)
         self.launchProtocol(protReconstruct)
-        self.assertIsNotNone(protReconstruct.outputVolume, "There was a problem with Spider reconstruction protocol")
+        self.assertIsNotNone(protReconstruct.outputVolume,
+                             "There was a problem with Spider reconstruction protocol")

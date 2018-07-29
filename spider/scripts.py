@@ -25,33 +25,24 @@
 # **************************************************************************
 
 import os
-from os.path import join, dirname, abspath, exists
+from os.path import join, dirname, abspath
 from collections import OrderedDict
 import subprocess
 import re
 
 from pyworkflow.object import String
-from pyworkflow.utils import runJob, Environ
+from pyworkflow.utils import runJob
 from pyworkflow.utils.path import replaceBaseExt, removeBaseExt
 from pyworkflow.em.data import EMObject
 
-from Spiderutils import fixHeaders, makeDocfileHeader
+import spider
+from spider import SPIDER, SPIDER_MPI
+from spider.Spiderutils import fixHeaders, makeDocfileHeader
 
-
-SPIDER_HOME = 'SPIDER_HOME'
-SPIDER_DIR = 'SPIDER_DIR'
-
-SPPROC_DIR = 'SPPROC_DIR'
-SPMAN_DIR = 'SPMAN_DIR'
-SPBIN_DIR = 'SPBIN_DIR'
 
 END_HEADER = 'END BATCH HEADER'
-SPIDER = 'spider_linux_mp_intel64'
-SPIDER_MPI = 'spider_linux_mpi_opt64'
-
 PATH = abspath(dirname(__file__))
 TEMPLATE_DIR = 'templates'
-SCRIPTS_DIR = 'scripts'
 
 # Regular expressions for parsing vars in scripts header
 
@@ -70,73 +61,8 @@ HEADER_COLUMNS = ['ANGLE_PSI2', 'ANGLE_THE',
                   'SX', 'SY', 'MIR-CC']
 
 
-def getEnviron():
-    """ Load the environment variables needed for Spider.
-    If SPIDER_DIR is defined, the bin, man and proc folders will be 
-    defined from it. If not, each of them should be defined separately. 
-    """
-    global SPIDER, SPIDER_MPI
-    env = Environ(os.environ)
-    SPIDER_DIR = env.getFirst(('SPIDER_HOME', 'SPIDER_DIR'), mandatory=True)  #
-    if SPIDER_DIR is None:
-        errors = ''
-        for var in [SPBIN_DIR, SPMAN_DIR, SPPROC_DIR]:
-            if not var in env:
-                errors += "\n   Missing SPIDER variable: '%s'" % var
-        if len(errors):
-            print "ERRORS: " + errors
-    else: 
-        env.update({SPBIN_DIR: join(SPIDER_DIR, 'bin') + '/', # Spider needs this extra slash at the end
-                    SPMAN_DIR: join(SPIDER_DIR, 'man') + '/',
-                    SPPROC_DIR: join(SPIDER_DIR, 'proc') + '/'
-                    })
-    
-    # Get the executable or 'spider' by default
-    SPIDER = join(env[SPBIN_DIR], env.get('SPIDER', 'spider_linux_mp_intel64'))
-    SPIDER_MPI = join(env[SPBIN_DIR], env.get('SPIDER_MPI', 'spider_linux_mpi_opt64'))
-    # expand ~ and vars
-    SPIDER = abspath(os.path.expanduser(os.path.expandvars(SPIDER)))
-    SPIDER_MPI = abspath(os.path.expanduser(os.path.expandvars(SPIDER_MPI)))
-        
-    env.set('PATH', env[SPBIN_DIR], env.END)
-    
-    return env
-    
-
-environment = getEnviron()
-
-
-def validateInstallation():
-    """ This function will be used to check if SPIDER is properly installed. """
-    missingPaths = ["%s: %s" % (var, environment[var])
-                    for var in [SPBIN_DIR, SPMAN_DIR, SPPROC_DIR]
-                    if not os.path.exists(environment[var])]
-
-    if missingPaths:
-        return ["Missing variables:"] + missingPaths
-    else:
-        return [] # No errors
-
-
-def getVersion():
-    env = Environ(os.environ)
-    path = env.getFirst((SPIDER_HOME, SPIDER_DIR), mandatory=True)
-    for v in getSupportedVersions():
-        if v in path or v in os.path.realpath(path):
-            return v
-    return ''
-
-
-def getSupportedVersions():
-    return ['24.03']
-
-
 def _getFile(*paths):
     return join(PATH, *paths)
-
-
-def getScript(*paths):
-    return _getFile(SCRIPTS_DIR, getVersion(), *paths)
 
 
 def __substituteVar(match, paramsDict, lineTemplate):
@@ -151,7 +77,7 @@ def writeScript(inputScript, outputScript, paramsDict):
     """ Create a new Spider script by substituting 
     params in the input 'paramsDict'.
     """
-    fIn = open(getScript(inputScript), 'r')
+    fIn = open(spider.Plugin.getScript(inputScript), 'r')
     fOut = open(outputScript, 'w')
     inHeader = True # After the end of header, no more value replacement
     inFrL = False
@@ -198,7 +124,8 @@ def runTemplate(inputScript, ext, paramsDict, nummpis=1, program=SPIDER, log=Non
 def runScript(inputScript, ext, program, nummpis, log=None, cwd=None):
     scriptName = removeBaseExt(inputScript)
     args = " %s @%s" % (ext, scriptName)
-    runJob(log, program, args, numberOfMpi=nummpis, env=dict(environment), cwd=cwd)
+    runJob(log, program, args, numberOfMpi=nummpis,
+           env=dict(spider.Plugin.getEnviron()), cwd=cwd)
     
 
 def runCustomMaskScript(filterRadius1, sdFactor,
@@ -234,7 +161,7 @@ class SpiderShell(object):
         self._proc = subprocess.Popen(SPIDER, shell=True, 
                                       stdin=subprocess.PIPE,
                                       stdout=FNULL, stderr=FNULL,
-                                      env=environment,
+                                      env=spider.Plugin.getEnviron(),
                                       cwd=cwd)
         if self._debug and self._log:
             self._log = open(self._log, 'w+')

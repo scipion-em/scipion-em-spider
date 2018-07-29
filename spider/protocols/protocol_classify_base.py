@@ -34,7 +34,7 @@ from pyworkflow.protocol.params import PointerParam, IntParam
 from pyworkflow.utils import removeExt, copyFile
 import pyworkflow.utils.graph as graph
 
-from ..spider import SpiderDocFile
+from spider.scripts import SpiderDocFile
 from protocol_base import SpiderProtocol
 
 

@@ -31,8 +31,8 @@ from pyworkflow.protocol.params import IntParam, EnumParam
 from pyworkflow.em import ProtAlign2D, Particle, NO_INDEX
 from pyworkflow.em.data import Transform
 
-from ..constants import *
-from ..spider import getDocsLink
+from spider.constants import *
+from spider.scripts import getDocsLink
 from protocol_base import SpiderProtocol
 
 

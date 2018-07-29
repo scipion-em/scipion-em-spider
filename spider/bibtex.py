@@ -26,10 +26,6 @@
 # *
 # **************************************************************************
 """
-Bibtex string file for Spider protocols.
-"""
-
-_bibtexStr = """
 
 @article{Shaikh2008,
   author = {Shaikh, T. R. and Gao, H. and Baxter, W. and Asturias, F. J. and
@@ -101,7 +97,3 @@ _bibtexStr = """
 }
 
 """
-
-from pyworkflow.utils import parseBibTex
-
-_bibtex = parseBibTex(_bibtexStr)  

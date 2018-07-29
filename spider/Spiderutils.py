@@ -20,7 +20,6 @@ import os, re, datetime
 import struct
 from commands import getoutput
 from types import *
-#from spider import SPIDER
 
 WRITE_SPIREOUT = "WRITE_SPIREOUT"   # environmental variable for Spire
 

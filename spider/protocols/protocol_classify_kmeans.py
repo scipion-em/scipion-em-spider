@@ -26,7 +26,7 @@
 
 from pyworkflow.protocol.params import IntParam
 
-from ..spider import SpiderDocFile
+from spider.scripts import SpiderDocFile
 from protocol_classify_base import SpiderProtClassify
 
       
