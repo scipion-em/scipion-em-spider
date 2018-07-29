@@ -72,7 +72,7 @@ class SpiderProtReconstruct(SpiderProtocol):
                            'allocating memory in _BP 32F_, you can use '
                            'operation _BP 3F_. It will run three times to '
                            'create the three output volumes one by one.')
-        form.addParallelSection(threads=1, mpi=1)
+        form.addParallelSection(threads=1, mpi=0)
         
     #--------------------------- INSERT steps functions --------------------------------------------  
     def _insertAllSteps(self):        

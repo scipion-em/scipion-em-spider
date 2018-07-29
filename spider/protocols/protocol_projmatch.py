@@ -183,7 +183,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                       label='Angular range ',
                       help="This parameter determines the range of reference projections that will be searched.")          
 
-        form.addParallelSection(threads=4, mpi=1)
+        form.addParallelSection(threads=4, mpi=0)
     
     #--------------------------- INSERT steps functions -----------------------
     def _insertAllSteps(self):        

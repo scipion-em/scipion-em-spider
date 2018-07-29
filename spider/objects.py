@@ -41,5 +41,3 @@ class PcaFile(EMObject):
 
     def getFileName(self):
         return self.filename.get()
-
-
