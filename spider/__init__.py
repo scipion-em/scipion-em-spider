@@ -34,7 +34,7 @@ import objects
 _logo = "spider_logo.png"
 _references = ['Shaikh2008', 'Frank1996b']
 
-SPIDER_HOME_VAR = 'SPIDER_HOME'
+SPIDER_HOME = 'SPIDER_HOME'
 SPPROC_DIR = 'SPPROC_DIR'
 SPMAN_DIR = 'SPMAN_DIR'
 SPBIN_DIR = 'SPBIN_DIR'
@@ -42,12 +42,14 @@ SPIDER = 'spider_linux_mp_intel64'
 SPIDER_MPI = 'spider_linux_mpi_opt64'
 
 
-# The following class is required for Scipion to detect this Python module
-# as a Scipion Plugin. It needs to specify the PluginMeta __metaclass__
-# Some function related to the underlying package binaries need to be
-# implemented
-class Plugin:
-    #__metaclass__ = pyworkflow.em.PluginMeta
+class Plugin(pyworkflow.em.Plugin):
+    _homeVar = SPIDER_HOME
+    _pathVars = [SPIDER_HOME, SPPROC_DIR, SPMAN_DIR, SPBIN_DIR]
+    _supportedVersions = ['24.03']
+
+    @classmethod
+    def _defineVariables(cls):
+        cls._defineEmVar(SPIDER_HOME, 'spider-24.03')
 
     @classmethod
     def getEnviron(cls):
@@ -56,46 +58,21 @@ class Plugin:
         defined from it. If not, each of them should be defined separately.
         """
         env = Environ(os.environ)
-        SPIDER_HOME = os.environ[('%s' % SPIDER_HOME_VAR)]
-        if SPIDER_HOME is None:
+        if cls.getHome():
+            env.update(  # Spider needs this extra slash at the end
+                {SPBIN_DIR: cls.getHome('bin') + '/',
+                 SPMAN_DIR: cls.getHome('man') + '/',
+                 SPPROC_DIR: cls.getHome('proc') + '/'})
+        else:
             errors = ''
             for var in [SPBIN_DIR, SPMAN_DIR, SPPROC_DIR]:
                 if not var in env:
                     errors += "\n   Missing SPIDER variable: '%s'" % var
             if len(errors):
                 print "ERRORS: " + errors
-        else:
-            env.update({SPBIN_DIR: join(SPIDER_HOME, 'bin') + '/',  # Spider needs this extra slash at the end
-                        SPMAN_DIR: join(SPIDER_HOME, 'man') + '/',
-                        SPPROC_DIR: join(SPIDER_HOME, 'proc') + '/'
-                        })
 
         env.set('PATH', env[SPBIN_DIR], env.END)
-
         return env
-
-    @classmethod
-    def getVersion(cls):
-        path = os.environ[SPIDER_HOME_VAR]
-        for v in cls.getSupportedVersions():
-            if v in path or v in os.path.realpath(path):
-                return v
-        return ''
-
-    @classmethod
-    def getSupportedVersions(cls):
-        """ Return the list of supported binary versions. """
-        return ['24.03']
-
-    @classmethod
-    def validateInstallation(cls):
-        """ This function will be used to check if package is properly installed. """
-        environ = cls.getEnviron()
-        missingPaths = ["%s: %s" % (var, environ[var])
-                        for var in [SPBIN_DIR, SPMAN_DIR, SPPROC_DIR]
-                        if not os.path.exists(environ[var])]
-
-        return (["Missing variables:"] + missingPaths) if missingPaths else []
 
     @classmethod
     def getScript(cls, *paths):
@@ -109,5 +86,6 @@ class Plugin:
         cmd = abspath(join(cls.getEnviron()[SPBIN_DIR], program))
 
         return str(cmd)
+
 
 pyworkflow.em.Domain.registerPlugin(__name__)
