@@ -77,7 +77,7 @@ class Plugin(pyworkflow.em.Plugin):
     @classmethod
     def getScript(cls, *paths):
         """ Return the script that will be used. """
-        cmd = join(__path__[0], 'scripts', cls.getVersion(), *paths)
+        cmd = join(__path__[0], 'scripts', cls.getActiveVersion(), *paths)
         return str(cmd)
 
     @classmethod

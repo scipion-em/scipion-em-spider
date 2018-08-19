@@ -26,17 +26,15 @@
 
 import os
 from os.path import join, dirname, abspath
+import datetime
 from collections import OrderedDict
 import subprocess
 import re
 
-from pyworkflow.object import String
 from pyworkflow.utils import runJob
 from pyworkflow.utils.path import replaceBaseExt, removeBaseExt
-from pyworkflow.em.data import EMObject
 
 import spider
-from spider.Spiderutils import fixHeaders, makeDocfileHeader
 
 
 END_HEADER = 'END BATCH HEADER'
@@ -191,14 +189,42 @@ class SpiderDocFile(object):
     def __init__(self, filename, mode='r'):
         self._file = open(filename, mode)
         self._count = 0
+
+    def nowisthetime(self, dt=None, format='%d-%b-%Y AT %H:%M:%S'):
+        if dt is None:
+            dt = datetime.datetime.now()
+        return dt.strftime(format).upper()
+
+    def fixHeaders(self, headers):
+        """make all headers 11 characters in width; return doc string"""
+        w = 11
+        docstr = " ; /    "
+        for h in headers:
+            d = len(h)
+            if d > w:
+                h = h[:w]
+            docstr += h.rjust(w + 1)
+        docstr += "\n"
+        return docstr
+
+    def makeDocfileHeader(self, filename, batext=None):
+        """create the comment line used at the top of SPIDER document files"""
+        filename = os.path.basename(filename)
+        fn, ext = os.path.splitext(filename)
+        ext = ext[1:]
+        if batext == None:
+            batext = 'spl'  # Spider Python Library
+        timestr = self.nowisthetime()
+        h = " ;%s/%s   %s   %s\n" % (batext, ext, timestr, filename)
+        return h
         
     def writeComment(self, filename, batext='spi'):
-        line = makeDocfileHeader(filename, batext)
+        line = self.makeDocfileHeader(filename, batext)
 
         print >> self._file, line
 
     def writeHeader(self, fields):
-        line = fixHeaders(fields)
+        line = self.fixHeaders(fields)
 
         print  >> self._file, line
         

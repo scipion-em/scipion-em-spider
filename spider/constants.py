@@ -51,6 +51,48 @@ CG_NONE = 0
 CG_PH = 1
 CG_RT180 = 2
 
-# BP type
+# BP type (reconstruct protocol)
 BP_32F = 0
 BP_3F = 1
+
+# Protocol type (projmatch)
+DEF_GROUPS = 0
+GOLD_STD = 1
+
+# Backprojection method (projmatch protocol)
+BP_CG = 0
+#BP_3F = 1
+BP_RP = 2
+BP_3N = 3
+
+#################################################
+# viewer constants
+ITER_LAST = 0
+ITER_SELECTION = 1
+
+ANGDIST_2DPLOT = 0
+ANGDIST_CHIMERA = 1
+
+VOLUME_SLICES = 0
+VOLUME_CHIMERA = 1
+
+VOL = 0
+VOL_HALF1 = 1
+VOL_HALF2 = 2
+VOL_FILTERED = 3
+VOL_CENTERED = 4
+
+# Template volume names depending on the iteration
+VOLNAMES_GOLDSTD = {
+    VOL: 'vol_%02d_unfilt',
+    VOL_HALF1: 'vol_%02d_s1',
+    VOL_HALF2: 'vol_%02d_s2',
+    VOL_FILTERED: 'vol_%02d',
+    VOL_CENTERED: 'vol_%02d_cent'
+}
+
+VOLNAMES_DEFGROUPS = {
+    VOL: 'vol%02d',
+    VOL_HALF1: 'vol%02d_sub1',
+    VOL_HALF2: 'vol%02d_sub2',
+}

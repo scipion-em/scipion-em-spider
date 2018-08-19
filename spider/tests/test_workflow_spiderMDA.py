@@ -29,7 +29,7 @@ import os
 
 from pyworkflow.em.protocol import ProtImportParticles
 from pyworkflow.tests import setupTestProject, DataSet, unittest, BaseTest
-from pyworkflow.test.em.workflows.test_workflow import TestWorkflow
+from pyworkflow.tests.em.workflows.test_workflow import TestWorkflow
 
 from spider.convert import writeSetOfImages
 from spider.protocols import *
@@ -37,8 +37,6 @@ from spider.protocols import *
   
 
 class TestSpiderConvert(TestWorkflow):
-    """ Check the images are converted properly to spider format. """
-    
     @classmethod
     def setUpClass(cls):    
         # Create a new project

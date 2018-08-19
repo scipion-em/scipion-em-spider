@@ -37,38 +37,10 @@ import pyworkflow.protocol.params as params
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO, ProtocolViewer
 from pyworkflow.em.plotter import EmPlotter
 
+from spider.constants import *
 from spider.protocols import SpiderProtRefinement
 from spider.utils import SpiderDocFile
 
-ITER_LAST = 0
-ITER_SELECTION = 1
-
-ANGDIST_2DPLOT = 0
-ANGDIST_CHIMERA = 1
-
-VOLUME_SLICES = 0
-VOLUME_CHIMERA = 1
-
-VOL = 0
-VOL_HALF1 = 1
-VOL_HALF2 = 2
-VOL_FILTERED = 3
-VOL_CENTERED = 4
-
-# Template volume names depending on the iteration
-VOLNAMES_GOLDSTD = {
-    VOL: 'vol_%02d_unfilt',
-    VOL_HALF1: 'vol_%02d_s1',
-    VOL_HALF2: 'vol_%02d_s2',
-    VOL_FILTERED: 'vol_%02d',
-    VOL_CENTERED: 'vol_%02d_cent'
-}
-
-VOLNAMES_DEFGROUPS = {
-    VOL: 'vol%02d',
-    VOL_HALF1: 'vol%02d_sub1',
-    VOL_HALF2: 'vol%02d_sub2',
-}
 
 
 class SpiderViewerRefinement(ProtocolViewer):
@@ -98,8 +70,8 @@ Examples:
                       help="Write the iteration list to visualize.")
 
         group = form.addGroup('Angular assignment')
-        group.addParam('showImagesAngularAssignment', params.LabelParam, default=True,
-                       label='Particles angular assignment')
+        #group.addParam('showImagesAngularAssignment', params.LabelParam, default=True,
+        #               label='Particles angular assignment')
         group.addParam('displayAngDist', params.EnumParam, choices=['2D plot', 'chimera'],
                        default=ANGDIST_2DPLOT, display=params.EnumParam.DISPLAY_HLIST,
                        label='Display angular distribution',

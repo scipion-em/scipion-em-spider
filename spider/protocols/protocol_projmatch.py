@@ -42,17 +42,9 @@ from spider.utils import (SpiderDocFile, SpiderDocAliFile,
                           writeScript, runScript)
 from spider.convert import (ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX,
                        SHIFTY, convertEndian, alignmentToRow)
+from spider.constants import *
 from protocol_base import SpiderProtocol
 
-# Protocol type
-DEF_GROUPS = 0
-GOLD_STD = 1
-
-# Backprojection method
-BP_CG = 0
-BP_3F = 1
-BP_RP = 2
-BP_3N = 3
 
 
 class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
@@ -67,8 +59,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     without (gold-standard refinement).
     
     For more information, see:
-    [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html]
-    [SPIDER documentation on projection-matching]]
+    [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html][SPIDER documentation on projection-matching]]
     """
     _label = 'refinement'
 

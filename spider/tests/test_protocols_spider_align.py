@@ -74,9 +74,6 @@ class TestSpiderAlign(TestWorkflow):
 
         self.runAlignment(protFilter, SpiderProtAlignAPSR,
                           objLabel='align apsr')
-        self.runAlignment(protFilter, SpiderProtAlignAPSR,
-                          objLabel='align apsr - RT180', cgOption=2)  # RT180
-
         self.runAlignment(protFilter, SpiderProtAlignPairwise,
                           objLabel='align pairwise')
         self.runAlignment(protFilter, SpiderProtAlignPairwise,
