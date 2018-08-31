@@ -35,17 +35,9 @@ from pyworkflow.em.constants import NO_INDEX, ALIGN_2D, ALIGN_3D, ALIGN_PROJ
 from pyworkflow.utils.path import moveFile
 
 from spider.utils import SpiderDocFile, runTemplate
+from spider.constants import (SHIFTX, SHIFTY, ANGLE_PSI,
+                              ANGLE_THE, ANGLE_PHI, FLIP)
 
-    
-
-SHIFTX = 'shiftx'
-SHIFTY = 'shifty'
-
-ANGLE_PSI = 'psi' # in-plane, xmipp psi
-ANGLE_THE = 'the' # tilt in xmipp
-ANGLE_PHI = 'phi' # rot in xmipp
-
-FLIP = 'flip'
 
 
 def locationToSpider(index, filename):
@@ -104,7 +96,7 @@ def convertEndian(stackFn, stackSize):
     moveFile(fn + '_big' + ext, stackFn)
     
     
-#-------------- Geometry conversions -----------------
+#-------------- Geometry conversions ------------------------------------------
 
 def geometryFromMatrix(matrix, inverseTransform):
     from pyworkflow.em.transformations import translation_from_matrix, euler_from_matrix
@@ -117,7 +109,7 @@ def geometryFromMatrix(matrix, inverseTransform):
         shifts = translation_from_matrix(matrix)
     rawAngles = -rad2deg(euler_from_matrix(matrix, axes='szyz'))
     
-    # Try to have always possitives angles
+    # Try to have always positive angles
     #angles = [a + 360 if a < 0 else a for a in rawAngles]
     angles = rawAngles
     

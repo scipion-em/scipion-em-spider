@@ -29,17 +29,12 @@ from os.path import abspath
 
 import pyworkflow.em
 from pyworkflow.utils import Environ, join
-import objects
+
+from constants import *
+
 
 _logo = "spider_logo.png"
 _references = ['Shaikh2008', 'Frank1996b']
-
-SPIDER_HOME = 'SPIDER_HOME'
-SPPROC_DIR = 'SPPROC_DIR'
-SPMAN_DIR = 'SPMAN_DIR'
-SPBIN_DIR = 'SPBIN_DIR'
-SPIDER = 'spider_linux_mp_intel64'
-SPIDER_MPI = 'spider_linux_mpi_opt64'
 
 
 class Plugin(pyworkflow.em.Plugin):

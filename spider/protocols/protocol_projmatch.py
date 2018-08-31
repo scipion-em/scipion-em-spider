@@ -40,8 +40,7 @@ from pyworkflow.em.data import Volume, FSC
 import spider
 from spider.utils import (SpiderDocFile, SpiderDocAliFile,
                           writeScript, runScript)
-from spider.convert import (ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX,
-                       SHIFTY, convertEndian, alignmentToRow)
+from spider.convert import convertEndian, alignmentToRow
 from spider.constants import *
 from protocol_base import SpiderProtocol
 
@@ -151,7 +150,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                            "If more iterations are requested than the number of values specified here, "
                            "the last value will be repeated. \n\n"
                            "For example, in the default *3.3 3 3x2 1.5*, "
-                           "the value of 2 degrees will be repeated three times, "
+                           "the increment will be: iter 1 - 3.3 degrees, iter 2 - 3 degrees, iter 3,4,5 - 2 degrees, "
                            "and iterations from the sixth onward will use 1.5 degrees.")
         form.addParam('angLimits', params.StringParam, default='2x0 15 8 6 5',
                       condition='not smallAngle',
@@ -163,8 +162,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                            "If more iterations are requested than the number of values specified here, "
                            "the last value will be repeated. \n\n"
                            "For example, in the default *2x0 15 8 6 5*, "
-                           "and iterations from the sixth onward will use 5 degrees, "
-                           "an unrestricted search will be performed twice.")
+                           "the increment will be: iter 1,2 - unrestricted, iter 3 - 15 degrees, iter 4 - 8 degrees, "
+                           "iter 5 - 6 degrees and iterations from the sixth onward will use 5 degrees.")
         form.addParam('angStepSm', params.FloatParam, default=0.5,
                       condition='smallAngle',
                       label='Angular increment',

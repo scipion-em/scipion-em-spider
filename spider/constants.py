@@ -28,8 +28,25 @@ This modules contains constants related to Spider protocols
 """
 
 #------------------ Constants values --------------------------------------
+SPIDER_HOME = 'SPIDER_HOME'
+SPPROC_DIR = 'SPPROC_DIR'
+SPMAN_DIR = 'SPMAN_DIR'
+SPBIN_DIR = 'SPBIN_DIR'
+SPIDER = 'spider_linux_mp_intel64'
+SPIDER_MPI = 'spider_linux_mpi_opt64'
+
 # spider documentation url
 SPIDER_DOCS = 'https://spider.wadsworth.org/spider_doc/spider/docs/man/'
+
+# convert.py constants
+SHIFTX = 'shiftx'
+SHIFTY = 'shifty'
+
+ANGLE_PSI = 'psi' # in-plane, xmipp psi
+ANGLE_THE = 'the' # tilt in xmipp
+ANGLE_PHI = 'phi' # rot in xmipp
+
+FLIP = 'flip'
 
 # Filter types
 FILTER_TOPHAT = 0

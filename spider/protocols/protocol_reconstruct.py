@@ -34,9 +34,9 @@ from pyworkflow.em.constants import ALIGN_PROJ
 from pyworkflow.em.data import Volume
 
 from spider.utils import SpiderDocFile
-from spider.constants import BP_32F
-from spider.convert import (ANGLE_PHI, ANGLE_PSI, ANGLE_THE, SHIFTX,
-                       SHIFTY, convertEndian, alignmentToRow)
+from spider.constants import (BP_32F, ANGLE_PHI, ANGLE_PSI,
+                              ANGLE_THE, SHIFTX, SHIFTY)
+from spider.convert import convertEndian, alignmentToRow
 from protocol_base import SpiderProtocol
 
 

@@ -29,7 +29,7 @@ This module implements visualization program for Spider CA-PCA protocol.
 
 from pyworkflow.protocol.params import *
 from pyworkflow.viewer import (Viewer, ProtocolViewer, DESKTOP_TKINTER,
-                               WEB_DJANGO,TextView)
+                               WEB_DJANGO, TextView)
 from pyworkflow.em.viewer import DataView
 from pyworkflow.em.plotter import EmPlotter
 

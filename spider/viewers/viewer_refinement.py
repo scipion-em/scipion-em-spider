@@ -327,6 +327,10 @@ Examples:
 
         if self.displayAngDist == ANGDIST_2DPLOT:
             for it in iterations:
+                if it == 1:
+                    print("Orientations for the first iteration cannot be plotted. "
+                          "Skipping..")
+                    continue
                 anglesSqlite = self._getFinalPath('angular_dist_%03d.sqlite' % it)
                 title = 'Angular distribution iter %03d' % it
                 plotter = EmPlotter(x=1, y=1, windowTitle=title)
