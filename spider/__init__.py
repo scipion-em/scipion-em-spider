@@ -82,5 +82,13 @@ class Plugin(pyworkflow.em.Plugin):
 
         return str(cmd)
 
+    @classmethod
+    def defineBinaries(cls, env):
+
+        env.addPackage('spider', version='24.03',
+                       tar='spider-web-24.03.tgz',
+                       neededProgs=['csh'],
+                       default=True)
+
 
 pyworkflow.em.Domain.registerPlugin(__name__)
