@@ -32,8 +32,10 @@ from protocol_classify_base import SpiderProtClassify
       
 
 class SpiderProtClassifyKmeans(SpiderProtClassify):
-    """ Performs automatic K-Means clustering and classification
-    on factors produced by CA or PCA. Uses the Spider CL KM program
+    """ This protocol wraps SPIDER CL KM command.
+
+    Performs automatic K-Means clustering and classification
+    on factors produced by CA or PCA.
     """
     _label = 'classify kmeans'
     

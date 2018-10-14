@@ -31,14 +31,14 @@ from protocol_align_base import SpiderProtAlign
 
       
 class SpiderProtAlignAPSR(SpiderProtAlign):
-    """ 
+    """ This protocol wraps SPIDER AP SR command.
     Reference-free alignment (both translational and rotational)
-    of an image series. Uses Spider AP SR command.
+    of an image series.
     
     See detailed description at:
     [[http://spider.wadsworth.org/spider_doc/spider/docs/man/apsr.html][SPIDER's AP SR online manual]]
     """
-    _label = 'align apsr'
+    _label = 'align ap sr'
     
     def __init__(self, **args):
         SpiderProtAlign.__init__(self, 'mda/apsr4class.msa', 'apsr', **args)

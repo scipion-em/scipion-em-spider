@@ -52,7 +52,7 @@ from spider.protocols import SpiderProtClassifyWard, SpiderProtClassifyDiday
 
 
 class SpiderViewerClassify(ProtocolViewer):
-    """ Visualization of some Classification protocols in Spider. """
+    """ Visualization of Spider classification results. """
 
     _environments = [DESKTOP_TKINTER, WEB_DJANGO]
     

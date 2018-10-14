@@ -44,7 +44,7 @@ from spider.utils import SpiderDocFile
 
 
 class SpiderViewerRefinement(ProtocolViewer):
-    """ Visualization of Spider refinement protocol. """
+    """ Visualization of Spider refinement results. """
 
     _environments = [DESKTOP_TKINTER, WEB_DJANGO]
     _targets = [SpiderProtRefinement]

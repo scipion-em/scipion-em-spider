@@ -34,9 +34,8 @@ from protocol_base import SpiderProtocol
 
 
 class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
-    """ 
-    This step creates a custom mask. 
-    
+    """ This protocol creates a 2D mask using SPIDER.
+
     In the step following this one, dimension-reduction, the covariance of 
     the pixels in all images will be computed. Only pixels under a given 
     mask will be analyzed. If this step is performed, a mask that follows 
@@ -46,7 +45,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
     of numerical inaccuracy in the next dimension-reduction step. On the other 
     hand, given the power of modern computers, this step may be unnecessary.
     """
-    _label = 'custom mask'
+    _label = 'create 2d mask'
     
     def __init__(self, **kwargs):
         ProtCreateMask2D.__init__(self, **kwargs)

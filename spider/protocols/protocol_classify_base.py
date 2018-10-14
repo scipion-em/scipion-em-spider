@@ -39,8 +39,8 @@ from protocol_base import SpiderProtocol
 
 
 class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
-    """ Base for Spider classification protocols
-    """
+    """ Base protocol for SPIDER classifications. """
+
     def __init__(self, script, classDir, **kwargs):
         ProtClassify2D.__init__(self, **kwargs)
         SpiderProtocol.__init__(self, **kwargs)

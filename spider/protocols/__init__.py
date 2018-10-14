@@ -27,6 +27,7 @@
 Import of all protocols included in spider.
 """
 from protocol_base import SpiderProtocol
+from protocol_align_base import SpiderProtAlign
 from protocol_classify_base import SpiderProtClassify
 from protocol_filters import SpiderProtFilter
 from protocol_align_apsr import SpiderProtAlignAPSR

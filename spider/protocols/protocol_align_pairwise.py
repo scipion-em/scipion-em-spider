@@ -34,7 +34,9 @@ from protocol_align_base import SpiderProtAlign
 
       
 class SpiderProtAlignPairwise(SpiderProtAlign):
-    """ Reference-free alignment (both translational and rotational) of an image series.
+    """ This protocol wraps SPIDER AP SR command (pairwise alignment).
+
+    Reference-free alignment (both translational and rotational) of an image series.
 
     This alignment scheme aligns a pair of images at a time and then averages them.
     Then, the averages of each of those pairs are aligned and averaged,

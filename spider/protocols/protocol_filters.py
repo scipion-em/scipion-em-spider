@@ -24,9 +24,6 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-Particle filter operations.
-"""
 
 from pyworkflow.em.protocol import ProtFilterParticles  
 from pyworkflow.protocol.params import (EnumParam, BooleanParam,
@@ -39,8 +36,7 @@ from protocol_base import SpiderProtocol
         
       
 class SpiderProtFilter(ProtFilterParticles, SpiderProtocol):
-    """ Apply Fourier filters to an image or volume 
-    using Spider FQ or FQ NP. 
+    """ Apply Fourier filters to an image or a volume using Spider FQ or FQ NP.
     
     To improve boundary quality the image is padded 
     with the average value to twice the original size 

@@ -38,7 +38,7 @@ from spider.protocols.protocol_ca_pca import SpiderProtCAPCA
 
 
 class SpiderViewerCAPCA(ProtocolViewer):
-    """ Visualization of CA PCA Protocol. """
+    """ Visualization of CA PCA results. """
            
     _environments = [DESKTOP_TKINTER, WEB_DJANGO]
     _targets = [SpiderProtCAPCA]

@@ -211,7 +211,7 @@ class SpiderAlignRadiusDialog(MaskPreviewDialog):
         self.preview = MaskPreview(frame, self.dim, label=self.previewLabel,
                                    outerRadius=int(self.outerRadius)*self.ratio,
                                    innerRadius=int(self.innerRadius)*self.ratio,
-                                   projDiam=self.projDiam*self.ratio)
+                                   extraRing=self.projDiam*self.ratio)
         self.preview.grid(row=0, column=0)
 
     def _createControls(self, frame):
@@ -225,7 +225,7 @@ class SpiderAlignRadiusDialog(MaskPreviewDialog):
                                        from_=1, to=int(self.dim_par/2),
                                        value=self.protocolParent.alignmentShift.get(), step=1,
                                        callback=lambda a, b, c: self.updateRadius())
-        self.radSlider.grid(row=1, column=0, padx=5, pady=5)
+        self.aliShSlider.grid(row=1, column=0, padx=5, pady=5)
 
         self.prjDiamSlider = LabelSlider(frame, 'Projection diameter (frac)',
                                          from_=0.01, to=1,
@@ -239,10 +239,10 @@ class SpiderAlignRadiusDialog(MaskPreviewDialog):
                                 self.prjDiamSlider.get() * self.ratio)
 
     def getRadius(self):
-        return self.radSlider.get()
+        return int(self.radSlider.get())
 
     def getAliShift(self):
-        return self.aliShSlider.get()
+        return int(self.aliShSlider.get())
 
     def getPrjDiam(self):
         return self.prjDiamSlider.get()

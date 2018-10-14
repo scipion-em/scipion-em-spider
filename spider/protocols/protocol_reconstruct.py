@@ -24,8 +24,6 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-"""
 
 import pyworkflow.em as em
 import pyworkflow.protocol.params as params
@@ -42,9 +40,9 @@ from protocol_base import SpiderProtocol
 
                                
 class SpiderProtReconstruct(SpiderProtocol):
-    """
+    """ This protocol wraps SPIDER BP 32F command.
+
     Simple reconstruction protocol using Fourier back projection.
-    Uses Spider BP 32F program.
     Mainly used for testing conversion of Euler angles.
     """
     _label = 'reconstruct fourier'

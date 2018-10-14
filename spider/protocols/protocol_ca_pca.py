@@ -36,7 +36,7 @@ from protocol_base import SpiderProtocol
 
 
 class SpiderProtCAPCA(SpiderProtocol):
-    """Correspondence Analysis (CA) or Principal Component Analysis (PCA).
+    """Protocol for Correspondence Analysis (CA) or Principal Component Analysis (PCA).
     
     CA is the preferred method of finding inter-image variations. 
     PCA computes the distance between data vectors with Euclidean 
@@ -49,7 +49,7 @@ class SpiderProtCAPCA(SpiderProtocol):
     For more info see:
     [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/classification/tutorial.html#CAPCA][SPIDER MDA documentation]] 
     """
-    _label = 'capca'
+    _label = 'ca pca'
     
     def __init__(self, **kwargs):
         SpiderProtocol.__init__(self, **kwargs)
