@@ -39,7 +39,7 @@ _references = ['Shaikh2008', 'Frank1996b']
 
 class Plugin(pyworkflow.em.Plugin):
     _homeVar = SPIDER_HOME
-    _pathVars = [SPIDER_HOME, SPPROC_DIR, SPMAN_DIR, SPBIN_DIR]
+    _pathVars = [SPIDER_HOME]
     _supportedVersions = ['24.03']
 
     @classmethod
@@ -55,9 +55,9 @@ class Plugin(pyworkflow.em.Plugin):
         env = Environ(os.environ)
         if cls.getHome():
             env.update(  # Spider needs this extra slash at the end
-                {SPBIN_DIR: cls.getHome('bin') + '/',
-                 SPMAN_DIR: cls.getHome('man') + '/',
-                 SPPROC_DIR: cls.getHome('proc') + '/'})
+                {SPBIN_DIR: cls.getHome('spider/bin') + '/',
+                 SPMAN_DIR: cls.getHome('spider/man') + '/',
+                 SPPROC_DIR: cls.getHome('spider/proc') + '/'})
         else:
             errors = ''
             for var in [SPBIN_DIR, SPMAN_DIR, SPPROC_DIR]:
@@ -92,3 +92,4 @@ class Plugin(pyworkflow.em.Plugin):
 
 
 pyworkflow.em.Domain.registerPlugin(__name__)
+
