@@ -86,7 +86,10 @@ class Plugin(pyworkflow.em.Plugin):
     def defineBinaries(cls, env):
 
         env.addPackage('spider', version='24.03',
-                       tar='spider-web-24.03.tgz',
+                       url='https://spider.wadsworth.org/spider_doc/spider/download/spiderweb.24.03.tar.gz',
+                       createBuildDir=True,
+                       buildDir='spider',
+                       target="spider/spider",
                        neededProgs=['csh'],
                        default=True)
 
