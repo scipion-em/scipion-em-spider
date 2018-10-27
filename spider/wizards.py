@@ -57,7 +57,7 @@ from spider.protocols import (SpiderProtCAPCA, SpiderProtAlignAPSR,
 #===============================================================================
 
 class SpiderProtAlignRadiusWizard(VolumeMaskRadiiWizard):
-    _targets = [(SpiderProtRefinement, ['radius', 'alignmentShift', 'winFrac'])]
+    _targets = [(SpiderProtRefinement, ['radius', 'alignmentShift'])]
 
     def _getParameters(self, protocol):
         label, value = self._getInputProtocol(self._targets, protocol)
@@ -82,16 +82,14 @@ class SpiderProtAlignRadiusWizard(VolumeMaskRadiiWizard):
             if d.resultYes():
                     form.setVar('radius', d.getRadius())
                     form.setVar('alignmentShift', d.getAliShift())
-                    form.setVar('winFrac', d.getPrjDiam())
         else:
             dialog.showWarning("Input volume",
                                "Select volume first", form.root)
 
 
 class SpiderProtMaskWizard(ParticleMaskRadiusWizard):
-    _targets = [(SpiderProtCAPCA, ['radius']),
-                (SpiderProtRefinement, ['radius'])]
-    
+    _targets = [(SpiderProtCAPCA, ['radius'])]
+
     def _getParameters(self, protocol):
         
         label, value = self._getInputProtocol(self._targets, protocol)
@@ -204,15 +202,12 @@ class SpiderAlignRadiusDialog(MaskPreviewDialog):
         from pyworkflow.gui.matplotlib_image import MaskPreview
         self.innerRadius = self.protocolParent.radius.get()
         self.outerRadius = self.innerRadius + self.protocolParent.alignmentShift.get()
-        self.projDiam = int(self.protocolParent.winFrac.get() * float(self.dim_par / 2))
-        print "vars= ", self.innerRadius, self.outerRadius, self.projDiam
 
         if self.outerRadius is None or self.outerRadius > self.dim_par/2:
             self.outerRadius = int(self.dim_par/2)
         self.preview = MaskPreview(frame, self.dim, label=self.previewLabel,
                                    outerRadius=int(self.outerRadius)*self.ratio,
-                                   innerRadius=int(self.innerRadius)*self.ratio,
-                                   extraRing=self.projDiam*self.ratio)
+                                   innerRadius=int(self.innerRadius)*self.ratio)
         self.preview.grid(row=0, column=0)
 
     def _createControls(self, frame):
@@ -228,25 +223,15 @@ class SpiderAlignRadiusDialog(MaskPreviewDialog):
                                        callback=lambda a, b, c: self.updateRadius())
         self.aliShSlider.grid(row=1, column=0, padx=5, pady=5)
 
-        self.prjDiamSlider = LabelSlider(frame, 'Projection diameter (frac)',
-                                         from_=0.01, to=1,
-                                         value=self.protocolParent.winFrac.get(), step=0.01,
-                                         callback=lambda a, b, c: self.updateRadius())
-        self.prjDiamSlider.grid(row=2, column=0, padx=5, pady=5)
-
     def updateRadius(self):
         self.preview.updateMask(self.radSlider.get() * self.ratio,
-                                self.aliShSlider.get() * self.ratio,
-                                self.prjDiamSlider.get() * self.ratio)
+                                self.aliShSlider.get() * self.ratio)
 
     def getRadius(self):
         return int(self.radSlider.get())
 
     def getAliShift(self):
         return int(self.aliShSlider.get())
-
-    def getPrjDiam(self):
-        return self.prjDiamSlider.get()
 
 
 class SpiderFilterDialog(DownsampleDialog):
