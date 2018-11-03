@@ -5,3 +5,5 @@
  Spider is a image processing suite for electron microscopy developed by [Joachim Frank and others](https://spider.wadsworth.org/spider_doc/spider/docs/spider.html).
 
  Supported versions of Spider: 24.03
+
+![build status](http://heisenberg.cnb.csic.es:9980/badges/spider_devel.svg "Build status")
