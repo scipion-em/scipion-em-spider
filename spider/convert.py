@@ -99,7 +99,7 @@ def convertEndian(stackFn, stackSize):
 #-------------- Geometry conversions ------------------------------------------
 
 def geometryFromMatrix(matrix, inverseTransform):
-    from pyworkflow.em.transformations import translation_from_matrix, euler_from_matrix
+    from pyworkflow.em.convert.transformations import  translation_from_matrix, euler_from_matrix
     from numpy import rad2deg
     if inverseTransform:
         from numpy.linalg import inv
@@ -120,7 +120,7 @@ def matrixFromGeometry(shifts, angles, inverseTransform):
     """ Create the transformation matrix from a given
     2D shifts in X and Y...and the 3 euler angles.
     """
-    from pyworkflow.em.transformations import euler_matrix
+    from pyworkflow.em.convert.transformations import  euler_matrix
     from numpy import deg2rad
     radAngles = -deg2rad(angles)
 
