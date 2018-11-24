@@ -27,14 +27,13 @@
 This module implements viewers for Spider protocols.
 """
 
+from pyworkflow.em.viewers import DataViewer
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
-# FIXME: remove this dependency on xmipp3 plugin
-from xmipp3.viewers import XmippViewer
 from spider.objects import PcaFile
 
 
     
-class SpiderViewer(XmippViewer):
+class SpiderViewer(DataViewer):
     """ Wrapper to visualize different type of objects
     with the Xmipp program xmipp_showj. """
     
