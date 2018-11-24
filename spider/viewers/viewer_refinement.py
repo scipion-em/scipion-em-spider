@@ -35,7 +35,7 @@ from glob import glob
 import pyworkflow.em as em
 import pyworkflow.protocol.params as params
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO, ProtocolViewer
-from pyworkflow.em.plotter import EmPlotter
+from pyworkflow.em.viewers import EmPlotter
 
 from spider.constants import *
 from spider.protocols import SpiderProtRefinement
