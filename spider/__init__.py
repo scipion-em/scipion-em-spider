@@ -40,11 +40,11 @@ _references = ['Shaikh2008', 'Frank1996b']
 class Plugin(pyworkflow.em.Plugin):
     _homeVar = SPIDER_HOME
     _pathVars = [SPIDER_HOME]
-    _supportedVersions = ['24.03']
+    _supportedVersions = ['25.02']
 
     @classmethod
     def _defineVariables(cls):
-        cls._defineEmVar(SPIDER_HOME, 'spider-24.03')
+        cls._defineEmVar(SPIDER_HOME, 'spider-25.02')
 
     @classmethod
     def getEnviron(cls):
@@ -61,7 +61,7 @@ class Plugin(pyworkflow.em.Plugin):
         else:
             errors = ''
             for var in [SPBIN_DIR, SPMAN_DIR, SPPROC_DIR]:
-                if not var in env:
+                if var not in env:
                     errors += "\n   Missing SPIDER variable: '%s'" % var
             if len(errors):
                 print "ERRORS: " + errors
@@ -84,15 +84,12 @@ class Plugin(pyworkflow.em.Plugin):
 
     @classmethod
     def defineBinaries(cls, env):
-
-        env.addPackage('spider', version='24.03',
-                       url='https://spider.wadsworth.org/spider_doc/spider/download/spiderweb.24.03.tar.gz',
+        env.addPackage('spider', version='25.02',
+                       url='https://spider.wadsworth.org/spider_doc/spider/download/spiderweb.25.02.tar.gz',
                        createBuildDir=True,
                        buildDir='spider',
                        target="spider/spider",
                        neededProgs=['csh'],
                        default=True)
 
-
 pyworkflow.em.Domain.registerPlugin(__name__)
-

@@ -1,3 +1,4 @@
+1.0.6 - updated spider to 25.02 to fix segfault bug of intel binaries
 1.0.4 - removed xmipp dependency in the viewer, add protocols.conf
 13-October-2018 - Added PyPi files
 
