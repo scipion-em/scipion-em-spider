@@ -32,12 +32,12 @@ from os.path import splitext, split
 
 from pyworkflow.em import Transform
 from pyworkflow.em.constants import NO_INDEX, ALIGN_2D, ALIGN_3D, ALIGN_PROJ
+import pyworkflow.em.convert.transformations as transformations
 from pyworkflow.utils.path import moveFile
 
 from spider.utils import SpiderDocFile, runTemplate
 from spider.constants import (SHIFTX, SHIFTY, ANGLE_PSI,
                               ANGLE_THE, ANGLE_PHI, FLIP)
-
 
 
 def locationToSpider(index, filename):
@@ -50,6 +50,7 @@ def locationToSpider(index, filename):
     
     return filename
 
+
 def spiderToLocation(spiderFilename):
     """ Return a location (index, filename) given
     a Spider filename with the filename@index structure. """
@@ -61,7 +62,7 @@ def spiderToLocation(spiderFilename):
 
 
 def writeSetOfImages(imgSet, stackFn, selFn):
-    """ This function will write a SetOfMicrographs as a Spider stack and selfile.
+    """ Write a SetOfMicrographs as a Spider stack and selfile.
     Params:
         imgSet: the SetOfMicrograph instance.
         stackFn: the filename where to write the stack.
@@ -89,30 +90,23 @@ def convertEndian(stackFn, stackSize):
     fnDir, fnBase = split(fn)
     # Change to BigEndian
     runTemplate('../cp_endian.spi', ext[1:],
-              {'[particles]': fnBase + '@******',
-               '[particles_big]': fnBase + '_big@******',
-               '[numberOfParticles]': stackSize
-               }, cwd=fnDir)
+                {'[particles]': fnBase + '@******',
+                 '[particles_big]': fnBase + '_big@******',
+                 '[numberOfParticles]': stackSize
+                 }, cwd=fnDir)
     moveFile(fn + '_big' + ext, stackFn)
     
     
-#-------------- Geometry conversions ------------------------------------------
+# ------------- Geometry conversions ---------------------------------------
 
 def geometryFromMatrix(matrix, inverseTransform):
-    from pyworkflow.em.convert.transformations import  translation_from_matrix, euler_from_matrix
-    from numpy import rad2deg
     if inverseTransform:
-        from numpy.linalg import inv
-        matrix = inv(matrix)
-        shifts = -translation_from_matrix(matrix)
+        matrix = numpy.linalg.inv(matrix)
+        shifts = -transformations.translation_from_matrix(matrix)
     else:
-        shifts = translation_from_matrix(matrix)
-    rawAngles = -rad2deg(euler_from_matrix(matrix, axes='szyz'))
-    
-    # Try to have always positive angles
-    #angles = [a + 360 if a < 0 else a for a in rawAngles]
-    angles = rawAngles
-    
+        shifts = transformations.translation_from_matrix(matrix)
+    angles = -numpy.rad2deg(transformations.euler_from_matrix(matrix,
+                                                              axes='szyz'))
     return shifts, angles
 
 
@@ -120,11 +114,11 @@ def matrixFromGeometry(shifts, angles, inverseTransform):
     """ Create the transformation matrix from a given
     2D shifts in X and Y...and the 3 euler angles.
     """
-    from pyworkflow.em.convert.transformations import  euler_matrix
     from numpy import deg2rad
     radAngles = -deg2rad(angles)
 
-    M = euler_matrix(radAngles[0], radAngles[1], radAngles[2], 'szyz')
+    M = transformations.euler_matrix(radAngles[0], radAngles[1], radAngles[2],
+                                     'szyz')
     if inverseTransform:
         from numpy.linalg import inv
         M[:3, 3] = -shifts[:3]
@@ -141,8 +135,6 @@ def rowToAlignment(alignmentRow, alignType):
             otherwise matrix is 3D (3D volume alignment or projection)
     invTransform == True  -> for xmipp implies projection
     """
-    #raise Exception("Function rowToAlignment not implemented yet")
-
     is2D = alignType == ALIGN_2D
     inverseTransform = True  # alignType == em.ALIGN_PROJ
 
@@ -161,6 +153,7 @@ def rowToAlignment(alignmentRow, alignType):
 
     return alignment
 
+
 def alignmentToRow(alignment, alignmentRow, alignType):
     """
     is2D == True-> matrix is 2D (2D images alignment)
@@ -170,32 +163,32 @@ def alignmentToRow(alignment, alignmentRow, alignType):
     """
     is2D = alignType == ALIGN_2D
     inverseTransform = alignType == ALIGN_PROJ
-    #only flip is meaningful if 2D case
-    #in that case the 2x2 determinant is negative
+    # only flip is meaningful if 2D case
+    # in that case the 2x2 determinant is negative
     flip = False
     matrix = alignment.getMatrix()
     
     if alignType == ALIGN_2D:
-        #get 2x2 matrix and check if negative
+        # get 2x2 matrix and check if negative
         flip = bool(numpy.linalg.det(matrix[0:2,0:2]) < 0)
         if flip:
-            matrix[0,:2] *= -1.#invert only the first two columns keep x
-            matrix[2,2]   =  1.#set 3D rot
+            matrix[0, :2] *= -1.  # invert only the first two columns keep x
+            matrix[2, 2] = 1.  # set 3D rot
         else:
             pass
 
-    elif alignType==ALIGN_3D:
-        flip = bool(numpy.linalg.det(matrix[0:3,0:3]) < 0)
+    elif alignType == ALIGN_3D:
+        flip = bool(numpy.linalg.det(matrix[0:3, 0:3]) < 0)
         if flip:
-            matrix[0,:4] *= -1.#now, invert first line including x
-            matrix[3,3]   =  1.#set 3D rot
+            matrix[0, :4] *= -1.  # now, invert first line including x
+            matrix[3, 3] = 1.  # set 3D rot
         else:
             pass
 
     else:
         flip = bool(numpy.linalg.det(matrix[0:3,0:3]) < 0)
         if flip:
-            matrix[0,:4] *= -1.#now, invert first line including x
+            matrix[0, :4] *= -1.  # now, invert first line including x
     shifts, angles = geometryFromMatrix(matrix, inverseTransform)
     alignmentRow[SHIFTX] = -shifts[0]
     alignmentRow[SHIFTY] = -shifts[1]
@@ -204,7 +197,6 @@ def alignmentToRow(alignment, alignmentRow, alignType):
         angle = angles[0] + angles[2]
         alignmentRow[ANGLE_PSI] = angle
     else:
-        #if alignType == ALIGN_3D:
         alignmentRow[ANGLE_PHI] = angles[0]
         alignmentRow[ANGLE_THE] = angles[1]
         alignmentRow[ANGLE_PSI] = -angles[2]

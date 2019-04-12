@@ -23,11 +23,12 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This modules contains constants related to Spider protocols
-"""
 
-#------------------ Constants values --------------------------------------
+# Define the version of the 'spider' Python module, that can also be
+# imported from setup.py for PyPI distribution
+__version__ = '1.0.7'
+
+# ----------------- Constants values --------------------------------------
 SPIDER_HOME = 'SPIDER_HOME'
 SPPROC_DIR = 'SPPROC_DIR'
 SPMAN_DIR = 'SPMAN_DIR'
@@ -42,9 +43,9 @@ SPIDER_DOCS = 'https://spider.wadsworth.org/spider_doc/spider/docs/man/'
 SHIFTX = 'shiftx'
 SHIFTY = 'shifty'
 
-ANGLE_PSI = 'psi' # in-plane, xmipp psi
-ANGLE_THE = 'the' # tilt in xmipp
-ANGLE_PHI = 'phi' # rot in xmipp
+ANGLE_PSI = 'psi'  # in-plane, xmipp psi
+ANGLE_THE = 'the'  # tilt in xmipp
+ANGLE_PHI = 'phi'  # rot in xmipp
 
 FLIP = 'flip'
 

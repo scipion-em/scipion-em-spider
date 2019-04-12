@@ -100,7 +100,8 @@ def writeScript(inputScript, outputScript, paramsDict):
     fOut.close()    
      
     
-def runTemplate(inputScript, ext, paramsDict, nummpis=1, program=spider.Plugin.getProgram(), log=None, cwd=None):
+def runTemplate(inputScript, ext, paramsDict, nummpis=1,
+                program=spider.Plugin.getProgram(), log=None, cwd=None):
     """ This function will create a valid Spider script
     by copying the template and replacing the values in dictionary.
     After the new file is read, the Spider interpreter is invoked.
