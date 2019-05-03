@@ -6,4 +6,4 @@
 
  Supported versions of Spider: 25.02
 
-![build status](http://arquimedes.cnb.csic.es:9980/badges/spider_devel.svg "Build status")
+![build status](http://scipion-test.cnb.csic.es:9980/badges/spider_devel.svg "Build status")
