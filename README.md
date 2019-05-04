@@ -51,3 +51,4 @@ In 2018 the plugin was updated to support the latest (at that moment) SPIDER ver
 
 ## References
 1.  J. Frank et al. (1996). SPIDER and WEB: Processing and visualization of images in 3D electron microscopy and related fields. JSB. 116: 190-199.
+
