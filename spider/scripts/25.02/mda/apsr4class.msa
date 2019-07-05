@@ -81,6 +81,10 @@ md
 set mp
 [nummps]
 
+md
+set threads
+[nummps]
+
 ; run reference-free alignment
 AP SR
 [unaligned]        ; particles to be aligned
