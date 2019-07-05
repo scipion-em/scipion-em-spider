@@ -5,7 +5,7 @@
 ; ---------------- Parameters ----------------
 [inner-rad] = 5        ; first ring radius for alignment, pixels
 [outer-rad] = 44       ; expected object radius, pixels
-[nummps]    = 0        ; number of processors to use (0=all)
+[nummps]    = 2        ; number of processors to use (0=all)
 ;;[obj-diam] = 88        ; expected object diameter, pixels
 
 ; ---------------- Input files ----------------

@@ -35,6 +35,7 @@ b) Developer's version
 
 SPIDER binaries will be installed automatically with the plugin, but you can also link an existing installation. 
 Default installation path assumed is ``software/em/spider-25.02``, if you want to change it, set *SPIDER_HOME* in ``scipion.conf`` file to the folder where the SPIDER is installed. Additional information about using SPIDER with MPI can be found on a separate `page <https://github.com/scipion-em/scipion-em-spider/wiki/How-to-Install-MPI>`_. Unfortunately, at the moment we do not support MPI in our SPIDER wrappers, since it requires a lot of effort to refactor almost all protocols. :(
+Depending on you CPU type you might want to change the default binary from ``spider_linux_mp_intel64`` to a different one by explicitly setting *SPIDER* variable. Similarly you can modify *SPIDER_MPI* variable (default ``spider_linux_mpi_opt64``).
 
 To check the installation, simply run one of the following Scipion tests:
 
