@@ -14,7 +14,7 @@
 ;;[obj-diam]     = -1                      ; object diameter, pixels (<0 == get from PARAMS)
 [search-range] = 8                       ; translation search range, for AP SH (for alignment to final average)
 [step-size]    = 2                       ; translation step size, for AP SH
-[nummps]       = 0                       ; number of processors to use
+[nummps]       = 2                       ; number of processors to use
 
 ; --------------- Input files ---------------
 ;;fr l
@@ -219,6 +219,10 @@ sd e
 ; use nummps processors
 md
 set mp
+[nummps]
+
+md
+set threads
 [nummps]
 
 ; loop through pair-depths

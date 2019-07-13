@@ -45,6 +45,8 @@ class Plugin(pyworkflow.em.Plugin):
     @classmethod
     def _defineVariables(cls):
         cls._defineEmVar(SPIDER_HOME, 'spider-25.02')
+        cls._defineVar(SPIDER, 'spider_linux_mp_intel64')
+        cls._defineVar(SPIDER_MPI, 'spider_linux_mpi_opt64')
 
     @classmethod
     def getEnviron(cls):
@@ -77,7 +79,11 @@ class Plugin(pyworkflow.em.Plugin):
 
     @classmethod
     def getProgram(cls, mpi=False):
-        program = SPIDER if mpi is False else SPIDER_MPI
+        if mpi:
+            program = os.path.basename(cls.getVar(SPIDER_MPI))
+        else:
+            program = os.path.basename(cls.getVar(SPIDER))
+
         cmd = abspath(join(cls.getEnviron()[SPBIN_DIR], program))
 
         return str(cmd)

@@ -26,15 +26,15 @@
 
 # Define the version of the 'spider' Python module, that can also be
 # imported from setup.py for PyPI distribution
-__version__ = '1.0.7'
+__version__ = '1.0.9'
 
 # ----------------- Constants values --------------------------------------
 SPIDER_HOME = 'SPIDER_HOME'
 SPPROC_DIR = 'SPPROC_DIR'
 SPMAN_DIR = 'SPMAN_DIR'
 SPBIN_DIR = 'SPBIN_DIR'
-SPIDER = 'spider_linux_mp_intel64'
-SPIDER_MPI = 'spider_linux_mpi_opt64'
+SPIDER = 'SPIDER'
+SPIDER_MPI = 'SPIDER_MPI'
 
 # spider documentation url
 SPIDER_DOCS = 'https://spider.wadsworth.org/spider_doc/spider/docs/man/'
