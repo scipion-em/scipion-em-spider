@@ -31,19 +31,18 @@ from glob import glob
 import re
 
 import pyworkflow.utils as pwutils
-import pyworkflow.em as em
+import pwem
 import pyworkflow.protocol.params as params
-from pyworkflow.em.protocol import ProtRefine3D
-from pyworkflow.em.constants import ALIGN_PROJ
-from pyworkflow.em.data import Volume, FSC
+from pwem.protocols import ProtRefine3D
+from pwem.constants import ALIGN_PROJ
+from pwem.objects import Volume, FSC
 
 import spider
-from spider.utils import (SpiderDocFile, SpiderDocAliFile,
-                          writeScript, runScript)
-from spider.convert import convertEndian, alignmentToRow
-from spider.constants import *
-from protocol_base import SpiderProtocol
-
+from ..utils import (SpiderDocFile, SpiderDocAliFile,
+                     writeScript, runScript)
+from ..convert import convertEndian, alignmentToRow
+from ..constants import *
+from .protocol_base import SpiderProtocol
 
 
 class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
@@ -195,7 +194,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         
         # Convert the input volume
         volPath = self._getExtraPath('ref_vol.vol')
-        em.ImageHandler().convert(self.input3DReference.get(), volPath)
+        pwem.convert.ImageHandler().convert(self.input3DReference.get(), volPath)
         pwutils.moveFile(volPath, volPath.replace('.vol', '.stk'))
         
         self._writeRefinementScripts(protType)
@@ -413,7 +412,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         return warns
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append('Number of iterations: *%s*' % self.numberOfIterations)
         
         if self.smallAngle:
@@ -475,8 +474,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                         itemDataIterator=iter(outDocFn))
 
     def _createItemMatrix(self, item, row):
-        from spider.convert import createItemMatrix
-        from pyworkflow.em import ALIGN_PROJ
+        from ..convert import createItemMatrix
+        from pwem.constants import ALIGN_PROJ
         createItemMatrix(item, row, align=ALIGN_PROJ)
 
     def _getFscData(self, iter):
@@ -493,6 +492,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             fscData.append(values[2])
 
         return resolution, fscData
+
 
 class DefocusGroupInfo():
     """ Helper class to store some information about 

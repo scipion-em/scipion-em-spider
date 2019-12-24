@@ -26,8 +26,7 @@
 # **************************************************************************
 
 from pyworkflow.utils.path import getLastFile
-from protocol_align_base import SpiderProtAlign
-
+from .protocol_align_base import SpiderProtAlign
 
       
 class SpiderProtAlignAPSR(SpiderProtAlign):

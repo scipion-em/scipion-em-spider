@@ -23,14 +23,11 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module implements viewers for Spider protocols.
-"""
 
-from pyworkflow.em.viewers import DataViewer
+from pwem.viewers import DataViewer
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
-from spider.objects import PcaFile
 
+from ..objects import PcaFile
 
     
 class SpiderViewer(DataViewer):

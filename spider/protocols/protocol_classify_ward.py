@@ -24,9 +24,8 @@
 # *
 # **************************************************************************
 
-from protocol_classify_base import SpiderProtClassifyCluster
-      
-      
+from .protocol_classify_base import SpiderProtClassifyCluster
+
 
 class SpiderProtClassifyWard(SpiderProtClassifyCluster):
     """ This protocol wraps SPIDER CL HC command.
@@ -51,12 +50,12 @@ class SpiderProtClassifyWard(SpiderProtClassifyCluster):
         return cites
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append('Number of factors: *%s*' % self.numberOfFactors)
         return summary
     
     def _methods(self):
-        msg  = "\nInput particles %s " % self.getObjectTag('inputParticles')
+        msg = "\nInput particles %s " % self.getObjectTag('inputParticles')
         msg += "were subjected to Ward's method  "
         msg += "(SPIDER command [[http://spider.wadsworth.org/spider_doc/spider/docs/man/clhc.html][CL HC]]) "
         msg += "using %s factors. " % self.numberOfFactors

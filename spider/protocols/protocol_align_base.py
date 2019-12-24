@@ -28,13 +28,13 @@
 from os.path import join, exists
 
 from pyworkflow.protocol.params import IntParam, EnumParam
-from pyworkflow.em import ProtAlign2D, Particle, NO_INDEX
-from pyworkflow.em.data import Transform
+from pwem.protocols import ProtAlign2D
+from pwem.objects import Particle, Transform
+from pwem.constants import NO_INDEX
 
-from spider.constants import *
-from spider.utils import getDocsLink
-from protocol_base import SpiderProtocol
-
+from ..constants import *
+from ..utils import getDocsLink
+from .protocol_base import SpiderProtocol
 
       
 class SpiderProtAlign(ProtAlign2D, SpiderProtocol):

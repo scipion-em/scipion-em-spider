@@ -27,12 +27,11 @@
 from os.path import join
 
 from pyworkflow.protocol.params import IntParam, PointerParam, EnumParam, FloatParam
-from pyworkflow.em.convert import ImageHandler
+from pwem.convert import ImageHandler
 
-from spider.constants import CA
-from spider.objects import PcaFile
-from protocol_base import SpiderProtocol
-
+from ..constants import CA
+from ..objects import PcaFile
+from .protocol_base import SpiderProtocol
 
 
 class SpiderProtCAPCA(SpiderProtocol):
@@ -132,7 +131,7 @@ class SpiderProtCAPCA(SpiderProtocol):
     def convertMaskStep(self, maskType):
         """ Convert the input mask if needed."""
         # Copy mask if selected
-        if maskType > 0: # mask from file
+        if maskType > 0:  # mask from file
             maskFn = self._getFileName('mask')
             ImageHandler().convert(self.maskImage.get().getLocation(), 
                        (1, maskFn))

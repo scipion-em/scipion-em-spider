@@ -27,17 +27,17 @@
 import os
 from os.path import abspath
 
-import pyworkflow.em
+import pwem
 from pyworkflow.utils import Environ, join
 
-from constants import *
+from .constants import *
 
 
 _logo = "spider_logo.png"
 _references = ['Shaikh2008', 'Frank1996b']
 
 
-class Plugin(pyworkflow.em.Plugin):
+class Plugin(pwem.Plugin):
     _homeVar = SPIDER_HOME
     _pathVars = [SPIDER_HOME]
     _supportedVersions = ['25.02']
@@ -66,7 +66,7 @@ class Plugin(pyworkflow.em.Plugin):
                 if var not in env:
                     errors += "\n   Missing SPIDER variable: '%s'" % var
             if len(errors):
-                print "ERRORS: " + errors
+                print("ERRORS: " + errors)
 
         env.set('PATH', env[SPBIN_DIR], env.END)
         return env
@@ -100,4 +100,4 @@ class Plugin(pyworkflow.em.Plugin):
                        default=True)
 
 
-pyworkflow.em.Domain.registerPlugin(__name__)
+pwem.Domain.registerPlugin(__name__)

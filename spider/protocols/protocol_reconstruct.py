@@ -25,20 +25,18 @@
 # *
 # **************************************************************************
 
-import pyworkflow.em as em
 import pyworkflow.protocol.params as params
 from pyworkflow.protocol.constants import LEVEL_ADVANCED, STEPS_SERIAL
-from pyworkflow.em.constants import ALIGN_PROJ
-from pyworkflow.em.data import Volume
+from pwem.constants import ALIGN_PROJ
+from pwem.objects import Volume
 
-from spider.utils import SpiderDocFile
-from spider.constants import (BP_32F, ANGLE_PHI, ANGLE_PSI,
-                              ANGLE_THE, SHIFTX, SHIFTY)
-from spider.convert import convertEndian, alignmentToRow
-from protocol_base import SpiderProtocol
+from ..utils import SpiderDocFile
+from ..constants import (BP_32F, ANGLE_PHI, ANGLE_PSI,
+                         ANGLE_THE, SHIFTX, SHIFTY)
+from ..convert import convertEndian, alignmentToRow
+from .protocol_base import SpiderProtocol
 
 
-                               
 class SpiderProtReconstruct(SpiderProtocol):
     """ This protocol wraps SPIDER BP 32F command.
 
@@ -148,7 +146,7 @@ class SpiderProtReconstruct(SpiderProtocol):
         return errors
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append("Volume reconstructed using %s command" % self.getEnumText('bpType'))
 
         return summary

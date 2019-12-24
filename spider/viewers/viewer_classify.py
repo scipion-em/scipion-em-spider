@@ -23,17 +23,14 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module implements the visualization program
-for Spider classify protocols.
-"""
 
 from os.path import join
 
 import Tkinter as tk
 
-from pyworkflow.em import ProtUserSubSet, SetOfClasses2D
-from pyworkflow.em.viewers import EmPlotter
+from pwem.protocols import ProtUserSubSet
+from pwem.objects import SetOfClasses2D
+from pwem.viewers import EmPlotter, ClassesView
 from pyworkflow.protocol.params import IntParam, FloatParam, LabelParam
 from pyworkflow.protocol.constants import STATUS_FINISHED
 from pyworkflow.utils.properties import Icon
@@ -44,11 +41,10 @@ from pyworkflow.gui import Window
 from pyworkflow.gui.widgets import HotButton
 from pyworkflow.gui.graph import LevelTree
 from pyworkflow.gui.canvas import Canvas, ImageBox
-from pyworkflow.em.viewers import ClassesView
 from pyworkflow.gui.dialog import askString
 
-from spider.utils import SpiderDocFile
-from spider.protocols import SpiderProtClassifyWard, SpiderProtClassifyDiday
+from ..utils import SpiderDocFile
+from ..protocols import SpiderProtClassifyWard, SpiderProtClassifyDiday
 
 
 class SpiderViewerClassify(ProtocolViewer):
@@ -210,9 +206,7 @@ class SpiderViewerWard(SpiderViewerClassify):
             project._storeProtocol(prot)
             #self.project.launchProtocol(prot, wait=True)
 
-        except Exception, ex:
-            import traceback
-            traceback.print_exc()    
+        except Exception as ex:
             self.win.showError(str(ex))
         
     def getSelectedNodesCount(self, depth):

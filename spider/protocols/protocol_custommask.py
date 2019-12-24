@@ -24,13 +24,13 @@
 # *
 # **************************************************************************
 
-from pyworkflow.em import ProtCreateMask2D, Mask
+from pwem.protocols import ProtCreateMask2D
+from pwem.objects import Mask
 from pyworkflow.protocol.params import PointerParam, FloatParam
-from pyworkflow.em.convert import ImageHandler 
+from pwem.convert import ImageHandler
 
-from spider.utils import runCustomMaskScript
-from protocol_base import SpiderProtocol
-
+from ..utils import runCustomMaskScript
+from .protocol_base import SpiderProtocol
 
 
 class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
@@ -136,8 +136,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
             summary.append('Input image not selected yet.')
         
         return summary
-    
-    
+
     def _methods(self):
         if self.inputImage.hasValue():        
             pixelSize = self.inputImage.get().getSamplingRate()
@@ -157,4 +156,3 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
             msg = 'Input image not selected yet.'
             
         return [msg]
-

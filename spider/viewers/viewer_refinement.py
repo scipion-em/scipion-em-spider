@@ -24,23 +24,16 @@
 # *
 # **************************************************************************
 
-"""
-This module implements visualization program
-for Spider refinement protocols.
-"""
-
 import os
 from glob import glob
 
-import pyworkflow.em as em
 import pyworkflow.protocol.params as params
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO, ProtocolViewer
-from pyworkflow.em.viewers import EmPlotter
+from pwem.viewers import EmPlotter, ChimeraClientView, ChimeraView
 
-from spider.constants import *
-from spider.protocols import SpiderProtRefinement
-from spider.utils import SpiderDocFile
-
+from ..constants import *
+from ..protocols import SpiderProtRefinement
+from ..utils import SpiderDocFile
 
 
 class SpiderViewerRefinement(ProtocolViewer):
@@ -99,8 +92,7 @@ Examples:
 
         group.addParam('showFSC', params.LabelParam, default=True,
                        important=True,
-                       label='Display resolution plots (FSC)',
-                       help='')
+                       label='Display resolution plots (FSC)')
         group.addParam('groupFSC', params.EnumParam, default=0,
                        choices=['iterations', 'defocus groups'],
                        condition='not isGoldStdProt and viewIter==0',
@@ -203,11 +195,11 @@ Examples:
                     f.write("open spider:%s\n" % localVol)
             f.write('tile\n')
             f.close()
-            view = em.ChimeraView(cmdFile)
+            view = ChimeraView(cmdFile)
         else:
             # view = CommandView('xmipp_chimera_client --input "%s" --mode projector 256 &' % volumes[0])
             # view = em.ChimeraClientView(volumes[0])
-            view = em.ChimeraClientView(volumes[0],
+            view = ChimeraClientView(volumes[0],
                                         showProjection=True)  # , angularDistFile=sqliteFn, spheresDistance=radius)
 
         return [view]
@@ -278,7 +270,7 @@ Examples:
                 self._plotFSC(a, fscFile)
                 legends.append('%s %d' % (legendPrefix, it))
             else:
-                print "Missing file: ", fscFile
+                print("Missing file: ", fscFile)
 
         # plot final FSC curve (from BP)
         if self.groupFSC == 0 and not self.isGoldStdProt():
@@ -340,14 +332,14 @@ Examples:
                 views.append(plotter)
         else:
             it = iterations[-1]
-            print "Using last iteration: ", it
+            print("Using last iteration: ", it)
             anglesSqlite = self._getFinalPath('angular_dist_%03d.sqlite' % it)
             self.createAngDistributionSqlite(anglesSqlite, nparts,
                                              itemDataIterator=self._iterAngles(it))
             volumes = self.getVolumeNames(it)
-            views.append(em.ChimeraClientView(volumes[0],
-                                              showProjection=True,
-                                              angularDistFile=anglesSqlite,
-                                              spheresDistance=2))  # self.spheresScale.get()))
+            views.append(ChimeraClientView(volumes[0],
+                                           showProjection=True,
+                                           angularDistFile=anglesSqlite,
+                                           spheresDistance=2))  # self.spheresScale.get()))
 
         return views

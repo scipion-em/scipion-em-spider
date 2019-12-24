@@ -26,10 +26,10 @@
 # **************************************************************************
 
 import pyworkflow.utils as pwutils
-from pyworkflow.em import IntParam
+from pyworkflow.protocol.params import IntParam
 
 import spider
-from protocol_align_base import SpiderProtAlign
+from .protocol_align_base import SpiderProtAlign
 
 
       

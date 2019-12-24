@@ -24,15 +24,14 @@
 # *
 # **************************************************************************
 
-
 import os
 
-from pyworkflow.em.protocol import ProtImportParticles
+from pwem.protocols import ProtImportParticles
 from pyworkflow.tests import setupTestProject, DataSet, unittest, BaseTest
-from pyworkflow.tests.em.workflows.test_workflow import TestWorkflow
+from pwem.tests.workflows.test_workflow import TestWorkflow
 
-from spider.convert import writeSetOfImages
-from spider.protocols import *
+from ..convert import writeSetOfImages
+from ..protocols import *
 
   
 
@@ -54,7 +53,7 @@ class TestSpiderConvert(TestWorkflow):
         
         stackFn = self.getOutputPath('stack.stk')
         selFn = self.getOutputPath('stack_sel.stk')
-        print "stackFn: ", stackFn
+        print("stackFn: ", stackFn)
         writeSetOfImages(protImport.outputParticles, stackFn, selFn)
 
 

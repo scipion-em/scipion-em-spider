@@ -24,32 +24,33 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module implement some wizards
-"""
 
 import os
-import Tkinter as tk
-import ttk
+try:
+    import tkinter as tk
+    from tkinter import ttk
+except:
+    import Tkinter as tk
+    import ttk
 
 from pyworkflow.utils.path import cleanPath
-from pyworkflow.em.constants import UNIT_PIXEL
-from pyworkflow.em.convert import ImageHandler
+from pwem.constants import UNIT_PIXEL
+from pwem.convert import ImageHandler
 
-from pyworkflow.em.wizard import (EmWizard, ParticleMaskRadiusWizard,
-                                  ParticlesMaskRadiiWizard,
-                                  FilterParticlesWizard, DownsampleDialog, ImagePreviewDialog,
-                                  ListTreeProvider, VolumeMaskRadiiWizard, MaskPreviewDialog)
+from pwem.wizards import (EmWizard, ParticleMaskRadiusWizard,
+                          ParticlesMaskRadiiWizard,
+                          FilterParticlesWizard, DownsampleDialog, ImagePreviewDialog,
+                          ListTreeProvider, VolumeMaskRadiiWizard, MaskPreviewDialog)
 import pyworkflow.gui.dialog as dialog
 from pyworkflow.gui.widgets import LabelSlider, HotButton
 
 import spider
-from spider.utils import SpiderShell, runCustomMaskScript
-from spider.constants import FILTER_FERMI
-from spider.convert import locationToSpider
-from spider.protocols import (SpiderProtCAPCA, SpiderProtAlignAPSR,
-                      SpiderProtAlignPairwise, SpiderProtFilter,
-                      SpiderProtCustomMask, SpiderProtRefinement)
+from .utils import SpiderShell, runCustomMaskScript
+from .constants import FILTER_FERMI
+from .convert import locationToSpider
+from .protocols import (SpiderProtCAPCA, SpiderProtAlignAPSR,
+                        SpiderProtAlignPairwise, SpiderProtFilter,
+                        SpiderProtCustomMask, SpiderProtRefinement)
 
 
 #===============================================================================
@@ -119,7 +120,7 @@ class SpiderParticlesMaskRadiiWizard(ParticlesMaskRadiiWizard):
         
         label, value = self._getInputProtocol(self._targets, protocol)
         
-        protParams = {}
+        protParams = dict()
         protParams['input']= protocol.inputParticles
         protParams['label']= label
         protParams['value']= value
@@ -149,13 +150,13 @@ class SpiderFilterParticlesWizard(FilterParticlesWizard):
         
         label, value = self._getInputProtocol(self._targets, protocol)
         
-        protParams = {}
-        protParams['input']= protocol.inputParticles
-        protParams['label']= label
-        protParams['value']= value
-        protParams['mode']= [protocol.filterType.get(),
-                             protocol.filterMode.get(),
-                             protocol.usePadding.get()]
+        protParams = dict()
+        protParams['input'] = protocol.inputParticles
+        protParams['label'] = label
+        protParams['value'] = value
+        protParams['mode'] = [protocol.filterType.get(),
+                              protocol.filterMode.get(),
+                              protocol.usePadding.get()]
 
         return protParams
     
@@ -193,9 +194,6 @@ class SpiderFilterParticlesWizard(FilterParticlesWizard):
 # UTILS
 #===============================================================================
     
-#--------------- Dialogs used by Wizards --------------------------        
-
-
 class SpiderAlignRadiusDialog(MaskPreviewDialog):
 
     def _createPreview(self, frame):
@@ -321,6 +319,7 @@ class SpiderFilterDialog(DownsampleDialog):
         img.read(locXmippStr)
         self.rightImage = img
         self.updateFilteredImage()
+
 
 #TODO: Refactor this function to be used also by method filterParticles
 def filter_spider(inputLocStr, outputLocStr, **pars):
@@ -450,7 +449,7 @@ class CustomMaskDialog(ImagePreviewDialog):
         """ This function should compute the right preview
         using the self.lastObj that was selected
         """
-        prot = self.protocolParent # short notation
+        prot = self.protocolParent  # short notation
         tmp = prot.getProject().getTmpPath()
         ext = prot.getExt()
         # Convert input image to spider

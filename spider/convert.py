@@ -23,21 +23,18 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module contains converter functions related to Spider
-"""
 
 import numpy
 from os.path import splitext, split
 
-from pyworkflow.em import Transform
-from pyworkflow.em.constants import NO_INDEX, ALIGN_2D, ALIGN_3D, ALIGN_PROJ
-import pyworkflow.em.convert.transformations as transformations
+from pwem.objects import Transform
+from pwem.constants import NO_INDEX, ALIGN_2D, ALIGN_3D, ALIGN_PROJ
+import pwem.convert.transformations as transformations
 from pyworkflow.utils.path import moveFile
 
-from spider.utils import SpiderDocFile, runTemplate
-from spider.constants import (SHIFTX, SHIFTY, ANGLE_PSI,
-                              ANGLE_THE, ANGLE_PHI, FLIP)
+from .utils import SpiderDocFile, runTemplate
+from .constants import (SHIFTX, SHIFTY, ANGLE_PSI,
+                        ANGLE_THE, ANGLE_PHI, FLIP)
 
 
 def locationToSpider(index, filename):

@@ -24,18 +24,17 @@
 # *
 # **************************************************************************
 
-
 from os.path import basename
 
-from pyworkflow.em import ProtClassify2D, Particle, Class2D
-from pyworkflow.em.convert import ImageHandler
+from pwem.protocols import ProtClassify2D
+from pwem.objects import Particle, Class2D
+from pwem.convert import ImageHandler
 from pyworkflow.protocol.params import PointerParam, IntParam
 from pyworkflow.utils import removeExt, copyFile
 import pyworkflow.utils.graph as graph
 
-from spider.utils import SpiderDocFile
-from protocol_base import SpiderProtocol
-
+from ..utils import SpiderDocFile
+from .protocol_base import SpiderProtocol
 
 
 class SpiderProtClassify(ProtClassify2D, SpiderProtocol):

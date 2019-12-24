@@ -25,9 +25,9 @@
 # **************************************************************************
 
 from pyworkflow.tests import *
-from pyworkflow.em.protocol import ProtImportParticles
+from pwem.protocols import ProtImportParticles
 
-from spider.protocols import SpiderProtReconstruct
+from ..protocols import SpiderProtReconstruct
 
 
 class TestSpiderBase(BaseTest):
@@ -51,7 +51,7 @@ class TestSpiderBase(BaseTest):
 
 class TestSpiderReconstruct(TestSpiderBase):
     def test_ReconstructSpider(self):
-        print "Import Set of particles with angles"
+        print("Import Set of particles with angles")
         prot1 = self.newProtocol(ProtImportParticles,
                                  objLabel='from scipion (to-reconstruct)',
                                  importFrom=ProtImportParticles.IMPORT_FROM_SCIPION,
@@ -61,7 +61,7 @@ class TestSpiderReconstruct(TestSpiderBase):
                                  )
         self.launchProtocol(prot1)
         
-        print "Run Spider BP 32F Reconstruct"
+        print("Run Spider BP 32F Reconstruct")
         protReconstruct = self.newProtocol(SpiderProtReconstruct)
         protReconstruct.inputParticles.set(prot1.outputParticles)
         self.launchProtocol(protReconstruct)

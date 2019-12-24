@@ -23,17 +23,13 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module implements visualization program for Spider CA-PCA protocol.
-"""
 
 from pyworkflow.protocol.params import *
 from pyworkflow.viewer import (Viewer, ProtocolViewer, DESKTOP_TKINTER,
                                WEB_DJANGO, TextView)
-from pyworkflow.em.viewers import DataView, EmPlotter
+from pwem.viewers import DataView, EmPlotter
 
-from spider.protocols.protocol_ca_pca import SpiderProtCAPCA
-
+from ..protocols.protocol_ca_pca import SpiderProtCAPCA
 
 
 class SpiderViewerCAPCA(ProtocolViewer):
@@ -79,6 +75,7 @@ class SpiderViewerCAPCA(ProtocolViewer):
                 }
         
     def _viewParam(self, param=None):
+        view = None
         if param == 'doShowEigenImages':
             view = DataView(self.protocol._getFileName('eigenimages'))
         elif param == 'doShowReconsImages':

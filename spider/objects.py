@@ -24,8 +24,7 @@
 # *
 # **************************************************************************
 
-
-from pyworkflow.em.data import EMObject
+from pwem.objects import EMObject
 from pyworkflow.object import String
 
 

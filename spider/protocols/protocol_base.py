@@ -23,16 +23,12 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-Some Spider protocol base classes.
-"""
 
-from pyworkflow.em import EMProtocol
+from pwem.protocols import EMProtocol
 
 import spider
-from spider.utils import runTemplate
-from spider.convert import writeSetOfImages
-
+from ..utils import runTemplate
+from ..convert import writeSetOfImages
 
 
 class SpiderProtocol(EMProtocol):

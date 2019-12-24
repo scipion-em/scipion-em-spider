@@ -91,9 +91,8 @@ def writeScript(inputScript, outputScript, paramsDict):
                                               "%(var)s%(value)s%(suffix)s\n")
                 if newLine:
                     line = newLine
-            except Exception, ex:
-                print ex, "in line (%d): %s" % (i+1, line)
-                raise ex
+            except Exception as ex:
+                print(ex, "in line (%d): %s" % (i+1, line))
             inFrL = line.lower().startswith("fr ")
         fOut.write(line)
     fIn.close()
@@ -174,8 +173,8 @@ class SpiderShell(object):
     
     def runCmd(self, cmd):
         if self._debug:
-            print >> self._log, cmd
-        print >> self._proc.stdin, cmd
+            print(cmd, file=self._log)
+        print(cmd, file=self._proc.stdin)
         self._proc.stdin.flush()
         
     def close(self, end=True):
@@ -222,12 +221,12 @@ class SpiderDocFile(object):
     def writeComment(self, filename, batext='spi'):
         line = self.makeDocfileHeader(filename, batext)
 
-        print >> self._file, line
+        print(line, file=self._file)
 
     def writeHeader(self, fields):
         line = self.fixHeaders(fields)
 
-        print  >> self._file, line
+        print(line, file=self._file)
         
     def writeValues(self, *values):
         """ Write values in spider docfile. """
@@ -237,7 +236,7 @@ class SpiderDocFile(object):
         for v in values:
             line += " %11g" % float(v)
             
-        print >> self._file, line
+        print(line, file=self._file)
         
     def iterValues(self):
         for line in self._file:
@@ -273,6 +272,6 @@ class SpiderDocAliFile(object):
         
      
 def getDocsLink(op, label):
-    from spider.constants import SPIDER_DOCS
+    from .constants import SPIDER_DOCS
     """ Return a label for documentation url of a given command. """
     return '[[%(SPIDER_DOCS)s/%(op)s.html][%(label)s]]' % locals()

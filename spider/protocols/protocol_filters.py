@@ -25,14 +25,14 @@
 # *
 # **************************************************************************
 
-from pyworkflow.em.protocol import ProtFilterParticles  
+from pwem.protocols import ProtFilterParticles
 from pyworkflow.protocol.params import (EnumParam, BooleanParam,
                                         DigFreqParam, FloatParam)
 from pyworkflow.utils.path import removeBaseExt
 
-from spider.constants import *
-from spider.utils import SpiderShell
-from protocol_base import SpiderProtocol
+from ..constants import *
+from ..utils import SpiderShell
+from .protocol_base import SpiderProtocol
         
       
 class SpiderProtFilter(ProtFilterParticles, SpiderProtocol):
@@ -189,7 +189,7 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
     def _summary(self):
         pixelSize = self.inputParticles.get().getSamplingRate()
         
-        summary = []
+        summary = list()
         summary.append('Used filter: *%s %s*' %
                     (self.getEnumText('filterType'), self.getEnumText('filterMode')))
  

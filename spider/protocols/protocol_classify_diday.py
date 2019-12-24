@@ -24,9 +24,8 @@
 # *
 # **************************************************************************
 
-from protocol_classify_base import SpiderProtClassifyCluster
+from .protocol_classify_base import SpiderProtClassifyCluster
 
-      
 
 class SpiderProtClassifyDiday(SpiderProtClassifyCluster):
     """ This protocol wraps SPIDER CL CLA command.
@@ -55,7 +54,7 @@ class SpiderProtClassifyDiday(SpiderProtClassifyCluster):
         return cites
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append('Number of factors: *%s*' % self.numberOfFactors)
         return summary
     

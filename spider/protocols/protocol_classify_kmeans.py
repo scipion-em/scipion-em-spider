@@ -26,10 +26,9 @@
 
 from pyworkflow.protocol.params import IntParam
 
-from spider.utils import SpiderDocFile
-from protocol_classify_base import SpiderProtClassify
+from ..utils import SpiderDocFile
+from .protocol_classify_base import SpiderProtClassify
 
-      
 
 class SpiderProtClassifyKmeans(SpiderProtClassify):
     """ This protocol wraps SPIDER CL KM command.
@@ -87,13 +86,13 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
         return cites
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append('Number of classes: *%s*' % self.getNumberOfClasses())
         summary.append('Number of factors: *%s*' % self.numberOfFactors)
         return summary
     
     def _methods(self):
-        msg  = "\nInput particles %s " % self.getObjectTag('inputParticles')
+        msg = "\nInput particles %s " % self.getObjectTag('inputParticles')
         msg += "were divided into %d classes using K-means classification " % self.getNumberOfClasses()
         msg += "(SPIDER command [[http://spider.wadsworth.org/spider_doc/spider/docs/man/clkm.html][CL KM]]) "
         msg += "using %s factors. " % self.numberOfFactors
