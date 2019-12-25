@@ -31,9 +31,9 @@ from glob import glob
 import re
 
 import pyworkflow.utils as pwutils
-import pwem
 import pyworkflow.protocol.params as params
 from pwem.protocols import ProtRefine3D
+from pwem.convert import ImageHandler
 from pwem.constants import ALIGN_PROJ
 from pwem.objects import Volume, FSC
 
@@ -194,7 +194,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         
         # Convert the input volume
         volPath = self._getExtraPath('ref_vol.vol')
-        pwem.convert.ImageHandler().convert(self.input3DReference.get(), volPath)
+        ImageHandler().convert(self.input3DReference.get(), volPath)
         pwutils.moveFile(volPath, volPath.replace('.vol', '.stk'))
         
         self._writeRefinementScripts(protType)
@@ -290,7 +290,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         - selfile
         - docfile
         """
-        ih = em.ImageHandler()
+        ih = ImageHandler()
         # Keep a dict with all groups found in particles
         groupDict = {}
         template = self._getExtraPath('group%03d_%s.stk')

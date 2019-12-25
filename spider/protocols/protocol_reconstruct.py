@@ -28,6 +28,7 @@
 import pyworkflow.protocol.params as params
 from pyworkflow.protocol.constants import LEVEL_ADVANCED, STEPS_SERIAL
 from pwem.constants import ALIGN_PROJ
+from pwem.convert import ImageHandler
 from pwem.objects import Volume
 
 from ..utils import SpiderDocFile
@@ -81,7 +82,7 @@ class SpiderProtReconstruct(SpiderProtocol):
     def convertInputStep(self, particlesId):
         """ Convert all needed inputs before running the refinement script. """
         partSet = self.inputParticles.get()
-        ih = em.ImageHandler()
+        ih = ImageHandler()
 
         stackfile = self._getPath('particles.stk')
         docfile = self._getPath('docfile.stk')
