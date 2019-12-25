@@ -29,7 +29,7 @@ import os
 try:
     import tkinter as tk
     from tkinter import ttk
-except:
+except ImportError:
     import Tkinter as tk
     import ttk
 
@@ -389,7 +389,7 @@ class SpiderCustomMaskWizard(EmWizard):
         if protocol.inputImage.get():
             d = CustomMaskDialog(form.root, provider, protocolParent=protocol)
             if d.resultYes():
-                for varName in CUSTOMMASK_VARS.iterkeys():
+                for varName in CUSTOMMASK_VARS:
                     form.setVar(varName, d.getVarValue(varName))
         else:
             dialog.showWarning("Input error", "Select the input image first", form.root)  

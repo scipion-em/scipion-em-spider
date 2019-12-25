@@ -26,7 +26,12 @@
 
 from os.path import join
 
-import Tkinter as tk
+try:
+    import tkinter as tk
+    from tkinter import ttk
+except ImportError:
+    import Tkinter as tk
+    import ttk
 
 from pwem.protocols import ProtUserSubSet
 from pwem.objects import SetOfClasses2D
