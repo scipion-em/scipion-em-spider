@@ -45,7 +45,7 @@ from pyworkflow.utils.path import cleanPath
 from pyworkflow.gui import Window
 from pyworkflow.gui.widgets import HotButton
 from pyworkflow.gui.graph import LevelTree
-from pyworkflow.gui.canvas import Canvas, ImageBox
+from pyworkflow.gui.canvas import Canvas, Item
 from pyworkflow.gui.dialog import askString
 
 from ..utils import SpiderDocFile
@@ -259,6 +259,34 @@ class SpiderViewerWard(SpiderViewerClassify):
             prot._defineOutputs(outputParticles=particles)
 
         self._createSubsetProtocol(createParticles, runname)
+
+
+class ImageBox(Item):
+    # copied from pw/gui/canvas.py, still depends on xmippLib
+    def __init__(self, canvas, imgPath, x=0, y=0, text=None):
+        Item.__init__(self, canvas, x, y)
+        # Create the image
+        from pyworkflow.gui import getImage
+        from pwem.viewers.filehandlers import getImageFromPath
+
+        if imgPath is None:
+            self.image = getImage('no-image.gif')
+        else:
+            self.image = getImageFromPath(imgPath)
+
+        if text is not None:
+            self.label = tk.Label(canvas, image=self.image, text=text,
+                                  compound=tk.TOP, bg='gray')
+            self.id = self.canvas.create_window(x, y, window=self.label)
+            self.label.bind('<Button-1>', self._onClick)
+        else:
+            self.id = self.canvas.create_image(x, y, image=self.image)
+
+    def setSelected(self, value):  # Ignore selection highlight
+        pass
+
+    def _onClick(self, e=None):
+        pass
 
 
 class SpiderImageBox(ImageBox):
