@@ -7,7 +7,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -58,10 +58,11 @@ class SpiderProtFilter(ProtFilterParticles, SpiderProtocol):
                         'particles': 'particles_filtered',
                         'particlesSel': 'particles_filtered_sel'}
 
-    #--------------------------- DEFINE param functions -----------------------
+    # --------------------------- DEFINE param functions ----------------------
     def _defineProcessParams(self, form):
         form.addParam('filterType', EnumParam,
-                      choices=['Top-hat', 'Gaussian', 'Fermi', 'Butterworth', 'Raised cosine'],
+                      choices=['Top-hat', 'Gaussian', 'Fermi',
+                               'Butterworth', 'Raised cosine'],
                       label="Filter type", default=FILTER_BUTTERWORTH,
                       help="""Select what type of filter do you want to apply.
                       
@@ -96,7 +97,7 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
         form.addParam('filterRadius', DigFreqParam, default=0.12, 
                       label='Filter radius (0 < f < 0.5)',
                       condition='filterType <= %d or filterType == %d' %
-                                (FILTER_SPACE_REAL,FILTER_FERMI),
+                                (FILTER_SPACE_REAL, FILTER_FERMI),
                       help='Low frequency cutoff to apply the filter.\n')  
         
         line = form.addLine('Frequency', 
@@ -111,17 +112,18 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
                       help='Enter a temperature parameter T The filter falls off roughly within \n'
                            'this reciprocal distance (in terms of frequency units).')     
         
-    #--------------------------- INSERT steps functions -----------------------
+    # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):
         # Define some names
         self.particlesStk = self._getPath('%(particles)s.%(ext)s' % self._params)
         # Insert processing steps
         self._insertFunctionStep('convertInput', 'inputParticles', 
-                                 self._getFileName('particles'), self._getFileName('particlesSel'))
+                                 self._getFileName('particles'),
+                                 self._getFileName('particlesSel'))
         self._insertFunctionStep('filterStep', self.filterType.get())
         self._insertFunctionStep('createOutputStep')
 
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
     def filterStep(self, filterType):
         """ Apply the selected filter to particles. 
         Create the set of particles.
@@ -147,9 +149,9 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
         # Consider low-pass or high-pass
         filterNumber += self.filterMode.get()
 
-        self._enterWorkingDir() # Do operations inside the run working dir
+        self._enterWorkingDir()  # Do operations inside the run working dir
         
-        spi = SpiderShell(ext=self.getExt()) # Create the Spider process to send commands        
+        spi = SpiderShell(ext=self.getExt())  # Create the Spider process to send commands
         particlesStk = removeBaseExt(self.particlesStk)
         
         # Run a loop for filtering
@@ -162,7 +164,7 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
             
         spi.close()
             
-        self._leaveWorkingDir() # Go back to project dir
+        self._leaveWorkingDir()  # Go back to project dir
 
     def createOutputStep(self):
         particles = self.inputParticles.get()
@@ -177,7 +179,7 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
         self._defineOutputs(outputParticles=imgSet)
         self._defineTransformRelation(particles, imgSet)
         
-#--------------------------- INFO functions -----------------------------------
+# --------------------------- INFO functions ----------------------------------
     def _validate(self):
         errors = []
         return errors
@@ -191,14 +193,16 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
         
         summary = list()
         summary.append('Used filter: *%s %s*' %
-                    (self.getEnumText('filterType'), self.getEnumText('filterMode')))
+                       (self.getEnumText('filterType'),
+                        self.getEnumText('filterMode')))
  
         if self.filterType <= FILTER_FERMI:
             summary.append('Filter radius: *%s px^-1*' % self.filterRadius)
             radiusAngstroms = pixelSize/float(self.filterRadius)
-            summary.append('Filter radius: *%s Angstroms*' % radiusAngstroms )
+            summary.append('Filter radius: *%s Angstroms*' % radiusAngstroms)
         else:
-            summary.append('Frequency range: *%s - %s*' % (self.lowFreq, self.highFreq))
+            summary.append('Frequency range: *%s - %s*' % (self.lowFreq,
+                                                           self.highFreq))
 
         if self.filterType == FILTER_FERMI:
             summary.append('Temperature factor: *%s*' % self.temperature)

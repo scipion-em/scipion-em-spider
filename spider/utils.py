@@ -1,4 +1,4 @@
-    # **************************************************************************
+# **************************************************************************
 # *
 # * Authors:     J.M. De la Rosa Trevin (delarosatrevin@scilifelab.se)
 # *
@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -26,6 +26,7 @@
 
 import os
 from os.path import join, dirname, abspath
+from io import open
 import datetime
 from collections import OrderedDict
 import subprocess
@@ -34,7 +35,7 @@ import re
 from pyworkflow.utils import runJob
 from pyworkflow.utils.path import replaceBaseExt, removeBaseExt
 
-import spider
+from . import Plugin
 
 
 END_HEADER = 'END BATCH HEADER'
@@ -74,9 +75,9 @@ def writeScript(inputScript, outputScript, paramsDict):
     """ Create a new Spider script by substituting 
     params in the input 'paramsDict'.
     """
-    fIn = open(spider.Plugin.getScript(inputScript), 'r')
+    fIn = open(Plugin.getScript(inputScript), 'r')
     fOut = open(outputScript, 'w')
-    inHeader = True # After the end of header, no more value replacement
+    inHeader = True  # After the end of header, no more value replacement
     inFrL = False
 
     for i, line in enumerate(fIn):
@@ -100,7 +101,7 @@ def writeScript(inputScript, outputScript, paramsDict):
      
     
 def runTemplate(inputScript, ext, paramsDict, nummpis=1,
-                program=spider.Plugin.getProgram(), log=None, cwd=None):
+                program=Plugin.getProgram(), log=None, cwd=None):
     """ This function will create a valid Spider script
     by copying the template and replacing the values in dictionary.
     After the new file is read, the Spider interpreter is invoked.
@@ -122,7 +123,7 @@ def runScript(inputScript, ext, program, nummpis, log=None, cwd=None):
     scriptName = removeBaseExt(inputScript)
     args = " %s @%s" % (ext, scriptName)
     runJob(log, program, args, numberOfMpi=nummpis,
-           env=dict(spider.Plugin.getEnviron()), cwd=cwd)
+           env=dict(Plugin.getEnviron()), cwd=cwd)
     
 
 def runCustomMaskScript(filterRadius1, sdFactor,
@@ -155,10 +156,10 @@ class SpiderShell(object):
         cwd = kwargs.get('cwd', None)
         
         FNULL = open(os.devnull, 'w')
-        self._proc = subprocess.Popen(spider.Plugin.getProgram(), shell=True,
+        self._proc = subprocess.Popen(Plugin.getProgram(), shell=True,
                                       stdin=subprocess.PIPE,
                                       stdout=FNULL, stderr=FNULL,
-                                      env=spider.Plugin.getEnviron(),
+                                      env=Plugin.getEnviron(),
                                       cwd=cwd)
         if self._debug and self._log:
             self._log = open(self._log, 'w+')
@@ -181,7 +182,7 @@ class SpiderShell(object):
         if end:
             self.runCmd("end")
         self._proc.wait()
-        #self._proc.kill() TODO: Check if necessary
+        # self._proc.kill() TODO: Check if necessary
         
 
 class SpiderDocFile(object):
@@ -212,7 +213,7 @@ class SpiderDocFile(object):
         filename = os.path.basename(filename)
         fn, ext = os.path.splitext(filename)
         ext = ext[1:]
-        if batext == None:
+        if batext is None:
             batext = 'spl'  # Spider Python Library
         timestr = self.nowisthetime()
         h = " ;%s/%s   %s   %s\n" % (batext, ext, timestr, filename)

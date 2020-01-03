@@ -7,7 +7,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -49,9 +49,9 @@ class SpiderProtReconstruct(SpiderProtocol):
     def __init__(self, **kwargs):
         SpiderProtocol.__init__(self, **kwargs)
         self.stepsExecutionMode = STEPS_SERIAL
-        #self.allowMpi = True
+        # self.allowMpi = True
 
-    #--------------------------- DEFINE param functions --------------------------------------------
+    # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
         form.addSection(label='Input')
 
@@ -71,14 +71,15 @@ class SpiderProtReconstruct(SpiderProtocol):
                            'create the three output volumes one by one.')
         form.addParallelSection(threads=1, mpi=0)
         
-    #--------------------------- INSERT steps functions --------------------------------------------  
+    # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):        
-        self._insertFunctionStep('convertInputStep', self.inputParticles.get().getObjId())
+        self._insertFunctionStep('convertInputStep',
+                                 self.inputParticles.get().getObjId())
         self._insertFunctionStep('rotateStep')
         self._insertFunctionStep('reconstructStep')
         self._insertFunctionStep('createOutputStep')
     
-    #--------------------------- STEPS functions --------------------------------------------
+    # --------------------------- STEPS functions -----------------------------
     def convertInputStep(self, particlesId):
         """ Convert all needed inputs before running the refinement script. """
         partSet = self.inputParticles.get()
@@ -129,8 +130,8 @@ class SpiderProtReconstruct(SpiderProtocol):
                   '[next_group_align]': "'docfile'",
                   '[next_group_vol]': "'volume'"}
         self.runTemplate(scriptName, 'stk', params,
-                        nummpis=self.numberOfMpi.get())
-        #self.runJob('hostname', '', numberOfMpi=3)
+                         nummpis=self.numberOfMpi.get())
+        # self.runJob('hostname', '', numberOfMpi=3)
 
     def createOutputStep(self):
         imgSet = self.inputParticles.get()
@@ -141,7 +142,7 @@ class SpiderProtReconstruct(SpiderProtocol):
         self._defineOutputs(outputVolume=vol)
         self._defineSourceRelation(self.inputParticles, vol)
     
-    #--------------------------- INFO functions -------------------------------------------- 
+    # --------------------------- INFO functions ------------------------------
     def _validate(self):
         errors = []
         return errors

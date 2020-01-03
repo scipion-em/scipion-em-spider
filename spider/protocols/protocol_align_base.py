@@ -7,7 +7,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -58,7 +58,7 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
     def getAlignDir(self):
         return self._alignDir 
 
-    #--------------------------- DEFINE param functions -----------------------
+    # --------------------------- DEFINE param functions ----------------------
     
     def _defineAlignParams(self, form):
         line = form.addLine('Radius (px):', 
@@ -86,10 +86,11 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
                                  self._getFileName('particles'),
                                  self._getFileName('particlesSel'))
         self._insertFunctionStep('alignParticlesStep', 
-                                 self.innerRadius.get(), self.outerRadius.get())
+                                 self.innerRadius.get(),
+                                 self.outerRadius.get())
         self._insertFunctionStep('createOutputStep')
 
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
 
     def createOutputStep(self):
         outputStk = self._getFileName('particlesAligned')
@@ -109,7 +110,8 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
 
         imgSet.copyItems(particles,
                          updateItemCallback=self._updateItem,
-                         itemDataIterator=iter(range(1, particles.getSize()+1)))
+                         itemDataIterator=iter(range(1,
+                                                     particles.getSize()+1)))
 
         self._defineOutputs(outputParticles=imgSet)
         self._defineTransformRelation(self.inputParticles, imgSet)

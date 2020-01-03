@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -58,10 +58,11 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
                         'outputMask': 'output_mask'
                         }
     
-    #--------------------------- DEFINE param functions -----------------------
+    # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
         form.addSection(label='Input')
-        form.addParam('inputImage', PointerParam, label="Input image", important=True, 
+        form.addParam('inputImage', PointerParam, label="Input image",
+                      important=True,
                       pointerClass='Particle',
                       help='Select the input image to create the mask. \n'
                            'It is recommended to used an average image.')        
@@ -78,7 +79,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
                       label='Mask threshold (range: approx. 0 - 1)',
                       help='The filtered intermediate mask will be thresholded to generate the final mask.')
         
-    #--------------------------- INSERT steps functions -----------------------
+    # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):
         # Store references of input converted image filename
         # and the input image object
@@ -94,7 +95,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
         # Create the output Mask object
         self._insertFunctionStep('createOutputStep')
         
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
     def convertInputStep(self, inputLoc, outputFn):
         """ Convert the input image to a Spider (with stk extension). """
         ImageHandler().convert(inputLoc, (1, outputFn))
@@ -117,7 +118,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
         self._defineOutputs(outputMask=mask)
         self._defineSourceRelation(self.inputImage, mask)
             
-    #--------------------------- INFO functions -------------------------------
+    # --------------------------- INFO functions ------------------------------
     def _summary(self):
         summary = []
         
@@ -127,10 +128,10 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
             filter2Angstroms = pixelSize/self.filterRadius2.get()
             
             summary.append('Radius for initial Fourier filter: *%s px^-1*' % self.filterRadius1)
-            summary.append('              On the object scale: *%s Angstroms*' % filter1Angstroms )
+            summary.append('              On the object scale: *%s Angstroms*' % filter1Angstroms)
             summary.append('Threshold for filtered image: *avg + %s s.d.*' % self.sdFactor)
             summary.append('Radius for Fourier filter for intermediate mask: *%s px^-1*' % self.filterRadius2)
-            summary.append('               On the object scale: *%s Angstroms*' % filter2Angstroms )
+            summary.append('               On the object scale: *%s Angstroms*' % filter2Angstroms)
             summary.append('Threshold for filtered mask: *%s*' % self.maskThreshold)
         else:
             summary.append('Input image not selected yet.')
@@ -142,7 +143,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
             pixelSize = self.inputImage.get().getSamplingRate()
             filter1Angstroms = pixelSize/self.filterRadius1.get()
             filter2Angstroms = pixelSize/self.filterRadius2.get()
-            msg  = "We low-pass filtered the average image %s" %\
+            msg = "We low-pass filtered the average image %s" %\
                    self.getObjectTag('inputImage')
             msg += "to 1/%s Angstroms^-1, " % filter1Angstroms
             msg += "thresholded it at its average plus %s * s.d., "\

@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -41,7 +41,8 @@ class TestSpiderBase(BaseTest):
     def runImportParticles(cls, pattern, samplingRate, checkStack=False):
         """ Run an Import particles protocol. """
         cls.protImport = cls.newProtocol(ProtImportParticles,
-                                         filesPath=pattern, samplingRate=samplingRate,
+                                         filesPath=pattern,
+                                         samplingRate=samplingRate,
                                          checkStack=checkStack)
         cls.launchProtocol(cls.protImport)
         return cls.protImport
@@ -50,7 +51,8 @@ class TestSpiderBase(BaseTest):
     def runImportVolumes(cls, pattern, samplingRate):
         """ Run an Import volumes protocol. """
         cls.protImportVols = cls.newProtocol(ProtImportVolumes,
-                                             filesPath=pattern, samplingRate=samplingRate)
+                                             filesPath=pattern,
+                                             samplingRate=samplingRate)
         cls.launchProtocol(cls.protImportVols)
         return cls.protImportVols
 

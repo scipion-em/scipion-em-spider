@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -26,7 +26,8 @@
 
 from os.path import join
 
-from pyworkflow.protocol.params import IntParam, PointerParam, EnumParam, FloatParam
+from pyworkflow.protocol.params import (IntParam, PointerParam,
+                                        EnumParam, FloatParam)
 from pwem.convert import ImageHandler
 
 from ..constants import CA
@@ -70,7 +71,7 @@ class SpiderProtCAPCA(SpiderProtocol):
                         'reconstituted': join(self._caDir, 'stkreconstituted')
                         }
     
-    #--------------------------- DEFINE param functions -----------------------
+    # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
         form.addSection(label='Input')
         
@@ -92,7 +93,8 @@ class SpiderProtCAPCA(SpiderProtocol):
         form.addParam('numberOfFactors', IntParam, default=25,
                       label='Number of factors',
                       help='A 64x64 image can be expressed as a vector of 4096 dimensions. '
-                           'In this step, we will reduce this number of dimensions to the number of factors specified here. '
+                           'In this step, we will reduce this number of dimensions to the '
+                           'number of factors specified here. '
                            'These factors will represent the largest systematic variations in the data.')
         form.addParam('maskType', EnumParam, 
                       choices=['circular', 'object'], default=0, 
@@ -113,13 +115,15 @@ class SpiderProtCAPCA(SpiderProtocol):
 
         form.addParallelSection(threads=1, mpi=0)
         
-    #--------------------------- INSERT steps functions -----------------------
+    # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):
         # Insert processing steps
         self._insertFunctionStep('convertInput', 'inputParticles',
-                                 self._getFileName('particles'), self._getFileName('particlesSel'))
+                                 self._getFileName('particles'),
+                                 self._getFileName('particlesSel'))
         if self.maskType > 0:
-            self._insertFunctionStep('convertMaskStep', self.maskImage.get().getObjId())
+            self._insertFunctionStep('convertMaskStep',
+                                     self.maskImage.get().getObjId())
         else:
             self.maskImage.set(None)
             
@@ -127,14 +131,14 @@ class SpiderProtCAPCA(SpiderProtocol):
                                  self.numberOfFactors.get(), self.maskType.get())
         self._insertFunctionStep('createOutputStep')
         
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
     def convertMaskStep(self, maskType):
         """ Convert the input mask if needed."""
         # Copy mask if selected
         if maskType > 0:  # mask from file
             maskFn = self._getFileName('mask')
             ImageHandler().convert(self.maskImage.get().getLocation(), 
-                       (1, maskFn))
+                                   (1, maskFn))
         
     def capcaStep(self, analysisType, numberOfFactors, maskType):
         """ Apply the selected filter to particles. 
@@ -144,7 +148,7 @@ class SpiderProtCAPCA(SpiderProtocol):
         
         self._params.update({'[idim]': dim,
                              '[radius]': self.radius.get(),
-                             '[cas-option]': analysisType + 1, # Index starts at 0
+                             '[cas-option]': analysisType + 1,  # Index starts at 0
                              '[add-constant]': self.addConstant.get(),
                              '[num-factors]': numberOfFactors,
                              '[selection_doc]': self._params['particlesSel'],
@@ -170,7 +174,7 @@ class SpiderProtCAPCA(SpiderProtocol):
         self._defineSourceRelation(self.inputParticles, imc)
         self._defineSourceRelation(self.inputParticles, seq)
 
-    #--------------------------- INFO functions -------------------------------
+    # --------------------------- INFO functions ------------------------------
     def _summary(self):
         summary = []
         
@@ -198,7 +202,7 @@ class SpiderProtCAPCA(SpiderProtocol):
         return summary
     
     def _methods(self):
-        msg  = "\nInput particles %s were subjected to " %\
+        msg = "\nInput particles %s were subjected to " %\
                self.getObjectTag('inputParticles')
         
         if self.analysisType == 0:

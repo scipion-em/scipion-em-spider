@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -27,7 +27,6 @@
 from os.path import basename
 
 from pwem.protocols import ProtClassify2D
-from pwem.objects import Particle, Class2D
 from pwem.convert import ImageHandler
 from pyworkflow.protocol.params import PointerParam, IntParam
 from pyworkflow.utils import removeExt, copyFile
@@ -63,7 +62,7 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
     def getNumberOfClasses(self):
         return None
     
-    #--------------------------- DEFINE param functions -----------------------
+     #--------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
         self._defineBasicParams(form)
         form.addParallelSection(threads=4, mpi=0)
@@ -86,7 +85,7 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
                            'which ones to use. \n'
                            'Typically all but the first few are noisy.')
 
-    #--------------------------- INSERT steps functions -----------------------
+    # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):
         
         pcaFile = self.pcaFile.get().filename.get()
@@ -101,7 +100,7 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
         
         self._insertFunctionStep('createOutputStep')
         
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
     def _updateParams(self):
         pass 
         
@@ -117,7 +116,7 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
         # JMRT: I have modify the kmeans.msa script to not add _IMC
         # automatically, it can be also used with _SEQ suffix,
         # so we will pass the whole cas_file
-        imcBase = removeExt(imcLocalFile)#.replace('_IMC', '')
+        imcBase = removeExt(imcLocalFile)  # .replace('_IMC', '')
         imcPrefix = imcBase.replace('_IMC', '').replace('_SEQ', '')
         
         self._params.update({'x27': numberOfFactors,
@@ -136,11 +135,11 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
     def __init__(self, script, classDir, **kwargs):
         SpiderProtClassify.__init__(self, script, classDir, **kwargs)
 
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
     def createOutputStep(self):
         self.buildDendrogram(True)
          
-    #--------------------------- UTILS functions ------------------------------
+    # --------------------------- UTILS functions -----------------------------
     def _fillClassesFromNodes(self, classes2D, nodeList):
         """ Create the SetOfClasses2D from the images of each node
         in the dendrogram.
@@ -218,8 +217,8 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
         self.dendroIndexes = indexes
         self.dendroImages = self._getFileName('particles')
         self.dendroAverages = self._getFileName('averages')
-        self.dendroAverageCount = 0 # Write only the number of needed averages
-        self.dendroMaxLevel = 10 # FIXME: remove hard coding if working the levels
+        self.dendroAverageCount = 0  # Write only the number of needed averages
+        self.dendroMaxLevel = 10  # FIXME: remove hard coding if working the levels
         self.ih = ImageHandler()
 
         return self._buildDendrogram(0, len(values)-1, 1, writeAverages)
@@ -236,7 +235,7 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
 
         if writeAverages:
             node.addImage(child.image)
-            del child.image # Allow to free child image memory
+            del child.image  # Allow to free child image memory
                 
     def _buildDendrogram(self, leftIndex, rightIndex, index,
                          writeAverages=False, level=0, searchStop=0):
@@ -261,13 +260,13 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
             avgCount = self.dendroAverageCount + 1
             self.dendroAverageCount += 1
                     
-        if rightIndex == leftIndex: # Just only one element
+        if rightIndex == leftIndex:  # Just only one element
             height = self.dendroValues[leftIndex]
             node = DendroNode(index, height)
             node.extendImageList([self.dendroIndexes[leftIndex]])
             node.addImage(self.getImage(node.imageList[0]))
 
-        elif rightIndex == leftIndex + 1: # Two elements
+        elif rightIndex == leftIndex + 1:  # Two elements
             height = max(self.dendroValues[leftIndex], 
                          self.dendroValues[rightIndex])
             node = DendroNode(index, height)
@@ -275,7 +274,7 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
                                   self.dendroIndexes[rightIndex]])
             node.addImage(self.getImage(node.imageList[0]),
                           self.getImage(node.imageList[1]))
-        else: # 3 or more elements
+        else:  # 3 or more elements
             # Find the max value (or height) of the elements
             maxValue = self.dendroValues[leftIndex]
             maxIndex = 0

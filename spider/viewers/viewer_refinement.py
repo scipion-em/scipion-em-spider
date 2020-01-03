@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -26,17 +26,19 @@
 
 import os
 from glob import glob
+from io import open
 
 import pyworkflow.protocol.params as params
-from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO, ProtocolViewer
-from pwem.viewers import EmPlotter, ChimeraClientView, ChimeraView
+from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
+from pwem.viewers import (EmPlotter, ChimeraClientView,
+                          ChimeraView, EmProtocolViewer)
 
 from ..constants import *
 from ..protocols import SpiderProtRefinement
 from ..utils import SpiderDocFile
 
 
-class SpiderViewerRefinement(ProtocolViewer):
+class SpiderViewerRefinement(EmProtocolViewer):
     """ Visualization of Spider refinement results. """
 
     _environments = [DESKTOP_TKINTER, WEB_DJANGO]
@@ -63,10 +65,13 @@ Examples:
                       help="Write the iteration list to visualize.")
 
         group = form.addGroup('Angular assignment')
-        #group.addParam('showImagesAngularAssignment', params.LabelParam, default=True,
-        #               label='Particles angular assignment')
-        group.addParam('displayAngDist', params.EnumParam, choices=['2D plot', 'chimera'],
-                       default=ANGDIST_2DPLOT, display=params.EnumParam.DISPLAY_HLIST,
+        # group.addParam('showImagesAngularAssignment',
+        # params.LabelParam, default=True,
+        # label='Particles angular assignment')
+        group.addParam('displayAngDist', params.EnumParam,
+                       choices=['2D plot', 'chimera'],
+                       default=ANGDIST_2DPLOT,
+                       display=params.EnumParam.DISPLAY_HLIST,
                        label='Display angular distribution',
                        help='*2D plot*: display angular distribution as interative 2D in matplotlib.\n'
                             '*chimera*: display angular distribution using Chimera with red spheres.')
@@ -116,7 +121,8 @@ Examples:
 
     def volList(self):
         if self.isGoldStdProt():
-            return ['reconstructed', 'half1', 'half2', 'filtered', 'filtered & centered']
+            return ['reconstructed', 'half1', 'half2', 'filtered',
+                    'filtered & centered']
         else:
             return ['reconstructed', 'half1', 'half2']
 
@@ -150,9 +156,9 @@ Examples:
     def _getFinalPath(self, *paths):
         return self.protocol._getExtraPath('Refinement', 'final', *paths)
 
-    # ===============================================================================
-    # ShowVolumes
-    # ===============================================================================
+# =========================================================================
+# ShowVolumes
+# =========================================================================
     def _createVolumesSqlite(self):
         """ Write an sqlite with all volumes selected for visualization. """
 
@@ -200,7 +206,7 @@ Examples:
             # view = CommandView('xmipp_chimera_client --input "%s" --mode projector 256 &' % volumes[0])
             # view = em.ChimeraClientView(volumes[0])
             view = ChimeraClientView(volumes[0],
-                                        showProjection=True)  # , angularDistFile=sqliteFn, spheresDistance=radius)
+                                     showProjection=True)  # , angularDistFile=sqliteFn, spheresDistance=radius)
 
         return [view]
 
@@ -211,9 +217,9 @@ Examples:
         elif self.displayVol == VOLUME_SLICES:
             return self._createVolumesSqlite()
 
-            # ===============================================================================
-            # plotFSC
-            # ===============================================================================
+# ===============================================================================
+# plotFSC
+# ===============================================================================
 
     def _plotFSC(self, a, fscFile):
         resolution = []
@@ -280,7 +286,6 @@ Examples:
                 if os.path.exists(fscFinalFile):
                     self._plotFSC(a, fscFinalFile)
                     legends.append('final')
-
 
         if threshold < self.maxfsc:
             a.plot([self.minInv, self.maxInv], [threshold, threshold],

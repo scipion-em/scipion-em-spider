@@ -7,7 +7,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -44,7 +44,7 @@ from pwem.wizards import (EmWizard, ParticleMaskRadiusWizard,
 import pyworkflow.gui.dialog as dialog
 from pyworkflow.gui.widgets import LabelSlider, HotButton
 
-import spider
+from . import Plugin
 from .utils import SpiderShell, runCustomMaskScript
 from .constants import FILTER_FERMI
 from .convert import locationToSpider
@@ -53,16 +53,16 @@ from .protocols import (SpiderProtCAPCA, SpiderProtAlignAPSR,
                         SpiderProtCustomMask, SpiderProtRefinement)
 
 
-#===============================================================================
+# =============================================================================
 # MASKS
-#===============================================================================
+# =============================================================================
 
 class SpiderProtAlignRadiusWizard(VolumeMaskRadiiWizard):
     _targets = [(SpiderProtRefinement, ['radius', 'alignmentShift'])]
 
     def _getParameters(self, protocol):
         label, value = self._getInputProtocol(self._targets, protocol)
-        protParams = {}
+        protParams = dict()
         protParams['input'] = protocol.input3DReference
         protParams['label'] = label
         protParams['value'] = value
@@ -73,7 +73,7 @@ class SpiderProtAlignRadiusWizard(VolumeMaskRadiiWizard):
         _objs = self._getParameters(protocol)['input']
         return VolumeMaskRadiiWizard._getListProvider(self, _objs)
 
-    def show(self, form):
+    def show(self, form, *args):
         protocol = form.protocol
         provider = self._getProvider(protocol)
 
@@ -81,8 +81,8 @@ class SpiderProtAlignRadiusWizard(VolumeMaskRadiiWizard):
             d = SpiderAlignRadiusDialog(form.root, provider,
                                         protocolParent=protocol)
             if d.resultYes():
-                    form.setVar('radius', d.getRadius())
-                    form.setVar('alignmentShift', d.getAliShift())
+                form.setVar('radius', d.getRadius())
+                form.setVar('alignmentShift', d.getAliShift())
         else:
             dialog.showWarning("Input volume",
                                "Select volume first", form.root)
@@ -95,17 +95,17 @@ class SpiderProtMaskWizard(ParticleMaskRadiusWizard):
         
         label, value = self._getInputProtocol(self._targets, protocol)
         
-        protParams = {}
-        protParams['input']= protocol.inputParticles
-        protParams['label']= label
-        protParams['value']= value
+        protParams = dict()
+        protParams['input'] = protocol.inputParticles
+        protParams['label'] = label
+        protParams['value'] = value
         return protParams
     
     def _getProvider(self, protocol):
         _objs = self._getParameters(protocol)['input'] 
         return ParticleMaskRadiusWizard._getListProvider(self, _objs)
     
-    def show(self, form):
+    def show(self, form, *args):
         params = self._getParameters(form.protocol)
         _value = params['value']
         _label = params['label']
@@ -121,25 +121,25 @@ class SpiderParticlesMaskRadiiWizard(ParticlesMaskRadiiWizard):
         label, value = self._getInputProtocol(self._targets, protocol)
         
         protParams = dict()
-        protParams['input']= protocol.inputParticles
-        protParams['label']= label
-        protParams['value']= value
+        protParams['input'] = protocol.inputParticles
+        protParams['label'] = label
+        protParams['value'] = value
         return protParams
     
     def _getProvider(self, protocol):
         _objs = self._getParameters(protocol)['input']
         return ParticlesMaskRadiiWizard._getListProvider(self, _objs)
     
-    def show(self, form):
+    def show(self, form, *args):
         params = self._getParameters(form.protocol)
         _value = params['value']
         _label = params['label']
         ParticlesMaskRadiiWizard.show(self, form, _value, _label, UNIT_PIXEL)
     
 
-#===============================================================================
+# =============================================================================
 # FILTERS
-#===============================================================================
+# =============================================================================
 
 
 class SpiderFilterParticlesWizard(FilterParticlesWizard):    
@@ -164,11 +164,11 @@ class SpiderFilterParticlesWizard(FilterParticlesWizard):
         _objs = self._getParameters(protocol)['input']
         return FilterParticlesWizard._getListProvider(self, _objs)
     
-    def show(self, form):
+    def show(self, form, *args):
         protocol = form.protocol
         provider = self._getProvider(protocol)
 
-        installErrors = spider.Plugin.validateInstallation()
+        installErrors = Plugin.validateInstallation()
 
         if installErrors:
             dialog.showError("SPIDER not properly installed.",
@@ -177,7 +177,7 @@ class SpiderFilterParticlesWizard(FilterParticlesWizard):
 
         if provider is not None:
             d = SpiderFilterDialog(form.root, provider, 
-                                          protocolParent=protocol)
+                                   protocolParent=protocol)
             if d.resultYes():
                 if protocol.filterType <= FILTER_FERMI:
                     form.setVar('filterRadius', d.getRadius())
@@ -189,11 +189,12 @@ class SpiderFilterParticlesWizard(FilterParticlesWizard):
         else:
             dialog.showWarning("Input particles",
                                "Select particles first", form.root)
-    
-#===============================================================================
+
+# =============================================================================
 # UTILS
-#===============================================================================
-    
+# =============================================================================
+
+
 class SpiderAlignRadiusDialog(MaskPreviewDialog):
 
     def _createPreview(self, frame):
@@ -211,13 +212,15 @@ class SpiderAlignRadiusDialog(MaskPreviewDialog):
     def _createControls(self, frame):
         self.radSlider = LabelSlider(frame, 'Particle radius (px)',
                                      from_=1, to=int(self.dim_par/2),
-                                     value=self.protocolParent.radius.get(), step=1,
+                                     value=self.protocolParent.radius.get(),
+                                     step=1,
                                      callback=lambda a, b, c: self.updateRadius())
         self.radSlider.grid(row=0, column=0, padx=5, pady=5)
 
         self.aliShSlider = LabelSlider(frame, 'Alignment shift (px)',
                                        from_=1, to=int(self.dim_par/2),
-                                       value=self.protocolParent.alignmentShift.get(), step=1,
+                                       value=self.protocolParent.alignmentShift.get(),
+                                       step=1,
                                        callback=lambda a, b, c: self.updateRadius())
         self.aliShSlider.grid(row=1, column=0, padx=5, pady=5)
 
@@ -246,18 +249,28 @@ class SpiderFilterDialog(DownsampleDialog):
         self.freqFrame = ttk.LabelFrame(frame, text="Frequencies", padding="5 5 5 5")
         self.freqFrame.grid(row=0, column=0)
         if self.protocolParent.filterType <= FILTER_FERMI:
-            self.radiusSlider = self.addFreqSlider('Radius', self.protocolParent.filterRadius.get(), col=0)
+            self.radiusSlider = self.addFreqSlider('Radius',
+                                                   self.protocolParent.filterRadius.get(),
+                                                   col=0)
         else:
-            self.lfSlider = self.addFreqSlider('Low freq', self.protocolParent.lowFreq.get(), col=0)
-            self.hfSlider = self.addFreqSlider('High freq', self.protocolParent.highFreq.get(), col=1)        
+            self.lfSlider = self.addFreqSlider('Low freq',
+                                               self.protocolParent.lowFreq.get(),
+                                               col=0)
+            self.hfSlider = self.addFreqSlider('High freq',
+                                               self.protocolParent.highFreq.get(),
+                                               col=1)
         if self.protocolParent.filterType == FILTER_FERMI:
-            self.tempSlider = self.addFreqSlider('Temperature', self.protocolParent.temperature.get(), col=2)
-        radiusButton = tk.Button(self.freqFrame, text='Preview', command=self._doPreview)
+            self.tempSlider = self.addFreqSlider('Temperature',
+                                                 self.protocolParent.temperature.get(),
+                                                 col=2)
+        radiusButton = tk.Button(self.freqFrame, text='Preview',
+                                 command=self._doPreview)
         radiusButton.grid(row=0, column=3, padx=5, pady=5)
         
     def _doPreview(self, e=None):
         if self.lastObj is None:
-            dialog.showError("Empty selection", "Select an item first before preview", self)
+            dialog.showError("Empty selection",
+                             "Select an item first before preview", self)
         else:
             self._computeRightPreview()
             
@@ -265,7 +278,8 @@ class SpiderFilterDialog(DownsampleDialog):
         return self.radiusSlider.get()
     
     def addFreqSlider(self, label, value, col):
-        slider = LabelSlider(self.freqFrame, label, from_=0, to=0.5, value=value, callback=None)
+        slider = LabelSlider(self.freqFrame, label, from_=0, to=0.5,
+                             value=value, callback=None)
         slider.grid(row=0, column=col, padx=5, pady=5)
         return slider
     
@@ -296,7 +310,7 @@ class SpiderFilterDialog(DownsampleDialog):
                 
         outputLocSpiStr = locationToSpider(1, outputName)
         
-        pars = {}
+        pars = dict()
         pars["filterType"] = self.protocolParent.filterType.get()
         pars["filterMode"] = self.protocolParent.filterMode.get()
         pars["usePadding"] = self.protocolParent.usePadding.get()
@@ -321,12 +335,12 @@ class SpiderFilterDialog(DownsampleDialog):
         self.updateFilteredImage()
 
 
-#TODO: Refactor this function to be used also by method filterParticles
+# TODO: Refactor this function to be used also by method filterParticles
 def filter_spider(inputLocStr, outputLocStr, **pars):
     """ Function to filter an image located on inputLocStr and
     write it to outputLocStr. """
      
-    spi = SpiderShell(ext='spi') # Create the Spider process to send commands         
+    spi = SpiderShell(ext='spi')  # Create the Spider process to send commands
     filterNumber = pars["filterType"] * 2 + 1
     
     # Consider low-pass or high-pass
@@ -350,7 +364,7 @@ def filter_spider(inputLocStr, outputLocStr, **pars):
     spi.close()
     
     
-#-------------- Custom mask Wizard -----------------------------
+# -------------- Custom mask Wizard -------------------------------------------
 
 CUSTOMMASK_VARS = {'filterRadius1': 'First radius', 'sdFactor': 'First threshold',
                    'filterRadius2': 'Second radius', 'maskThreshold': 'Max threshold'}
@@ -371,7 +385,7 @@ class SpiderCustomMaskWizard(EmWizard):
     _targets = [(SpiderProtCustomMask, CUSTOMMASK_VARS.keys())]
     
     def _getParameters(self, protocol):
-        protParams = {}
+        protParams = dict()
         protParams['input'] = protocol.inputImage
         protParams['label'] = CUSTOMMASK_VARS.keys()
         protParams['labelText'] = MASKRESULT_LABELS
@@ -382,17 +396,19 @@ class SpiderCustomMaskWizard(EmWizard):
     def _getProvider(self, protocol):
         return ListTreeProvider([self._getParameters(protocol)['input'].get()])
     
-    def show(self, form):
+    def show(self, form, *args):
         protocol = form.protocol
         provider = self._getProvider(protocol)
 
         if protocol.inputImage.get():
-            d = CustomMaskDialog(form.root, provider, protocolParent=protocol)
+            d = CustomMaskDialog(form.root, provider,
+                                 protocolParent=protocol)
             if d.resultYes():
                 for varName in CUSTOMMASK_VARS:
                     form.setVar(varName, d.getVarValue(varName))
         else:
-            dialog.showWarning("Input error", "Select the input image first", form.root)  
+            dialog.showWarning("Input error",
+                               "Select the input image first", form.root)
 
 
 class CustomMaskDialog(ImagePreviewDialog):
@@ -415,12 +431,13 @@ class CustomMaskDialog(ImagePreviewDialog):
             self.previewLabel = label
             previewFrame = tk.Frame(frame)
             ImagePreviewDialog._createPreview(self, previewFrame)
-            self._previews.append(self.preview) # store all previews created
-            previewFrame.grid(row=i/4, column=i%4)
+            self._previews.append(self.preview)  # store all previews created
+            previewFrame.grid(row=i/4, column=i % 4)
             
     def _itemSelected(self, obj):
         self.lastObj = obj
-        dialog.FlashMessage(self, self.message, func=self._computeRightPreview)
+        dialog.FlashMessage(self, self.message,
+                            func=self._computeRightPreview)
            
     def _createVarWidgets(self, parent, varName, varLabel, row, col):
         var = tk.StringVar()
@@ -437,9 +454,11 @@ class CustomMaskDialog(ImagePreviewDialog):
         inputFrame.grid(row=0, column=0)
         
         for i, varName in enumerate(CUSTOMMASK_VARS):
-            self._createVarWidgets(inputFrame, varName, CUSTOMMASK_VARS[varName], i%2, i/2)
+            self._createVarWidgets(inputFrame, varName,
+                                   CUSTOMMASK_VARS[varName], i % 2, i/2)
             
-        previewBtn = HotButton(frame, text='Preview', command=self._computeRightPreview)
+        previewBtn = HotButton(frame, text='Preview',
+                               command=self._computeRightPreview)
         previewBtn.grid(row=1, column=1, padx=5, pady=5)
             
     def getVarValue(self, varName):

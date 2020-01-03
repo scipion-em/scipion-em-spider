@@ -7,7 +7,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -26,6 +26,7 @@
 # **************************************************************************
 
 from pyworkflow.utils.path import getLastFile
+
 from .protocol_align_base import SpiderProtAlign
 
       
@@ -68,11 +69,12 @@ class SpiderProtAlignAPSR(SpiderProtAlign):
         self.runTemplate(self.getScript(), self.getExt(), self._params)
                 
     def getAverage(self):
-        pattern = self._getPath(self.getAlignDir(), 'iteravg*.%s' % self.getExt())
+        pattern = self._getPath(self.getAlignDir(),
+                                'iteravg*.%s' % self.getExt())
         return getLastFile(pattern)
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append('Radius range (px): *%s - %s*' %
                        (self.innerRadius, self.outerRadius))
         
@@ -80,10 +82,11 @@ class SpiderProtAlignAPSR(SpiderProtAlign):
     
     def _methods(self):
         if hasattr(self, 'outputParticles'):
-            msg  = "Input particles %s were " % self.getObjectTag('inputParticles')
+            msg = "Input particles %s were " % self.getObjectTag('inputParticles')
             msg += "initially subjected to reference-free alignment using SPIDER's "
-            msg += "_AP SR_ command, using radii %s to %s pixels. " % (self.innerRadius, 
-                                                                       self.outerRadius)
+            msg += "_AP SR_ command, using radii %s to %s pixels. " % (
+                self.innerRadius,
+                self.outerRadius)
             msg += "Output particles: %s" % self.getObjectTag('outputParticles') 
         else:
             msg = "Output not ready yet."

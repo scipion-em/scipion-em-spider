@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -41,7 +41,7 @@ def locationToSpider(index, filename):
     """ Convert an index and filename location
     to a string with @ as expected in Spider.
     """
-    #TODO: Maybe we need to add more logic dependent of the format
+    # TODO: Maybe we need to add more logic dependent of the format
     if index != NO_INDEX:
         return "%s@%d" % (filename, index)
     
@@ -167,7 +167,7 @@ def alignmentToRow(alignment, alignmentRow, alignType):
     
     if alignType == ALIGN_2D:
         # get 2x2 matrix and check if negative
-        flip = bool(numpy.linalg.det(matrix[0:2,0:2]) < 0)
+        flip = bool(numpy.linalg.det(matrix[0:2, 0:2]) < 0)
         if flip:
             matrix[0, :2] *= -1.  # invert only the first two columns keep x
             matrix[2, 2] = 1.  # set 3D rot
@@ -183,7 +183,7 @@ def alignmentToRow(alignment, alignmentRow, alignType):
             pass
 
     else:
-        flip = bool(numpy.linalg.det(matrix[0:3,0:3]) < 0)
+        flip = bool(numpy.linalg.det(matrix[0:3, 0:3]) < 0)
         if flip:
             matrix[0, :4] *= -1.  # now, invert first line including x
     shifts, angles = geometryFromMatrix(matrix, inverseTransform)

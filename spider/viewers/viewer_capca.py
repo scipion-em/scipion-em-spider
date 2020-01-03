@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -23,10 +23,11 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
+from io import open
 
 from pyworkflow.protocol.params import *
-from pyworkflow.viewer import (Viewer, ProtocolViewer, DESKTOP_TKINTER,
-                               WEB_DJANGO, TextView)
+from pyworkflow.viewer import (ProtocolViewer, DESKTOP_TKINTER,
+                               WEB_DJANGO)
 from pwem.viewers import DataView, EmPlotter
 
 from ..protocols.protocol_ca_pca import SpiderProtCAPCA
@@ -41,7 +42,8 @@ class SpiderViewerCAPCA(ProtocolViewer):
     
     def _defineParams(self, form):
         form.addSection(label='Visualization')
-        form.addParam('doShowEigenImages', LabelParam, label="Show eigenimages?", default=True,
+        form.addParam('doShowEigenImages', LabelParam, label="Show eigenimages?",
+                      default=True,
                       help='Display eigenimages produced by CA/PCA')
         form.addParam('doShowReconsImages', LabelParam,
                       label="Show reconstitued images?", default=True,
@@ -53,17 +55,17 @@ class SpiderViewerCAPCA(ProtocolViewer):
                       help='One of the methods to determine what eigenvalues are useful, '
                       'and which are from noise is to view a histogram showing the percentage '
                       'of eigenvalue variance accounted for by each factor.')
-        form.addParam('doShowPcaFile', LabelParam, #expertLevel=LEVEL_ADVANCED,
+        form.addParam('doShowPcaFile', LabelParam,  # expertLevel=LEVEL_ADVANCED,
                       label="Show IMC file?", default=True,
                       help='This file contains coordinates of each image in the new vector space.')
-        form.addParam('doShowFactorMaps', LabelParam, #expertLevel=LEVEL_ADVANCED,
+        form.addParam('doShowFactorMaps', LabelParam,  # expertLevel=LEVEL_ADVANCED,
                       label="Show factor maps?", default=True,
                       help='Once you know which eigenvectors have some meaning and which are from noise, '
                       'you can display 2D factor maps of selected pairs of factors to visualize clustering (if any).')        
         line = form.addLine('Factors')
-        line.addParam('firstFactor', IntParam, #expertLevel=LEVEL_ADVANCED,
+        line.addParam('firstFactor', IntParam,  # expertLevel=LEVEL_ADVANCED,
                       label="First", default=1) 
-        line.addParam('secondFactor', IntParam, #expertLevel=LEVEL_ADVANCED,
+        line.addParam('secondFactor', IntParam,  # expertLevel=LEVEL_ADVANCED,
                       label="Second", default=2)
                       
     def _getVisualizeDict(self):
@@ -96,7 +98,7 @@ class SpiderViewerCAPCA(ProtocolViewer):
         fn = self.protocol._getFileName('eigFile')
         f = open(fn)
         values = f.readline().split()
-        n = int(values[0]) # Number of factors
+        n = int(values[0])  # Number of factors
         factors = arange(1, n+1)
         percents = []
         cumPercents = []
@@ -118,7 +120,7 @@ class SpiderViewerCAPCA(ProtocolViewer):
         for i, rect in enumerate(bars):
             h = rect.get_height()
             a.text(rect.get_x()+rect.get_width()/2., h+0.3, '%d' % cumPercents[i],
-                ha='center', va='bottom')
+                   ha='center', va='bottom')
         a.set_ylim([0, percents[0] + 5])
         
         return [xplotter]
@@ -128,8 +130,8 @@ class SpiderViewerCAPCA(ProtocolViewer):
         fn = self.protocol._getFileName('imcFile')
         f = open(fn)
         values = f.readline().split()
-        n = int(values[0]) # Number of images
-        nf = int(values[1]) # Number of factors
+        n = int(values[0])  # Number of images
+        nf = int(values[1])  # Number of factors
         
         x = self.firstFactor.get()
         y = self.secondFactor.get()
@@ -147,7 +149,7 @@ class SpiderViewerCAPCA(ProtocolViewer):
         f.close() 
         
         # Create the plot
-        xplotter = EmPlotter(1,1)
+        xplotter = EmPlotter(1, 1)
         a = xplotter.createSubPlot("Factor %d vs %d" % (x, y), 
                                    "Factor %d" % x, "Factor %d" % y)
         a.plot(xFactors, yFactors, 'o')

@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -27,13 +27,12 @@
 import os
 
 from pwem.protocols import ProtImportParticles
-from pyworkflow.tests import setupTestProject, DataSet, unittest, BaseTest
+from pyworkflow.tests import setupTestProject, DataSet
 from pwem.tests.workflows.test_workflow import TestWorkflow
 
 from ..convert import writeSetOfImages
 from ..protocols import *
 
-  
 
 class TestSpiderConvert(TestWorkflow):
     @classmethod
@@ -45,7 +44,8 @@ class TestSpiderConvert(TestWorkflow):
     
     def test_convert(self):
         """ Run an Import particles protocol. """
-        protImport = self.newProtocol(ProtImportParticles, filesPath=self.particlesFn, samplingRate=3.5)
+        protImport = self.newProtocol(ProtImportParticles,
+                                      filesPath=self.particlesFn, samplingRate=3.5)
         self.launchProtocol(protImport)
         # check that input images have been imported (a better way to do this?)
         if getattr(protImport, 'outputParticles', None) is None:
@@ -74,7 +74,8 @@ class TestSpiderWorkflow(TestWorkflow):
     
     def test_mdaWorkflow(self):
         """ Run an Import particles protocol. """
-        protImport = self.newProtocol(ProtImportParticles, filesPath=self.particlesFn, samplingRate=3.5)
+        protImport = self.newProtocol(ProtImportParticles,
+                                      filesPath=self.particlesFn, samplingRate=3.5)
         self.launchProtocol(protImport)
         # check that input images have been imported (a better way to do this?)
         if protImport.outputParticles is None:
@@ -122,7 +123,6 @@ class TestSpiderWorkflow(TestWorkflow):
                              "There was a problem with the SpiderProtCAPCA imcFile")
         self.assertIsNotNone(protCAPCA.seqFile,
                              "There was a problem with the SpiderProtCAPCA seqFile")
-        
         
         protWard = self.newProtocol(SpiderProtClassifyWard)
         protWard.pcaFile.set(protCAPCA.imcFile)
