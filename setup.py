@@ -204,4 +204,7 @@ setup(
         'Bug Reports': 'https://github.com/scipion-em/scipion-em-spider/issues',
         'Source': 'https://github.com/scipion-em/scipion-em-spider/',
     },
+    entry_points={
+        'pyworkflow.plugin': 'spider = spider'
+    }
 )

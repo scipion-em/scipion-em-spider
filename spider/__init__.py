@@ -98,6 +98,3 @@ class Plugin(pwem.Plugin):
                        target="spider/spider",
                        neededProgs=['csh'],
                        default=True)
-
-
-pwem.Domain.registerPlugin(__name__)
