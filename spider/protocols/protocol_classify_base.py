@@ -27,7 +27,7 @@
 from os.path import basename
 
 from pwem.protocols import ProtClassify2D
-from pwem.convert import ImageHandler
+from pwem.emlib.image import ImageHandler
 from pyworkflow.protocol.params import PointerParam, IntParam
 from pyworkflow.utils import removeExt, copyFile
 import pyworkflow.utils.graph as graph

@@ -35,7 +35,7 @@ except ImportError:
 
 from pyworkflow.utils.path import cleanPath
 from pwem.constants import UNIT_PIXEL
-from pwem.convert import ImageHandler
+from pwem.emlib.image import ImageHandler
 
 from pwem.wizards import (EmWizard, ParticleMaskRadiusWizard,
                           ParticlesMaskRadiiWizard,

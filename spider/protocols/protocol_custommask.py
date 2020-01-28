@@ -27,7 +27,7 @@
 from pwem.protocols import ProtCreateMask2D
 from pwem.objects import Mask
 from pyworkflow.protocol.params import PointerParam, FloatParam
-from pwem.convert import ImageHandler
+from pwem.emlib.image import ImageHandler
 
 from ..utils import runCustomMaskScript
 from .protocol_base import SpiderProtocol

@@ -28,7 +28,7 @@ from os.path import join
 
 from pyworkflow.protocol.params import (IntParam, PointerParam,
                                         EnumParam, FloatParam)
-from pwem.convert import ImageHandler
+from pwem.emlib.image import ImageHandler
 
 from ..constants import CA
 from ..objects import PcaFile
