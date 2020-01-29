@@ -101,13 +101,16 @@ def writeScript(inputScript, outputScript, paramsDict):
      
     
 def runTemplate(inputScript, ext, paramsDict, nummpis=1,
-                program=Plugin.getProgram(), log=None, cwd=None):
+                program=None, log=None, cwd=None):
     """ This function will create a valid Spider script
     by copying the template and replacing the values in dictionary.
     After the new file is read, the Spider interpreter is invoked.
     Usually the execution should be done where the results will
     be left.
     """
+    if program is None:
+        program = Plugin.getProgram()
+
     outputScript = replaceBaseExt(inputScript, ext)
     
     if cwd is not None:
