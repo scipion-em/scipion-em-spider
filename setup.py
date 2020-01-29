@@ -36,7 +36,7 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 
-from .spider.constants import __version__
+from spider.constants import __version__
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -120,7 +120,7 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 2.7'
+        'Programming Language :: Python :: 3.5'
     ],
 
     # This field adds keywords for your project which will appear on the
