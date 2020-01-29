@@ -36,7 +36,7 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 
-from .spider.constants import __version__
+from spider.constants import __version__
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -120,14 +120,14 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 2.7'
+        'Programming Language :: Python :: 3.5'
     ],
 
     # This field adds keywords for your project which will appear on the
     # project page. What does your project relate to?
     #
     # Note that this is a string of words separated by whitespace, not a list.
-    keywords='scipion electron-microscopy cryo-em structural-biology image-processing scipion-2.0',  # Optional
+    keywords='scipion electron-microscopy cryo-em structural-biology image-processing scipion-3.0',  # Optional
 
     # You can just specify package directories manually here if your project is
     # simple. Or you can use find_packages().
@@ -204,4 +204,7 @@ setup(
         'Bug Reports': 'https://github.com/scipion-em/scipion-em-spider/issues',
         'Source': 'https://github.com/scipion-em/scipion-em-spider/',
     },
+    entry_points={
+        'pyworkflow.plugin': 'spider = spider'
+    }
 )
