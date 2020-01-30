@@ -28,7 +28,7 @@
 import pyworkflow.protocol.params as params
 from pyworkflow.protocol.constants import LEVEL_ADVANCED, STEPS_SERIAL
 from pwem.constants import ALIGN_PROJ
-from pwem.convert import ImageHandler
+from pwem.emlib.image import ImageHandler
 from pwem.objects import Volume
 
 from ..utils import SpiderDocFile

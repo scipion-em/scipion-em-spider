@@ -34,7 +34,7 @@ import re
 import pyworkflow.utils as pwutils
 import pyworkflow.protocol.params as params
 from pwem.protocols import ProtRefine3D
-from pwem.convert import ImageHandler
+from pwem.emlib.image import ImageHandler
 from pwem.constants import ALIGN_PROJ
 from pwem.objects import Volume, FSC
 
