@@ -163,9 +163,10 @@ class SpiderShell(object):
                                       stdin=subprocess.PIPE,
                                       stdout=FNULL, stderr=FNULL,
                                       env=Plugin.getEnviron(),
-                                      cwd=cwd)
+                                      cwd=cwd,
+                                      universal_newlines=True)
         if self._debug and self._log:
-            self._log = open(self._log, 'w+')
+            self._log = open(self._log, 'wb+')
             
         self.runCmd(ext)
         
@@ -178,7 +179,7 @@ class SpiderShell(object):
     def runCmd(self, cmd):
         if self._debug:
             print(cmd, file=self._log)
-        print(cmd, file=self._proc.stdin)
+        self._proc.stdin.write(cmd)
         self._proc.stdin.flush()
         
     def close(self, end=True):
