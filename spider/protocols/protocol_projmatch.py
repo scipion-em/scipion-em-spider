@@ -391,7 +391,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         self._defineTransformRelation(self.inputParticles, outImgSet)
 
         fsc = FSC(objLabel=self.getRunName())
-        resolution, fscData = self._getFscData(iter=lastIter)
+        resolution, fscData = self._getFscData(it=lastIter)
         fsc.setData(resolution, fscData)
 
         self._defineOutputs(outputFSC=fsc)
@@ -482,11 +482,11 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         from pwem.constants import ALIGN_PROJ
         createItemMatrix(item, row, align=ALIGN_PROJ)
 
-    def _getFscData(self, iter):
+    def _getFscData(self, it):
         if self.protType == GOLD_STD:  # gold std
-            fn = self._getExtraPath("Refinement/final/fscdoc_m_%02d.stk" % iter)
+            fn = self._getExtraPath("Refinement/final/fscdoc_m_%02d.stk" % it)
         else:  # def groups
-            fn = self._getExtraPath("Refinement/final/ofscdoc_%02d.stk" % iter)
+            fn = self._getExtraPath("Refinement/final/ofscdoc_%02d.stk" % it)
 
         resolution = []
         fscData = []

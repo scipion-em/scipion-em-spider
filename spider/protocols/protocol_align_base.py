@@ -139,3 +139,7 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
     def _updateItem(self, item, index):
         item.setLocation(index, self._getFileName('particlesAligned'))
         item.setTransform(Transform())
+
+    def getAverage(self):
+        """ Implemented in subclasses. """
+        pass

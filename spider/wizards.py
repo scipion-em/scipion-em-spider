@@ -26,12 +26,8 @@
 # **************************************************************************
 
 import os
-try:
-    import tkinter as tk
-    from tkinter import ttk
-except ImportError:
-    import Tkinter as tk
-    import ttk
+import tkinter as tk
+from tkinter import ttk
 
 from pyworkflow.utils.path import cleanPath
 from pwem.constants import UNIT_PIXEL

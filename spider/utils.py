@@ -195,10 +195,10 @@ class SpiderDocFile(object):
         self._file = open(filename, mode)
         self._count = 0
 
-    def nowisthetime(self, dt=None, format='%d-%b-%Y AT %H:%M:%S'):
+    def nowisthetime(self, dt=None, fmt='%d-%b-%Y AT %H:%M:%S'):
         if dt is None:
             dt = datetime.datetime.now()
-        return dt.strftime(format).upper()
+        return dt.strftime(fmt).upper()
 
     def fixHeaders(self, headers):
         """make all headers 11 characters in width; return doc string"""
