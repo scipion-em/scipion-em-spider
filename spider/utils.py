@@ -179,7 +179,7 @@ class SpiderShell(object):
     def runCmd(self, cmd):
         if self._debug:
             print(cmd, file=self._log)
-        self._proc.stdin.write(cmd)
+        self._proc.stdin.write(str(cmd))
         self._proc.stdin.flush()
         
     def close(self, end=True):
