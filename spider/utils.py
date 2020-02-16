@@ -75,8 +75,8 @@ def writeScript(inputScript, outputScript, paramsDict):
     """ Create a new Spider script by substituting 
     params in the input 'paramsDict'.
     """
-    fIn = open(Plugin.getScript(inputScript), 'r')
-    fOut = open(outputScript, 'w')
+    fIn = open(Plugin.getScript(inputScript), 'r', encoding='utf-8')
+    fOut = open(outputScript, 'w', encoding='utf-8')
     inHeader = True  # After the end of header, no more value replacement
     inFrL = False
 
@@ -166,7 +166,7 @@ class SpiderShell(object):
                                       cwd=cwd,
                                       universal_newlines=True)
         if self._debug and self._log:
-            self._log = open(self._log, 'wb+')
+            self._log = open(self._log, 'w+')
             
         self.runCmd(ext)
         
@@ -179,14 +179,14 @@ class SpiderShell(object):
     def runCmd(self, cmd):
         if self._debug:
             print(cmd, file=self._log)
-        self._proc.stdin.write(str(cmd))
+        self._proc.stdin.write(str(cmd) + '\n')
         self._proc.stdin.flush()
         
     def close(self, end=True):
         if end:
             self.runCmd("end")
         self._proc.wait()
-        # self._proc.kill() TODO: Check if necessary
+        # self._proc.kill() # TODO: Check if necessary
         
 
 class SpiderDocFile(object):

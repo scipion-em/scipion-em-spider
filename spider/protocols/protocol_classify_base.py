@@ -160,8 +160,8 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
                 for i in node.imageList:
                     classDict[int(i)] = classCount
 
-        def updateItem(p, i):
-            classId = classDict.get(i, None)
+        def updateItem(p, item):
+            classId = classDict.get(item, None)
             if classId is None:
                 p._appendItem = False
             else:
@@ -204,7 +204,7 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
             writeAverages: whether to write class averages or not.
         """
         dendroFile = self._getFileName('dendroDoc')
-        # Dendrofile is a docfile with at least 3 data colums (class, height, id)
+        # Dendrofile is a docfile with at least 3 data columns (class, height, id)
         doc = SpiderDocFile(dendroFile)
         values = []
         indexes = []
@@ -224,7 +224,7 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
         return self._buildDendrogram(0, len(values)-1, 1, writeAverages)
 
     def getImage(self, particleNumber):
-        return self.ih.read((particleNumber, self.dendroImages))
+        return self.ih.read((int(particleNumber), self.dendroImages))
         
     def addChildNode(self, node, leftIndex, rightIndex, index,
                      writeAverages, level, searchStop):
@@ -317,8 +317,9 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
             if writeAverages:
                 # normalize the sum of images depending on the number of particles
                 # assigned to this classes
-                avgImage = node.image / float(node.getSize()) 
-                self.ih.write(avgImage, (node.avgCount, self.dendroAverages))
+                # avgImage = node.image / float(node.getSize())
+                node.image.inplaceDivide(float(node.getSize()))
+                self.ih.write(node.image, (node.avgCount, self.dendroAverages))
                 fn = self._getTmpPath('doc_class%03d.stk' % index)
                 doc = SpiderDocFile(fn, 'w+')
                 for i in node.imageList:

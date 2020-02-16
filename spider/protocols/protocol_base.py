@@ -34,6 +34,7 @@ from ..convert import writeSetOfImages
 
 class SpiderProtocol(EMProtocol):
     """ Base protocol for SPIDER utils. """
+    _params = None
             
     def convertInput(self, attrName, stackFn, selFn):
         """ Convert from an input pointer of SetOfImages to Spider.
