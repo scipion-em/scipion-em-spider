@@ -28,6 +28,7 @@ import os
 
 from pwem.protocols import ProtImportParticles
 from pyworkflow.tests import setupTestProject, DataSet
+from pyworkflow.utils import magentaStr
 from pwem.tests.workflows.test_workflow import TestWorkflow
 
 from ..convert import writeSetOfImages
@@ -44,13 +45,13 @@ class TestSpiderConvert(TestWorkflow):
     
     def test_convert(self):
         """ Run an Import particles protocol. """
+        print(magentaStr("\n==> Importing data - particles:"))
         protImport = self.newProtocol(ProtImportParticles,
                                       filesPath=self.particlesFn, samplingRate=3.5)
         self.launchProtocol(protImport)
-        # check that input images have been imported (a better way to do this?)
-        if getattr(protImport, 'outputParticles', None) is None:
-            raise Exception('Import of images: %s, failed. outputParticles is None.' % self.particlesFn)
-        
+        self.assertIsNotNone(protImport.outputParticles,
+                             "SetOfParticles has not been produced.")
+
         stackFn = self.getOutputPath('stack.stk')
         selFn = self.getOutputPath('stack_sel.stk')
         print("stackFn: ", stackFn)
@@ -74,20 +75,22 @@ class TestSpiderWorkflow(TestWorkflow):
     
     def test_mdaWorkflow(self):
         """ Run an Import particles protocol. """
+        print(magentaStr("\n==> Importing data - particles:"))
         protImport = self.newProtocol(ProtImportParticles,
                                       filesPath=self.particlesFn, samplingRate=3.5)
         self.launchProtocol(protImport)
-        # check that input images have been imported (a better way to do this?)
-        if protImport.outputParticles is None:
-            raise Exception('Import of images: %s, failed. outputParticles is None.' % self.particlesFn)
-        
+        self.assertIsNotNone(protImport.outputParticles,
+                             "SetOfParticles has not been produced.")
+
+        print(magentaStr("\n==> Testing spider - filter particles:"))
         protFilter = self.newProtocol(SpiderProtFilter)
         protFilter.inputParticles.set(protImport)
         protFilter.inputParticles.setExtended('outputParticles')
         self.launchProtocol(protFilter)
         self.assertIsNotNone(protFilter.outputParticles,
                              "There was a problem with the SpiderProtFilter outputParticles")
-        
+
+        print(magentaStr("\n==> Testing spider - align ap sr:"))
         protAPSR = self.newProtocol(SpiderProtAlignAPSR)
         protAPSR.inputParticles.set(protFilter.outputParticles)
         self.launchProtocol(protAPSR)
@@ -97,7 +100,8 @@ class TestSpiderWorkflow(TestWorkflow):
                              "There was a problem with the SpiderProtAlignAPSR outputAverage")
         self.assertTrue(protAPSR.outputParticles.hasAlignment2D(),
                         "outputParticles have no alignment registered")
-        
+
+        print(magentaStr("\n==> Testing spider - align pairwise:"))
         protPairwise = self.newProtocol(SpiderProtAlignPairwise)
         protPairwise.inputParticles.set(protFilter.outputParticles)
         self.launchProtocol(protPairwise)       
@@ -107,13 +111,15 @@ class TestSpiderWorkflow(TestWorkflow):
                              "There was a problem with the SpiderProtAlignPairwise outputAverage")
         self.assertTrue(protPairwise.outputParticles.hasAlignment2D(),
                         "outputParticles have no alignment registered")
-         
+
+        print(magentaStr("\n==> Testing spider - custom mask 2d:"))
         protMask = self.newProtocol(SpiderProtCustomMask)
         protMask.inputImage.set(protAPSR.outputAverage)
         self.launchProtocol(protMask)       
         self.assertIsNotNone(protMask.outputMask,
                              "There was a problem with the SpiderProtCustomMask outputAverage")
-              
+
+        print(magentaStr("\n==> Testing spider - ca pca:"))
         protCAPCA = self.newProtocol(SpiderProtCAPCA)
         protCAPCA.maskType.set(1)
         protCAPCA.maskImage.set(protMask.outputMask)
@@ -123,7 +129,8 @@ class TestSpiderWorkflow(TestWorkflow):
                              "There was a problem with the SpiderProtCAPCA imcFile")
         self.assertIsNotNone(protCAPCA.seqFile,
                              "There was a problem with the SpiderProtCAPCA seqFile")
-        
+
+        print(magentaStr("\n==> Testing spider - classify ward:"))
         protWard = self.newProtocol(SpiderProtClassifyWard)
         protWard.pcaFile.set(protCAPCA.imcFile)
         protWard.inputParticles.set(protAPSR.outputParticles)
@@ -134,7 +141,8 @@ class TestSpiderWorkflow(TestWorkflow):
         nativeFiles.append(dendroFile)
         nativeFiles.append(averages)
         self.validateFilesExist(nativeFiles)
-        
+
+        print(magentaStr("\n==> Testing spider - classift k-means:"))
         protKmeans = self.newProtocol(SpiderProtClassifyKmeans)
         protKmeans.pcaFile.set(protCAPCA.imcFile)
         protKmeans.inputParticles.set(protAPSR.outputParticles)
@@ -142,7 +150,8 @@ class TestSpiderWorkflow(TestWorkflow):
         self.launchProtocol(protKmeans)
         self.assertIsNotNone(protKmeans.outputClasses,
                              "There was a problem with the SpiderProtClassifyKmeans outputClasses")
-        
+
+        print(magentaStr("\n==> Testing spider - classify diday:"))
         protDiday = self.newProtocol(SpiderProtClassifyDiday)
         protDiday.pcaFile.set(protCAPCA.imcFile)
         protDiday.inputParticles.set(protAPSR.outputParticles)

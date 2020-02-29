@@ -43,9 +43,9 @@ class TestSpiderBase(BaseTest):
                                          filesPath=pattern, samplingRate=samplingRate,
                                          checkStack=checkStack)
         cls.launchProtocol(cls.protImport)
-        # check that input images have been imported (a better way to do this?)
-        if cls.protImport.outputParticles is None:
-            raise Exception('Import of images: %s, failed. outputParticles is None.' % pattern)
+        cls.assertIsNotNone(cls.protImport.outputParticles,
+                            "SetOfParticles has not been produced.")
+
         return cls.protImport
 
 

@@ -25,6 +25,7 @@
 # **************************************************************************
 
 from pyworkflow.tests import *
+from pyworkflow.utils import magentaStr
 from pwem.protocols import ProtImportParticles, ProtImportVolumes
 
 from ..protocols import SpiderProtRefinement
@@ -59,7 +60,7 @@ class TestSpiderBase(BaseTest):
 
 class TestSpiderRefinement(TestSpiderBase):
     def test_ProjMatchSpider(self):
-        print("Import Set of particles with angles")
+        print(magentaStr("\n==> Importing data - particles:"))
         protImportPart = self.newProtocol(ProtImportParticles,
                                           objLabel='from scipion (to-reconstruct)',
                                           importFrom=ProtImportParticles.IMPORT_FROM_SCIPION,
@@ -70,15 +71,15 @@ class TestSpiderRefinement(TestSpiderBase):
         self.assertIsNotNone(protImportPart.getFiles(),
                              "There was a problem with the import")
 
-        print("Import Volume")
+        print(magentaStr("\n==> Importing data - volume:"))
         protImportVol = self.newProtocol(ProtImportVolumes,
                                          filesPath=self.vol,
                                          samplingRate=7.08)
         self.launchProtocol(protImportVol)
         self.assertIsNotNone(protImportVol.getFiles(),
                              "There was a problem with the import")
-        
-        print("Run Spider refinement")
+
+        print(magentaStr("\n==> Testing spider - refinement:"))
         protRefine = self.newProtocol(SpiderProtRefinement,
                                       numberOfIterations=2,
                                       alignmentShift=2,
