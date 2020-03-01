@@ -126,7 +126,7 @@ def runScript(inputScript, ext, program, nummpis, log=None, cwd=None):
     scriptName = removeBaseExt(inputScript)
     args = " %s @%s" % (ext, scriptName)
     runJob(log, program, args, numberOfMpi=nummpis,
-           env=dict(Plugin.getEnviron()), cwd=cwd)
+           env=Plugin.getEnviron(), cwd=cwd)
     
 
 def runCustomMaskScript(filterRadius1, sdFactor,
