@@ -159,7 +159,8 @@ class SpiderShell(object):
         cwd = kwargs.get('cwd', None)
         
         FNULL = open(os.devnull, 'w')
-        self._proc = subprocess.Popen(Plugin.getProgram(), shell=True,
+        cmd = Plugin.getProgram().split()
+        self._proc = subprocess.Popen(cmd,
                                       stdin=subprocess.PIPE,
                                       stdout=FNULL, stderr=FNULL,
                                       env=Plugin.getEnviron(),
