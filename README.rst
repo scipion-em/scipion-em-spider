@@ -4,9 +4,13 @@ Spider plugin
 
 This plugin provide wrappers around several programs of `SPIDER <https://spider.wadsworth.org/spider_doc/spider/docs/spider.html>`_ software suite.
 
-.. figure:: http://scipion-test.cnb.csic.es:9980/badges/spider_devel.svg
-   :align: left
-   :alt: build status
++------------------+------------------+
+| stable: |stable| | devel: | |devel| |
++------------------+------------------+
+
+.. |stable| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_prod.svg
+.. |devel| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_sdevel.svg
+
 
 Installation
 ------------
