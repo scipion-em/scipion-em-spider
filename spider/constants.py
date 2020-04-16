@@ -26,7 +26,7 @@
 
 # Define the version of the 'spider' Python module, that can also be
 # imported from setup.py for PyPI distribution
-__version__ = '1.0.9'
+__version__ = '1.1.0'
 
 # ----------------- Constants values --------------------------------------
 SPIDER_HOME = 'SPIDER_HOME'
