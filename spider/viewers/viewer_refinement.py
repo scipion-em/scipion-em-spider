@@ -26,7 +26,6 @@
 
 import os
 from glob import glob
-from io import open
 
 import pyworkflow.protocol.params as params
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO

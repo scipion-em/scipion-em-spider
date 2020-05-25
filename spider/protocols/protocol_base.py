@@ -23,7 +23,6 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-from io import open
 
 from pwem.protocols import EMProtocol
 

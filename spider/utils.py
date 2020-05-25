@@ -26,7 +26,6 @@
 
 import os
 from os.path import join, dirname, abspath
-from io import open
 import datetime
 from collections import OrderedDict
 import subprocess

@@ -23,7 +23,6 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-from io import open
 
 from pyworkflow.protocol.params import *
 from pyworkflow.viewer import (ProtocolViewer, DESKTOP_TKINTER,

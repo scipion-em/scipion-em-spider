@@ -26,7 +26,6 @@
 # *
 # **************************************************************************
 
-from io import open
 from os.path import join
 from glob import glob
 import re
