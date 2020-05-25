@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -24,26 +24,20 @@
 # *
 # **************************************************************************
 
-"""
-This module implements visualization program
-for Spider refinement protocols.
-"""
-
 import os
 from glob import glob
 
-import pyworkflow.em as em
 import pyworkflow.protocol.params as params
-from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO, ProtocolViewer
-from pyworkflow.em.viewers import EmPlotter
+from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
+from pwem.viewers import (EmPlotter, ChimeraClientView,
+                          ChimeraView, EmProtocolViewer)
 
-from spider.constants import *
-from spider.protocols import SpiderProtRefinement
-from spider.utils import SpiderDocFile
+from ..constants import *
+from ..protocols import SpiderProtRefinement
+from ..utils import SpiderDocFile
 
 
-
-class SpiderViewerRefinement(ProtocolViewer):
+class SpiderViewerRefinement(EmProtocolViewer):
     """ Visualization of Spider refinement results. """
 
     _environments = [DESKTOP_TKINTER, WEB_DJANGO]
@@ -70,10 +64,13 @@ Examples:
                       help="Write the iteration list to visualize.")
 
         group = form.addGroup('Angular assignment')
-        #group.addParam('showImagesAngularAssignment', params.LabelParam, default=True,
-        #               label='Particles angular assignment')
-        group.addParam('displayAngDist', params.EnumParam, choices=['2D plot', 'chimera'],
-                       default=ANGDIST_2DPLOT, display=params.EnumParam.DISPLAY_HLIST,
+        # group.addParam('showImagesAngularAssignment',
+        # params.LabelParam, default=True,
+        # label='Particles angular assignment')
+        group.addParam('displayAngDist', params.EnumParam,
+                       choices=['2D plot', 'chimera'],
+                       default=ANGDIST_2DPLOT,
+                       display=params.EnumParam.DISPLAY_HLIST,
                        label='Display angular distribution',
                        help='*2D plot*: display angular distribution as interative 2D in matplotlib.\n'
                             '*chimera*: display angular distribution using Chimera with red spheres.')
@@ -99,8 +96,7 @@ Examples:
 
         group.addParam('showFSC', params.LabelParam, default=True,
                        important=True,
-                       label='Display resolution plots (FSC)',
-                       help='')
+                       label='Display resolution plots (FSC)')
         group.addParam('groupFSC', params.EnumParam, default=0,
                        choices=['iterations', 'defocus groups'],
                        condition='not isGoldStdProt and viewIter==0',
@@ -124,7 +120,8 @@ Examples:
 
     def volList(self):
         if self.isGoldStdProt():
-            return ['reconstructed', 'half1', 'half2', 'filtered', 'filtered & centered']
+            return ['reconstructed', 'half1', 'half2', 'filtered',
+                    'filtered & centered']
         else:
             return ['reconstructed', 'half1', 'half2']
 
@@ -158,9 +155,9 @@ Examples:
     def _getFinalPath(self, *paths):
         return self.protocol._getExtraPath('Refinement', 'final', *paths)
 
-    # ===============================================================================
-    # ShowVolumes
-    # ===============================================================================
+# =========================================================================
+# ShowVolumes
+# =========================================================================
     def _createVolumesSqlite(self):
         """ Write an sqlite with all volumes selected for visualization. """
 
@@ -203,12 +200,12 @@ Examples:
                     f.write("open spider:%s\n" % localVol)
             f.write('tile\n')
             f.close()
-            view = em.ChimeraView(cmdFile)
+            view = ChimeraView(cmdFile)
         else:
             # view = CommandView('xmipp_chimera_client --input "%s" --mode projector 256 &' % volumes[0])
             # view = em.ChimeraClientView(volumes[0])
-            view = em.ChimeraClientView(volumes[0],
-                                        showProjection=True)  # , angularDistFile=sqliteFn, spheresDistance=radius)
+            view = ChimeraClientView(volumes[0],
+                                     showProjection=True)  # , angularDistFile=sqliteFn, spheresDistance=radius)
 
         return [view]
 
@@ -219,9 +216,9 @@ Examples:
         elif self.displayVol == VOLUME_SLICES:
             return self._createVolumesSqlite()
 
-            # ===============================================================================
-            # plotFSC
-            # ===============================================================================
+# ===============================================================================
+# plotFSC
+# ===============================================================================
 
     def _plotFSC(self, a, fscFile):
         resolution = []
@@ -278,7 +275,7 @@ Examples:
                 self._plotFSC(a, fscFile)
                 legends.append('%s %d' % (legendPrefix, it))
             else:
-                print "Missing file: ", fscFile
+                print("Missing file: ", fscFile)
 
         # plot final FSC curve (from BP)
         if self.groupFSC == 0 and not self.isGoldStdProt():
@@ -288,7 +285,6 @@ Examples:
                 if os.path.exists(fscFinalFile):
                     self._plotFSC(a, fscFinalFile)
                     legends.append('final')
-
 
         if threshold < self.maxfsc:
             a.plot([self.minInv, self.maxInv], [threshold, threshold],
@@ -340,14 +336,14 @@ Examples:
                 views.append(plotter)
         else:
             it = iterations[-1]
-            print "Using last iteration: ", it
+            print("Using last iteration: ", it)
             anglesSqlite = self._getFinalPath('angular_dist_%03d.sqlite' % it)
             self.createAngDistributionSqlite(anglesSqlite, nparts,
                                              itemDataIterator=self._iterAngles(it))
             volumes = self.getVolumeNames(it)
-            views.append(em.ChimeraClientView(volumes[0],
-                                              showProjection=True,
-                                              angularDistFile=anglesSqlite,
-                                              spheresDistance=2))  # self.spheresScale.get()))
+            views.append(ChimeraClientView(volumes[0],
+                                           showProjection=True,
+                                           angularDistFile=anglesSqlite,
+                                           spheresDistance=2))  # self.spheresScale.get()))
 
         return views

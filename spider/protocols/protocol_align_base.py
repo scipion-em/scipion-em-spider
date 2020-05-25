@@ -7,7 +7,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -28,13 +28,13 @@
 from os.path import join, exists
 
 from pyworkflow.protocol.params import IntParam, EnumParam
-from pyworkflow.em import ProtAlign2D, Particle, NO_INDEX
-from pyworkflow.em.data import Transform
+from pwem.protocols import ProtAlign2D
+from pwem.objects import Particle, Transform
+from pwem.constants import NO_INDEX
 
-from spider.constants import *
-from spider.utils import getDocsLink
-from protocol_base import SpiderProtocol
-
+from ..constants import *
+from ..utils import getDocsLink
+from .protocol_base import SpiderProtocol
 
       
 class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
@@ -58,7 +58,7 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
     def getAlignDir(self):
         return self._alignDir 
 
-    #--------------------------- DEFINE param functions -----------------------
+    # --------------------------- DEFINE param functions ----------------------
     
     def _defineAlignParams(self, form):
         line = form.addLine('Radius (px):', 
@@ -86,10 +86,11 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
                                  self._getFileName('particles'),
                                  self._getFileName('particlesSel'))
         self._insertFunctionStep('alignParticlesStep', 
-                                 self.innerRadius.get(), self.outerRadius.get())
+                                 self.innerRadius.get(),
+                                 self.outerRadius.get())
         self._insertFunctionStep('createOutputStep')
 
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
 
     def createOutputStep(self):
         outputStk = self._getFileName('particlesAligned')
@@ -109,7 +110,8 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
 
         imgSet.copyItems(particles,
                          updateItemCallback=self._updateItem,
-                         itemDataIterator=iter(range(1, particles.getSize()+1)))
+                         itemDataIterator=iter(range(1,
+                                                     particles.getSize()+1)))
 
         self._defineOutputs(outputParticles=imgSet)
         self._defineTransformRelation(self.inputParticles, imgSet)
@@ -137,3 +139,7 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
     def _updateItem(self, item, index):
         item.setLocation(index, self._getFileName('particlesAligned'))
         item.setTransform(Transform())
+
+    def getAverage(self):
+        """ Implemented in subclasses. """
+        pass

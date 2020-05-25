@@ -1,3 +1,4 @@
+1.1.0 - migrated to python 3
 1.0.9 - config vars for binaries can be set by user
 1.0.7 - switch to rst
 1.0.6 - updated spider to 25.02 to fix segfault bug of intel binaries

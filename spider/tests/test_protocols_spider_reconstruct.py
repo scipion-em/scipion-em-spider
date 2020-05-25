@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -25,9 +25,9 @@
 # **************************************************************************
 
 from pyworkflow.tests import *
-from pyworkflow.em.protocol import ProtImportParticles
+from pwem.protocols import ProtImportParticles
 
-from spider.protocols import SpiderProtReconstruct
+from ..protocols import SpiderProtReconstruct
 
 
 class TestSpiderBase(BaseTest):
@@ -43,15 +43,15 @@ class TestSpiderBase(BaseTest):
                                          filesPath=pattern, samplingRate=samplingRate,
                                          checkStack=checkStack)
         cls.launchProtocol(cls.protImport)
-        # check that input images have been imported (a better way to do this?)
-        if cls.protImport.outputParticles is None:
-            raise Exception('Import of images: %s, failed. outputParticles is None.' % pattern)
+        cls.assertIsNotNone(cls.protImport.outputParticles,
+                            "SetOfParticles has not been produced.")
+
         return cls.protImport
 
 
 class TestSpiderReconstruct(TestSpiderBase):
     def test_ReconstructSpider(self):
-        print "Import Set of particles with angles"
+        print("Import Set of particles with angles")
         prot1 = self.newProtocol(ProtImportParticles,
                                  objLabel='from scipion (to-reconstruct)',
                                  importFrom=ProtImportParticles.IMPORT_FROM_SCIPION,
@@ -61,7 +61,7 @@ class TestSpiderReconstruct(TestSpiderBase):
                                  )
         self.launchProtocol(prot1)
         
-        print "Run Spider BP 32F Reconstruct"
+        print("Run Spider BP 32F Reconstruct")
         protReconstruct = self.newProtocol(SpiderProtReconstruct)
         protReconstruct.inputParticles.set(prot1.outputParticles)
         self.launchProtocol(protReconstruct)

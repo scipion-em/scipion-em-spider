@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -23,20 +23,17 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-Some Spider protocol base classes.
-"""
 
-from pyworkflow.em import EMProtocol
+from pwem.protocols import EMProtocol
 
-import spider
-from spider.utils import runTemplate
-from spider.convert import writeSetOfImages
-
+from .. import Plugin
+from ..utils import runTemplate
+from ..convert import writeSetOfImages
 
 
 class SpiderProtocol(EMProtocol):
     """ Base protocol for SPIDER utils. """
+    _params = None
             
     def convertInput(self, attrName, stackFn, selFn):
         """ Convert from an input pointer of SetOfImages to Spider.
@@ -48,7 +45,7 @@ class SpiderProtocol(EMProtocol):
         imgSetPointer = getattr(self, attrName)
         writeSetOfImages(imgSetPointer.get(), stackFn, selFn)
         
-    def _getFileName(self, key):
+    def _getFileName(self, key, *args):
         """ Give a key, append the extension
         and prefix the protocol working dir. 
         """
@@ -74,7 +71,7 @@ class SpiderProtocol(EMProtocol):
 
         log = getattr(self, '_log', None)
         mpiFlag = True if nummpis > 1 else False
-        program = spider.Plugin.getProgram(mpiFlag)
+        program = Plugin.getProgram(mpiFlag)
         runTemplate(inputScript, ext, paramsDict, nummpis=nummpis,
                     program=program, log=log)
         self._leaveWorkingDir()

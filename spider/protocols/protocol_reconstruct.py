@@ -7,7 +7,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -25,20 +25,19 @@
 # *
 # **************************************************************************
 
-import pyworkflow.em as em
 import pyworkflow.protocol.params as params
 from pyworkflow.protocol.constants import LEVEL_ADVANCED, STEPS_SERIAL
-from pyworkflow.em.constants import ALIGN_PROJ
-from pyworkflow.em.data import Volume
+from pwem.constants import ALIGN_PROJ
+from pwem.emlib.image import ImageHandler
+from pwem.objects import Volume
 
-from spider.utils import SpiderDocFile
-from spider.constants import (BP_32F, ANGLE_PHI, ANGLE_PSI,
-                              ANGLE_THE, SHIFTX, SHIFTY)
-from spider.convert import convertEndian, alignmentToRow
-from protocol_base import SpiderProtocol
+from ..utils import SpiderDocFile
+from ..constants import (BP_32F, ANGLE_PHI, ANGLE_PSI,
+                         ANGLE_THE, SHIFTX, SHIFTY)
+from ..convert import convertEndian, alignmentToRow
+from .protocol_base import SpiderProtocol
 
 
-                               
 class SpiderProtReconstruct(SpiderProtocol):
     """ This protocol wraps SPIDER BP 32F command.
 
@@ -50,9 +49,9 @@ class SpiderProtReconstruct(SpiderProtocol):
     def __init__(self, **kwargs):
         SpiderProtocol.__init__(self, **kwargs)
         self.stepsExecutionMode = STEPS_SERIAL
-        #self.allowMpi = True
+        # self.allowMpi = True
 
-    #--------------------------- DEFINE param functions --------------------------------------------
+    # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
         form.addSection(label='Input')
 
@@ -72,18 +71,19 @@ class SpiderProtReconstruct(SpiderProtocol):
                            'create the three output volumes one by one.')
         form.addParallelSection(threads=1, mpi=0)
         
-    #--------------------------- INSERT steps functions --------------------------------------------  
+    # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):        
-        self._insertFunctionStep('convertInputStep', self.inputParticles.get().getObjId())
+        self._insertFunctionStep('convertInputStep',
+                                 self.inputParticles.get().getObjId())
         self._insertFunctionStep('rotateStep')
         self._insertFunctionStep('reconstructStep')
         self._insertFunctionStep('createOutputStep')
     
-    #--------------------------- STEPS functions --------------------------------------------
+    # --------------------------- STEPS functions -----------------------------
     def convertInputStep(self, particlesId):
         """ Convert all needed inputs before running the refinement script. """
         partSet = self.inputParticles.get()
-        ih = em.ImageHandler()
+        ih = ImageHandler()
 
         stackfile = self._getPath('particles.stk')
         docfile = self._getPath('docfile.stk')
@@ -130,8 +130,8 @@ class SpiderProtReconstruct(SpiderProtocol):
                   '[next_group_align]': "'docfile'",
                   '[next_group_vol]': "'volume'"}
         self.runTemplate(scriptName, 'stk', params,
-                        nummpis=self.numberOfMpi.get())
-        #self.runJob('hostname', '', numberOfMpi=3)
+                         nummpis=self.numberOfMpi.get())
+        # self.runJob('hostname', '', numberOfMpi=3)
 
     def createOutputStep(self):
         imgSet = self.inputParticles.get()
@@ -142,13 +142,13 @@ class SpiderProtReconstruct(SpiderProtocol):
         self._defineOutputs(outputVolume=vol)
         self._defineSourceRelation(self.inputParticles, vol)
     
-    #--------------------------- INFO functions -------------------------------------------- 
+    # --------------------------- INFO functions ------------------------------
     def _validate(self):
         errors = []
         return errors
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append("Volume reconstructed using %s command" % self.getEnumText('bpType'))
 
         return summary

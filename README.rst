@@ -4,14 +4,19 @@ Spider plugin
 
 This plugin provide wrappers around several programs of `SPIDER <https://spider.wadsworth.org/spider_doc/spider/docs/spider.html>`_ software suite.
 
-.. figure:: http://scipion-test.cnb.csic.es:9980/badges/spider_devel.svg
-   :align: left
-   :alt: build status
++--------------+----------------+--------------------+
+| prod: |prod| | devel: |devel| | support: |support| |
++--------------+----------------+--------------------+
+
+.. |prod| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_prod.svg
+.. |devel| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_devel.svg
+.. |support| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_support.svg
+
 
 Installation
 ------------
 
-You will need to use `2.0 <https://github.com/I2PC/scipion/releases/tag/V2.0.0>`_ version of Scipion to be able to run these protocols. To install the plugin, you have two options:
+You will need to use `3.0 <https://github.com/I2PC/scipion/releases/tag/V3.0.0>`_ version of Scipion to be able to run these protocols. To install the plugin, you have two options:
 
 a) Stable version
 

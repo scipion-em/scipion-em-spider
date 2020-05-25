@@ -1,0 +1,4 @@
+from .test_protocols_spider_align import TestSpiderAlign
+from .test_protocols_spider_projmatch import TestSpiderRefinement
+from .test_protocols_spider_reconstruct import TestSpiderReconstruct
+from .test_workflow_spiderMDA import TestSpiderConvert, TestSpiderWorkflow

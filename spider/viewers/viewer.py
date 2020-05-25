@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -23,14 +23,11 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module implements viewers for Spider protocols.
-"""
 
-from pyworkflow.em.viewers import DataViewer
+from pwem.viewers import DataViewer
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
-from spider.objects import PcaFile
 
+from ..objects import PcaFile
 
     
 class SpiderViewer(DataViewer):

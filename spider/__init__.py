@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -27,17 +27,17 @@
 import os
 from os.path import abspath
 
-import pyworkflow.em
+import pwem
 from pyworkflow.utils import Environ, join
 
-from constants import *
+from .constants import *
 
 
 _logo = "spider_logo.png"
 _references = ['Shaikh2008', 'Frank1996b']
 
 
-class Plugin(pyworkflow.em.Plugin):
+class Plugin(pwem.Plugin):
     _homeVar = SPIDER_HOME
     _pathVars = [SPIDER_HOME]
     _supportedVersions = ['25.02']
@@ -66,7 +66,7 @@ class Plugin(pyworkflow.em.Plugin):
                 if var not in env:
                     errors += "\n   Missing SPIDER variable: '%s'" % var
             if len(errors):
-                print "ERRORS: " + errors
+                print("ERRORS: " + errors)
 
         env.set('PATH', env[SPBIN_DIR], env.END)
         return env
@@ -98,6 +98,3 @@ class Plugin(pyworkflow.em.Plugin):
                        target="spider/spider",
                        neededProgs=['csh'],
                        default=True)
-
-
-pyworkflow.em.Domain.registerPlugin(__name__)

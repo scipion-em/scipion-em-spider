@@ -1,4 +1,4 @@
-    # **************************************************************************
+# **************************************************************************
 # *
 # * Authors:     J.M. De la Rosa Trevin (delarosatrevin@scilifelab.se)
 # *
@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -34,7 +34,7 @@ import re
 from pyworkflow.utils import runJob
 from pyworkflow.utils.path import replaceBaseExt, removeBaseExt
 
-import spider
+from . import Plugin
 
 
 END_HEADER = 'END BATCH HEADER'
@@ -74,9 +74,9 @@ def writeScript(inputScript, outputScript, paramsDict):
     """ Create a new Spider script by substituting 
     params in the input 'paramsDict'.
     """
-    fIn = open(spider.Plugin.getScript(inputScript), 'r')
-    fOut = open(outputScript, 'w')
-    inHeader = True # After the end of header, no more value replacement
+    fIn = open(Plugin.getScript(inputScript), 'r', encoding='utf-8')
+    fOut = open(outputScript, 'w', encoding='utf-8')
+    inHeader = True  # After the end of header, no more value replacement
     inFrL = False
 
     for i, line in enumerate(fIn):
@@ -91,9 +91,8 @@ def writeScript(inputScript, outputScript, paramsDict):
                                               "%(var)s%(value)s%(suffix)s\n")
                 if newLine:
                     line = newLine
-            except Exception, ex:
-                print ex, "in line (%d): %s" % (i+1, line)
-                raise ex
+            except Exception as ex:
+                print(ex, "in line (%d): %s" % (i+1, line))
             inFrL = line.lower().startswith("fr ")
         fOut.write(line)
     fIn.close()
@@ -101,13 +100,16 @@ def writeScript(inputScript, outputScript, paramsDict):
      
     
 def runTemplate(inputScript, ext, paramsDict, nummpis=1,
-                program=spider.Plugin.getProgram(), log=None, cwd=None):
+                program=None, log=None, cwd=None):
     """ This function will create a valid Spider script
     by copying the template and replacing the values in dictionary.
     After the new file is read, the Spider interpreter is invoked.
     Usually the execution should be done where the results will
     be left.
     """
+    if program is None:
+        program = Plugin.getProgram()
+
     outputScript = replaceBaseExt(inputScript, ext)
     
     if cwd is not None:
@@ -123,7 +125,7 @@ def runScript(inputScript, ext, program, nummpis, log=None, cwd=None):
     scriptName = removeBaseExt(inputScript)
     args = " %s @%s" % (ext, scriptName)
     runJob(log, program, args, numberOfMpi=nummpis,
-           env=dict(spider.Plugin.getEnviron()), cwd=cwd)
+           env=Plugin.getEnviron(), cwd=cwd)
     
 
 def runCustomMaskScript(filterRadius1, sdFactor,
@@ -156,11 +158,13 @@ class SpiderShell(object):
         cwd = kwargs.get('cwd', None)
         
         FNULL = open(os.devnull, 'w')
-        self._proc = subprocess.Popen(spider.Plugin.getProgram(), shell=True,
+        cmd = Plugin.getProgram().split()
+        self._proc = subprocess.Popen(cmd,
                                       stdin=subprocess.PIPE,
                                       stdout=FNULL, stderr=FNULL,
-                                      env=spider.Plugin.getEnviron(),
-                                      cwd=cwd)
+                                      env=Plugin.getEnviron(),
+                                      cwd=cwd,
+                                      universal_newlines=True)
         if self._debug and self._log:
             self._log = open(self._log, 'w+')
             
@@ -174,15 +178,15 @@ class SpiderShell(object):
     
     def runCmd(self, cmd):
         if self._debug:
-            print >> self._log, cmd
-        print >> self._proc.stdin, cmd
+            print(cmd, file=self._log)
+        self._proc.stdin.write(str(cmd) + '\n')
         self._proc.stdin.flush()
         
     def close(self, end=True):
         if end:
             self.runCmd("end")
         self._proc.wait()
-        #self._proc.kill() TODO: Check if necessary
+        # self._proc.kill() # TODO: Check if necessary
         
 
 class SpiderDocFile(object):
@@ -191,10 +195,10 @@ class SpiderDocFile(object):
         self._file = open(filename, mode)
         self._count = 0
 
-    def nowisthetime(self, dt=None, format='%d-%b-%Y AT %H:%M:%S'):
+    def nowisthetime(self, dt=None, fmt='%d-%b-%Y AT %H:%M:%S'):
         if dt is None:
             dt = datetime.datetime.now()
-        return dt.strftime(format).upper()
+        return dt.strftime(fmt).upper()
 
     def fixHeaders(self, headers):
         """make all headers 11 characters in width; return doc string"""
@@ -213,7 +217,7 @@ class SpiderDocFile(object):
         filename = os.path.basename(filename)
         fn, ext = os.path.splitext(filename)
         ext = ext[1:]
-        if batext == None:
+        if batext is None:
             batext = 'spl'  # Spider Python Library
         timestr = self.nowisthetime()
         h = " ;%s/%s   %s   %s\n" % (batext, ext, timestr, filename)
@@ -222,12 +226,12 @@ class SpiderDocFile(object):
     def writeComment(self, filename, batext='spi'):
         line = self.makeDocfileHeader(filename, batext)
 
-        print >> self._file, line
+        print(line, file=self._file)
 
     def writeHeader(self, fields):
         line = self.fixHeaders(fields)
 
-        print  >> self._file, line
+        print(line, file=self._file)
         
     def writeValues(self, *values):
         """ Write values in spider docfile. """
@@ -237,7 +241,7 @@ class SpiderDocFile(object):
         for v in values:
             line += " %11g" % float(v)
             
-        print >> self._file, line
+        print(line, file=self._file)
         
     def iterValues(self):
         for line in self._file:
@@ -273,6 +277,6 @@ class SpiderDocAliFile(object):
         
      
 def getDocsLink(op, label):
-    from spider.constants import SPIDER_DOCS
+    from .constants import SPIDER_DOCS
     """ Return a label for documentation url of a given command. """
     return '[[%(SPIDER_DOCS)s/%(op)s.html][%(label)s]]' % locals()
