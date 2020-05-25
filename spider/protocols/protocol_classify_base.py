@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -24,18 +24,16 @@
 # *
 # **************************************************************************
 
-
 from os.path import basename
 
-from pyworkflow.em import ProtClassify2D, Particle, Class2D
-from pyworkflow.em.convert import ImageHandler
+from pwem.protocols import ProtClassify2D
+from pwem.emlib.image import ImageHandler
 from pyworkflow.protocol.params import PointerParam, IntParam
 from pyworkflow.utils import removeExt, copyFile
 import pyworkflow.utils.graph as graph
 
-from spider.utils import SpiderDocFile
-from protocol_base import SpiderProtocol
-
+from ..utils import SpiderDocFile
+from .protocol_base import SpiderProtocol
 
 
 class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
@@ -64,7 +62,7 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
     def getNumberOfClasses(self):
         return None
     
-    #--------------------------- DEFINE param functions -----------------------
+     #--------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
         self._defineBasicParams(form)
         form.addParallelSection(threads=4, mpi=0)
@@ -87,7 +85,7 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
                            'which ones to use. \n'
                            'Typically all but the first few are noisy.')
 
-    #--------------------------- INSERT steps functions -----------------------
+    # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):
         
         pcaFile = self.pcaFile.get().filename.get()
@@ -102,7 +100,7 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
         
         self._insertFunctionStep('createOutputStep')
         
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
     def _updateParams(self):
         pass 
         
@@ -118,7 +116,7 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
         # JMRT: I have modify the kmeans.msa script to not add _IMC
         # automatically, it can be also used with _SEQ suffix,
         # so we will pass the whole cas_file
-        imcBase = removeExt(imcLocalFile)#.replace('_IMC', '')
+        imcBase = removeExt(imcLocalFile)  # .replace('_IMC', '')
         imcPrefix = imcBase.replace('_IMC', '').replace('_SEQ', '')
         
         self._params.update({'x27': numberOfFactors,
@@ -137,11 +135,11 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
     def __init__(self, script, classDir, **kwargs):
         SpiderProtClassify.__init__(self, script, classDir, **kwargs)
 
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
     def createOutputStep(self):
         self.buildDendrogram(True)
          
-    #--------------------------- UTILS functions ------------------------------
+    # --------------------------- UTILS functions -----------------------------
     def _fillClassesFromNodes(self, classes2D, nodeList):
         """ Create the SetOfClasses2D from the images of each node
         in the dendrogram.
@@ -162,8 +160,8 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
                 for i in node.imageList:
                     classDict[int(i)] = classCount
 
-        def updateItem(p, i):
-            classId = classDict.get(i, None)
+        def updateItem(p, item):
+            classId = classDict.get(item, None)
             if classId is None:
                 p._appendItem = False
             else:
@@ -206,7 +204,7 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
             writeAverages: whether to write class averages or not.
         """
         dendroFile = self._getFileName('dendroDoc')
-        # Dendrofile is a docfile with at least 3 data colums (class, height, id)
+        # Dendrofile is a docfile with at least 3 data columns (class, height, id)
         doc = SpiderDocFile(dendroFile)
         values = []
         indexes = []
@@ -219,14 +217,14 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
         self.dendroIndexes = indexes
         self.dendroImages = self._getFileName('particles')
         self.dendroAverages = self._getFileName('averages')
-        self.dendroAverageCount = 0 # Write only the number of needed averages
-        self.dendroMaxLevel = 10 # FIXME: remove hard coding if working the levels
+        self.dendroAverageCount = 0  # Write only the number of needed averages
+        self.dendroMaxLevel = 10  # FIXME: remove hard coding if working the levels
         self.ih = ImageHandler()
 
         return self._buildDendrogram(0, len(values)-1, 1, writeAverages)
 
     def getImage(self, particleNumber):
-        return self.ih.read((particleNumber, self.dendroImages))
+        return self.ih.read((int(particleNumber), self.dendroImages))
         
     def addChildNode(self, node, leftIndex, rightIndex, index,
                      writeAverages, level, searchStop):
@@ -237,7 +235,7 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
 
         if writeAverages:
             node.addImage(child.image)
-            del child.image # Allow to free child image memory
+            del child.image  # Allow to free child image memory
                 
     def _buildDendrogram(self, leftIndex, rightIndex, index,
                          writeAverages=False, level=0, searchStop=0):
@@ -262,13 +260,13 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
             avgCount = self.dendroAverageCount + 1
             self.dendroAverageCount += 1
                     
-        if rightIndex == leftIndex: # Just only one element
+        if rightIndex == leftIndex:  # Just only one element
             height = self.dendroValues[leftIndex]
             node = DendroNode(index, height)
             node.extendImageList([self.dendroIndexes[leftIndex]])
             node.addImage(self.getImage(node.imageList[0]))
 
-        elif rightIndex == leftIndex + 1: # Two elements
+        elif rightIndex == leftIndex + 1:  # Two elements
             height = max(self.dendroValues[leftIndex], 
                          self.dendroValues[rightIndex])
             node = DendroNode(index, height)
@@ -276,7 +274,7 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
                                   self.dendroIndexes[rightIndex]])
             node.addImage(self.getImage(node.imageList[0]),
                           self.getImage(node.imageList[1]))
-        else: # 3 or more elements
+        else:  # 3 or more elements
             # Find the max value (or height) of the elements
             maxValue = self.dendroValues[leftIndex]
             maxIndex = 0
@@ -319,8 +317,9 @@ class SpiderProtClassifyCluster(SpiderProtClassify):
             if writeAverages:
                 # normalize the sum of images depending on the number of particles
                 # assigned to this classes
-                avgImage = node.image / float(node.getSize()) 
-                self.ih.write(avgImage, (node.avgCount, self.dendroAverages))
+                # avgImage = node.image / float(node.getSize())
+                node.image.inplaceDivide(float(node.getSize()))
+                self.ih.write(node.image, (node.avgCount, self.dendroAverages))
                 fn = self._getTmpPath('doc_class%03d.stk' % index)
                 doc = SpiderDocFile(fn, 'w+')
                 for i in node.imageList:

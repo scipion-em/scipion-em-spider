@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -23,17 +23,14 @@
 # *  e-mail address 'scipion@cnb.csic.es'
 # *
 # **************************************************************************
-"""
-This module implements the visualization program
-for Spider classify protocols.
-"""
 
 from os.path import join
 
-import Tkinter as tk
+import tkinter as tk
 
-from pyworkflow.em import ProtUserSubSet, SetOfClasses2D
-from pyworkflow.em.viewers import EmPlotter
+from pwem.protocols import ProtUserSubSet
+from pwem.objects import SetOfClasses2D
+from pwem.viewers import EmPlotter, ClassesView
 from pyworkflow.protocol.params import IntParam, FloatParam, LabelParam
 from pyworkflow.protocol.constants import STATUS_FINISHED
 from pyworkflow.utils.properties import Icon
@@ -43,12 +40,11 @@ from pyworkflow.utils.path import cleanPath
 from pyworkflow.gui import Window
 from pyworkflow.gui.widgets import HotButton
 from pyworkflow.gui.graph import LevelTree
-from pyworkflow.gui.canvas import Canvas, ImageBox
-from pyworkflow.em.viewers import ClassesView
+from pyworkflow.gui.canvas import Canvas, Item
 from pyworkflow.gui.dialog import askString
 
-from spider.utils import SpiderDocFile
-from spider.protocols import SpiderProtClassifyWard, SpiderProtClassifyDiday
+from ..utils import SpiderDocFile
+from ..protocols import SpiderProtClassifyWard, SpiderProtClassifyDiday
 
 
 class SpiderViewerClassify(ProtocolViewer):
@@ -66,8 +62,8 @@ class SpiderViewerClassify(ProtocolViewer):
                              'differences at the bottom can be eliminated with '
                              'an increase of the "Minimum height" setting.')
         group1.addParam('minHeight', FloatParam, default=0.5,
-                      label='Minimum height',
-                      help='The dendrogram will be cut at this level')
+                        label='Minimum height',
+                        help='The dendrogram will be cut at this level')
         self.groupClass = form.addGroup('Classes')
         self.groupClass.addParam('doShowClasses', LabelParam,
                                  label="Visualize class averages", default=True,
@@ -82,7 +78,7 @@ class SpiderViewerClassify(ProtocolViewer):
         xplotter = EmPlotter()
         self.plt = xplotter.createSubPlot("Dendrogram", "", "")
         self.step = 0.25
-        self.rightMost = 0.0 # Used to arrange leaf nodes at the bottom
+        self.rightMost = 0.0  # Used to arrange leaf nodes at the bottom
         
         node = self.protocol.buildDendrogram()
         self.plotNode(node, self.minHeight.get())    
@@ -131,8 +127,8 @@ class SpiderViewerWard(SpiderViewerClassify):
         SpiderViewerClassify._defineParams(self, form)
 
         self.groupClass.addParam('maxLevel', IntParam, default=4,
-                      label='Maximum level',
-                      help='Maximum level of classes to show')
+                                 label='Maximum level',
+                                 help='Maximum level of classes to show')
 
     def visualizeClasses(self, e=None):
         classTemplate = "class_%03d"
@@ -167,7 +163,7 @@ class SpiderViewerWard(SpiderViewerClassify):
         btn.grid(row=0, column=2, sticky='n', padx=5, pady=5)
             
         lt = LevelTree(g)
-        lt.DY = 135 # TODO: change in percent of the image size
+        lt.DY = 135  # TODO: change in percent of the image size
         lt.setCanvas(canvas)
         lt.paint(self._createNode, maxLevel=self.maxLevel.get()-1)
         canvas.updateScrollRegion()
@@ -189,9 +185,9 @@ class SpiderViewerWard(SpiderViewerClassify):
         s = '' if size == 1 else 's'
         headerLabel = 'Are you sure you want to create a new set of ' \
                       ' %s with %s element%s?' % (output, size, s)
-        runname =  askString('Question','Run name:', self.win.getRoot(), 30,
-                             defaultValue='ProtUserSubSet',
-                             headerLabel=headerLabel)
+        runname = askString('Question', 'Run name:', self.win.getRoot(), 30,
+                            defaultValue='ProtUserSubSet',
+                            headerLabel=headerLabel)
         if runname:
             createFunc = getattr(self, 'save' + output)
             createFunc(runname)
@@ -208,11 +204,9 @@ class SpiderViewerWard(SpiderViewerClassify):
             createOutputFunc(prot)
             prot.setStatus(STATUS_FINISHED)
             project._storeProtocol(prot)
-            #self.project.launchProtocol(prot, wait=True)
+            # self.project.launchProtocol(prot, wait=True)
 
-        except Exception, ex:
-            import traceback
-            traceback.print_exc()    
+        except Exception as ex:
             self.win.showError(str(ex))
         
     def getSelectedNodesCount(self, depth):
@@ -262,6 +256,34 @@ class SpiderViewerWard(SpiderViewerClassify):
         self._createSubsetProtocol(createParticles, runname)
 
 
+class ImageBox(Item):
+    # copied from pw/gui/canvas.py, still depends on xmippLib
+    def __init__(self, canvas, imgPath, x=0, y=0, text=None):
+        Item.__init__(self, canvas, x, y)
+        # Create the image
+        from pyworkflow.gui import getImage
+        from pwem.viewers.filehandlers import getImageFromPath
+
+        if imgPath is None:
+            self.image = getImage('no-image.gif')
+        else:
+            self.image = getImageFromPath(imgPath)
+
+        if text is not None:
+            self.label = tk.Label(canvas, image=self.image, text=text,
+                                  compound=tk.TOP, bg='gray')
+            self.id = self.canvas.create_window(x, y, window=self.label)
+            self.label.bind('<Button-1>', self._onClick)
+        else:
+            self.id = self.canvas.create_image(x, y, image=self.image)
+
+    def setSelected(self, value):  # Ignore selection highlight
+        pass
+
+    def _onClick(self, e=None):
+        pass
+
+
 class SpiderImageBox(ImageBox):
     def __init__(self, canvas, node, y):
         ImageBox.__init__(self, canvas, node.path, text=node.getName(), y=y)
@@ -287,8 +309,8 @@ class SpiderViewerDiday(SpiderViewerClassify):
         SpiderViewerClassify._defineParams(self, form)
 
         self.groupClass.addParam('numberOfClasses', IntParam, default=4,
-                      label='Number of classes',
-                      help='Desired number of classes.')
+                                 label='Number of classes',
+                                 help='Desired number of classes.')
 
     def visualizeClasses(self, e=None):
         prot = self.protocol

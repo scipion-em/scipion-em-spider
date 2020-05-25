@@ -8,7 +8,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -31,19 +31,18 @@ from glob import glob
 import re
 
 import pyworkflow.utils as pwutils
-import pyworkflow.em as em
 import pyworkflow.protocol.params as params
-from pyworkflow.em.protocol import ProtRefine3D
-from pyworkflow.em.constants import ALIGN_PROJ
-from pyworkflow.em.data import Volume, FSC
+from pwem.protocols import ProtRefine3D
+from pwem.emlib.image import ImageHandler
+from pwem.constants import ALIGN_PROJ
+from pwem.objects import Volume, FSC
 
-import spider
-from spider.utils import (SpiderDocFile, SpiderDocAliFile,
-                          writeScript, runScript)
-from spider.convert import convertEndian, alignmentToRow
-from spider.constants import *
-from protocol_base import SpiderProtocol
-
+from .. import Plugin
+from ..utils import (SpiderDocFile, SpiderDocAliFile,
+                     writeScript, runScript)
+from ..convert import convertEndian, alignmentToRow
+from ..constants import *
+from .protocol_base import SpiderProtocol
 
 
 class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
@@ -61,12 +60,12 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     """
     _label = 'refine 3D'
 
-    #--------------------------- DEFINE param functions -----------------------
+    # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
         form.addSection(label='Input')
 
         form.addParam('protType', params.EnumParam,
-                      choices=['with defocus groups','gold-standard'],
+                      choices=['with defocus groups', 'gold-standard'],
                       default=GOLD_STD,
                       display=params.EnumParam.DISPLAY_HLIST,
                       label='Choose refinement type',
@@ -138,8 +137,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                            "a set of reference projections is computed for each particle on the fly, "
                            "using the SPIDER command "
                            "[[http://spider.wadsworth.org/spider_doc/spider/docs/man/voras.html][VO RAS]]. ")        
-        #GLO [ang-steps]  = '3.3,3.,2.,2.,2.,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5'  ; Angular degree steps   
-        #GLO [ang-limits] = '0.,0.,15.,8.,6.,5.,5.,5.,5.,5.,5.,5.,5.,5.,5.,5.'            ; Angular limits
+        # GLO [ang-steps]  = '3.3,3.,2.,2.,2.,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5'  ; Angular degree steps
+        # GLO [ang-limits] = '0.,0.,15.,8.,6.,5.,5.,5.,5.,5.,5.,5.,5.,5.,5.,5.'            ; Angular limits
         form.addParam('angSteps', params.StringParam, default='3.3 3 3x2 1.5',
                       condition='not smallAngle',
                       label='Angular increment',
@@ -174,16 +173,17 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
 
         form.addParallelSection(threads=4, mpi=0)
     
-    #--------------------------- INSERT steps functions -----------------------
+    # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):        
         # Create new stacks and selfiles per groups
-        self._insertFunctionStep('convertInputStep', self.inputParticles.get().getObjId())
+        self._insertFunctionStep('convertInputStep',
+                                 self.inputParticles.get().getObjId())
 
         self._insertFunctionStep('runScriptStep', 'refine.pam')
                 
         self._insertFunctionStep('createOutputStep')
     
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
     
     def convertInputStep(self, particlesId):
         """ Convert all needed inputs before running the refinement script. """
@@ -195,7 +195,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         
         # Convert the input volume
         volPath = self._getExtraPath('ref_vol.vol')
-        em.ImageHandler().convert(self.input3DReference.get(), volPath)
+        ImageHandler().convert(self.input3DReference.get(), volPath)
         pwutils.moveFile(volPath, volPath.replace('.vol', '.stk'))
         
         self._writeRefinementScripts(protType)
@@ -217,8 +217,9 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             else:
                 dirName = 'no-defocus-groups'
 
-            outputScript=join(refPath, name)
-            writeScript(spider.Plugin.getScript('projmatch', 'Refinement', dirName, name), outputScript, paramsDict)
+            outputScript = join(refPath, name)
+            writeScript(Plugin.getScript('projmatch', 'Refinement', dirName, name),
+                        outputScript, paramsDict)
             
         nIter = self.numberOfIterations.get()
         
@@ -232,7 +233,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                   '[iter-end]': self.numberOfIterations.get(),
                   '[diam]': diam,
                   '[win-frac]': self.winFrac.get(),
-                  #'[converg]': self.convergence.get(),
+                  # '[converg]': self.convergence.get(),
                   '[small-ang]': '1' if self.smallAngle else '0',
                   '[ang-steps]': getListStr(self.angSteps.get()),
                   '[ang-limits]': getListStr(self.angLimits.get()),
@@ -291,7 +292,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         - selfile
         - docfile
         """
-        ih = em.ImageHandler()
+        ih = ImageHandler()
         # Keep a dict with all groups found in particles
         groupDict = {}
         template = self._getExtraPath('group%03d_%s.stk')
@@ -348,7 +349,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def runScriptStep(self, script):
         """ Just run the script that was generated in convertInputStep. """
         refPath = self._getExtraPath('Refinement')
-        runScript(script, 'pam/stk', program=spider.Plugin.getProgram(), nummpis=1, cwd=refPath, log=self._log)
+        runScript(script, 'pam/stk', program=Plugin.getProgram(),
+                  nummpis=1, cwd=refPath, log=self._log)
 
     def projectStep(self, volumeId):
         pass
@@ -388,13 +390,13 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         self._defineTransformRelation(self.inputParticles, outImgSet)
 
         fsc = FSC(objLabel=self.getRunName())
-        resolution, fscData = self._getFscData(iter=lastIter)
+        resolution, fscData = self._getFscData(it=lastIter)
         fsc.setData(resolution, fscData)
 
         self._defineOutputs(outputFSC=fsc)
         self._defineSourceRelation(vol, fsc)
     
-    #--------------------------- INFO functions -------------------------------
+    # --------------------------- INFO functions ------------------------------
     def _validate(self):
         errors = []
         if self.smallAngle:
@@ -413,7 +415,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         return warns
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append('Number of iterations: *%s*' % self.numberOfIterations)
         
         if self.smallAngle:
@@ -427,7 +429,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         diam = int(self.radius.get() * 2 * self.inputParticles.get().getSamplingRate())
         summary.append('Particle diameter: *%s* Angstroms' % diam)
         summary.append('Shift range: *%s* pixels' % self.alignmentShift)
-        #summary.append('Projection diameter: *%s* of window size' % self.winFrac)
+        # summary.append('Projection diameter: *%s* of window size' % self.winFrac)
 
         return summary
 
@@ -446,7 +448,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         
         return [msg]
         
-    #--------------------------- UTILS functions ------------------------------
+    # --------------------------- UTILS functions -----------------------------
     def _getDefocusGroup(self, img):
         return img.getMicId()
 
@@ -471,19 +473,19 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         initPartSet = self.inputParticles.get()
         partIter = iter(initPartSet.iterItems(orderBy=['id'], direction='ASC'))
         imgSet.copyItems(partIter,
-                        updateItemCallback=self._createItemMatrix,
-                        itemDataIterator=iter(outDocFn))
+                         updateItemCallback=self._createItemMatrix,
+                         itemDataIterator=iter(outDocFn))
 
     def _createItemMatrix(self, item, row):
-        from spider.convert import createItemMatrix
-        from pyworkflow.em import ALIGN_PROJ
+        from ..convert import createItemMatrix
+        from pwem.constants import ALIGN_PROJ
         createItemMatrix(item, row, align=ALIGN_PROJ)
 
-    def _getFscData(self, iter):
+    def _getFscData(self, it):
         if self.protType == GOLD_STD:  # gold std
-            fn = self._getExtraPath("Refinement/final/fscdoc_m_%02d.stk" % iter)
+            fn = self._getExtraPath("Refinement/final/fscdoc_m_%02d.stk" % it)
         else:  # def groups
-            fn = self._getExtraPath("Refinement/final/ofscdoc_%02d.stk" % iter)
+            fn = self._getExtraPath("Refinement/final/ofscdoc_%02d.stk" % it)
 
         resolution = []
         fscData = []
@@ -494,7 +496,8 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
 
         return resolution, fscData
 
-class DefocusGroupInfo():
+
+class DefocusGroupInfo:
     """ Helper class to store some information about 
     defocus groups like the number of particles
     or the docfile to be generated.

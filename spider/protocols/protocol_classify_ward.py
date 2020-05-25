@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -24,9 +24,8 @@
 # *
 # **************************************************************************
 
-from protocol_classify_base import SpiderProtClassifyCluster
-      
-      
+from .protocol_classify_base import SpiderProtClassifyCluster
+
 
 class SpiderProtClassifyWard(SpiderProtClassifyCluster):
     """ This protocol wraps SPIDER CL HC command.
@@ -39,9 +38,10 @@ class SpiderProtClassifyWard(SpiderProtClassifyCluster):
     _label = 'classify ward'
     
     def __init__(self, **kwargs):
-        SpiderProtClassifyCluster.__init__(self, 'mda/hierarchical.msa', 'HC', **kwargs)
+        SpiderProtClassifyCluster.__init__(self, 'mda/hierarchical.msa',
+                                           'HC', **kwargs)
         
-    #--------------------------- INFO functions -------------------------------------------- 
+    # --------------------------- INFO functions -------------------------------------------
     def _validate(self):
         errors = []
         return errors
@@ -51,12 +51,12 @@ class SpiderProtClassifyWard(SpiderProtClassifyCluster):
         return cites
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append('Number of factors: *%s*' % self.numberOfFactors)
         return summary
     
     def _methods(self):
-        msg  = "\nInput particles %s " % self.getObjectTag('inputParticles')
+        msg = "\nInput particles %s " % self.getObjectTag('inputParticles')
         msg += "were subjected to Ward's method  "
         msg += "(SPIDER command [[http://spider.wadsworth.org/spider_doc/spider/docs/man/clhc.html][CL HC]]) "
         msg += "using %s factors. " % self.numberOfFactors

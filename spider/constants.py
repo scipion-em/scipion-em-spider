@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -26,7 +26,7 @@
 
 # Define the version of the 'spider' Python module, that can also be
 # imported from setup.py for PyPI distribution
-__version__ = '1.0.9'
+__version__ = '1.1.1'
 
 # ----------------- Constants values --------------------------------------
 SPIDER_HOME = 'SPIDER_HOME'
@@ -79,7 +79,7 @@ GOLD_STD = 1
 
 # Backprojection method (projmatch protocol)
 BP_CG = 0
-#BP_3F = 1
+# BP_3F = 1
 BP_RP = 2
 BP_3N = 3
 

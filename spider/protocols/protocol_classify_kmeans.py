@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -26,10 +26,9 @@
 
 from pyworkflow.protocol.params import IntParam
 
-from spider.utils import SpiderDocFile
-from protocol_classify_base import SpiderProtClassify
+from ..utils import SpiderDocFile
+from .protocol_classify_base import SpiderProtClassify
 
-      
 
 class SpiderProtClassifyKmeans(SpiderProtClassify):
     """ This protocol wraps SPIDER CL KM command.
@@ -40,9 +39,10 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
     _label = 'classify kmeans'
     
     def __init__(self, **kwargs):
-        SpiderProtClassify.__init__(self, 'mda/kmeans.msa', 'KM', **kwargs)
+        SpiderProtClassify.__init__(self, 'mda/kmeans.msa',
+                                    'KM', **kwargs)
         
-    #--------------------------- DEFINE param functions -----------------------
+    # --------------------------- DEFINE param functions ----------------------
     def _defineBasicParams(self, form):
         SpiderProtClassify._defineBasicParams(self, form)
 
@@ -53,7 +53,7 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
     def getNumberOfClasses(self):
         return self.numberOfClasses.get()
             
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
     def _updateParams(self):
         self._params.update({'x20': self.getNumberOfClasses(),
                              '[particles]': self._params['particles'] + '@******',
@@ -77,7 +77,7 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
         self._defineOutputs(outputClasses=classes2D)
         self._defineSourceRelation(particles, classes2D)
          
-    #--------------------------- INFO functions -------------------------------
+    # --------------------------- INFO functions ------------------------------
     def _validate(self):
         errors = []
         return errors
@@ -87,19 +87,19 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
         return cites
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append('Number of classes: *%s*' % self.getNumberOfClasses())
         summary.append('Number of factors: *%s*' % self.numberOfFactors)
         return summary
     
     def _methods(self):
-        msg  = "\nInput particles %s " % self.getObjectTag('inputParticles')
+        msg = "\nInput particles %s " % self.getObjectTag('inputParticles')
         msg += "were divided into %d classes using K-means classification " % self.getNumberOfClasses()
         msg += "(SPIDER command [[http://spider.wadsworth.org/spider_doc/spider/docs/man/clkm.html][CL KM]]) "
         msg += "using %s factors. " % self.numberOfFactors
         return [msg]
     
-    #--------------------------- UTILS functions ------------------------------
+    # --------------------------- UTILS functions -----------------------------
     def _updateParticle(self, item, row):
         _, classNum = row
         item.setClassId(classNum)

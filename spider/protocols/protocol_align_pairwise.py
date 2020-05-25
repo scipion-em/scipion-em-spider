@@ -7,7 +7,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -26,13 +26,12 @@
 # **************************************************************************
 
 import pyworkflow.utils as pwutils
-from pyworkflow.em import IntParam
+from pyworkflow.protocol.params import IntParam
 
-import spider
-from protocol_align_base import SpiderProtAlign
+from .. import Plugin
+from .protocol_align_base import SpiderProtAlign
 
 
-      
 class SpiderProtAlignPairwise(SpiderProtAlign):
     """ This protocol wraps SPIDER AP SR command (pairwise alignment).
 
@@ -52,7 +51,7 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
     def __init__(self, **args):
         SpiderProtAlign.__init__(self, 'mda/pairwise.msa', 'pairwise', **args)
     
-    #--------------------------- DEFINE param functions -----------------------
+    # --------------------------- DEFINE param functions ----------------------
     
     def _defineAlignParams(self, form):
         SpiderProtAlign._defineAlignParams(self, form)
@@ -67,7 +66,7 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
                            '(in pixel units) up to a maximum of +/- _searchRange_.')        
         form.addParallelSection(threads=2, mpi=0)    
     
-    #--------------------------- STEPS functions ------------------------------
+    # --------------------------- STEPS functions -----------------------------
     
     def alignParticlesStep(self, innerRadius, outerRadius):
         """ Execute the pairwise.msa script to align the particles. """
@@ -78,7 +77,7 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
                              '[idim-header]': xdim,
                              '[cg-option]': self.cgOption.get(),
                              '[inner-rad]': innerRadius,
-                             '[outer-rad]': outerRadius, # convert radius to diameter
+                             '[outer-rad]': outerRadius,  # convert radius to diameter
                              '[search-range]': self.searchRange.get(),
                              '[step-size]': self.stepSize.get(),
                              '[selection_list]': self._params['particlesSel'],
@@ -86,21 +85,22 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
                              '[nummps]': self.numberOfThreads.get(),
                             })
         
-        copy1Script = spider.Plugin.getScript('mda/center1.msa')
+        copy1Script = Plugin.getScript('mda/center1.msa')
         newScript = pwutils.replaceBaseExt(copy1Script, self.getExt())
         pwutils.copyFile(copy1Script, self._getPath(newScript))
         self.runTemplate(self.getScript(), self.getExt(), self._params)
                 
     def getAverage(self):
-        return self._getPath(self.getAlignDir(), 'rfreeavg001.%s' % self.getExt()) 
+        return self._getPath(self.getAlignDir(),
+                             'rfreeavg001.%s' % self.getExt())
        
-    #--------------------------- INFO functions -------------------------------------------- 
+    # --------------------------- INFO functions ------------------------------
     
     def _citations(self):
         return ['Marco1996']
     
     def _summary(self):
-        summary = []
+        summary = list()
         summary.append('Radius range (px): *%s - %s*' %
                        (self.innerRadius, self.outerRadius))
         summary.append('Search range (px): *%s*' % self.searchRange)
@@ -109,7 +109,7 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
         return summary
     
     def _methods(self):
-        msg  = "Input particles %s " % self.getObjectTag('inputParticles')
+        msg = "Input particles %s " % self.getObjectTag('inputParticles')
         msg += "were subjected to a pairwise reference-free alignment using the "
         msg += "'pyramidal system for prealignment construction' ([Marco1996]), "
         msg += "using radii %s to %s pixels. " % (self.innerRadius, self.outerRadius)

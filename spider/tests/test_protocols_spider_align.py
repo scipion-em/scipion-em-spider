@@ -6,7 +6,7 @@
 # *
 # * This program is free software; you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
-# * the Free Software Foundation; either version 2 of the License, or
+# * the Free Software Foundation; either version 3 of the License, or
 # * (at your option) any later version.
 # *
 # * This program is distributed in the hope that it will be useful,
@@ -24,15 +24,14 @@
 # *
 # **************************************************************************
 
-
-from pyworkflow.em.protocol import ProtImportParticles
+from pwem.protocols import ProtImportParticles
 from pyworkflow.tests import setupTestProject, DataSet
-from pyworkflow.tests.em.workflows.test_workflow import TestWorkflow
+from pyworkflow.utils import magentaStr
+from pwem.tests.workflows.test_workflow import TestWorkflow
 
-from spider.protocols import (SpiderProtFilter, SpiderProtAlignAPSR,
-                              SpiderProtAlignPairwise)
+from ..protocols import (SpiderProtFilter, SpiderProtAlignAPSR,
+                         SpiderProtAlignPairwise)
 
-  
    
 class TestSpiderAlign(TestWorkflow):
     @classmethod
@@ -57,14 +56,15 @@ class TestSpiderAlign(TestWorkflow):
 
     def test_align(self):
         """ Run an Import particles protocol. """
+        print(magentaStr("\n==> Importing data - particles:"))
         protImport = self.newProtocol(ProtImportParticles,
                                       filesPath=self.particlesFn,
                                       samplingRate=3.5)
         self.launchProtocol(protImport)
-        # check that input images have been imported (a better way to do this?)
-        if protImport.outputParticles is None:
-            raise Exception('Import of images: %s, failed. outputParticles is None.' % self.particlesFn)
-        
+        self.assertIsNotNone(protImport.outputParticles,
+                             "SetOfParticles has not been produced.")
+
+        print(magentaStr("\n==> Running spider - filter particles:"))
         protFilter = self.newProtocol(SpiderProtFilter)
         protFilter.inputParticles.set(protImport)
         protFilter.inputParticles.setExtended('outputParticles')
@@ -72,9 +72,12 @@ class TestSpiderAlign(TestWorkflow):
         self.assertIsNotNone(protFilter.outputParticles,
                              "There was a problem with the SpiderProtFilter outputParticles")
 
+        print(magentaStr("\n==> Testing spider - align ap sr:"))
         self.runAlignment(protFilter, SpiderProtAlignAPSR,
                           objLabel='align apsr')
+        print(magentaStr("\n==> Testing spider - align pairwise:"))
         self.runAlignment(protFilter, SpiderProtAlignPairwise,
                           objLabel='align pairwise')
+        print(magentaStr("\n==> Testing spider - align pairwise with 180 deg. rotation:"))
         self.runAlignment(protFilter, SpiderProtAlignPairwise,
                           objLabel='align pairwise - RT180', cgOption=2)  # RT180
