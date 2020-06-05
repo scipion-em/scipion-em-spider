@@ -32,7 +32,10 @@ from pyworkflow.utils import magentaStr
 from pwem.tests.workflows.test_workflow import TestWorkflow
 
 from ..convert import writeSetOfImages
-from ..protocols import *
+from ..protocols import (SpiderProtFilter, SpiderProtAlignAPSR,
+                         SpiderProtAlignPairwise, SpiderProtCustomMask,
+                         SpiderProtCAPCA, SpiderProtClassifyWard,
+                         SpiderProtClassifyDiday, SpiderProtClassifyKmeans)
 
 
 class TestSpiderConvert(TestWorkflow):
