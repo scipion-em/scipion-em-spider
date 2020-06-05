@@ -65,19 +65,25 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
                       important=True,
                       pointerClass='Particle',
                       help='Select the input image to create the mask. \n'
-                           'It is recommended to used an average image.')        
+                           'It is recommended to used an average image.')
         form.addParam('filterRadius1', FloatParam, default=0.1,
-                      label='Fourier radius for input image (range: 0 - 0.5 px^-1)',
-                      help='The input image will be low-pass filtered to smooth any jagged edges.')        
+                      label='Fourier radius for input image '
+                            '(range: 0 - 0.5 px^-1)',
+                      help='The input image will be low-pass filtered to '
+                           'smooth any jagged edges.')
         form.addParam('sdFactor', FloatParam, default=0.6,
                       label='First threshold (units of standard deviations)',
-                      help='The filtered image will be thresholded at the average plus this number * st.dev.')
+                      help='The filtered image will be thresholded at the '
+                           'average plus this number * st.dev.')
         form.addParam('filterRadius2', FloatParam, default=0.1,
-                      label='Fourier radius for intermediate mask (range: 0 - 0.5)',
-                      help='The intermediate thresholded mask will be again filtered for further smoothing.')       
+                      label='Fourier radius for intermediate mask '
+                            '(range: 0 - 0.5)',
+                      help='The intermediate thresholded mask will be again '
+                           'filtered for further smoothing.')
         form.addParam('maskThreshold', FloatParam, default=0.01,
                       label='Mask threshold (range: approx. 0 - 1)',
-                      help='The filtered intermediate mask will be thresholded to generate the final mask.')
+                      help='The filtered intermediate mask will be thresholded '
+                           'to generate the final mask.')
         
     # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):
@@ -144,7 +150,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
             filter1Angstroms = pixelSize/self.filterRadius1.get()
             filter2Angstroms = pixelSize/self.filterRadius2.get()
             msg = "We low-pass filtered the average image %s" %\
-                   self.getObjectTag('inputImage')
+                  self.getObjectTag('inputImage')
             msg += "to 1/%s Angstroms^-1, " % filter1Angstroms
             msg += "thresholded it at its average plus %s * s.d., "\
                    % self.sdFactor

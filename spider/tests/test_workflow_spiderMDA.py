@@ -32,7 +32,10 @@ from pyworkflow.utils import magentaStr
 from pwem.tests.workflows.test_workflow import TestWorkflow
 
 from ..convert import writeSetOfImages
-from ..protocols import *
+from ..protocols import (SpiderProtFilter, SpiderProtAlignAPSR,
+                         SpiderProtAlignPairwise, SpiderProtCustomMask,
+                         SpiderProtCAPCA, SpiderProtClassifyWard,
+                         SpiderProtClassifyDiday, SpiderProtClassifyKmeans)
 
 
 class TestSpiderConvert(TestWorkflow):
@@ -142,7 +145,7 @@ class TestSpiderWorkflow(TestWorkflow):
         nativeFiles.append(averages)
         self.validateFilesExist(nativeFiles)
 
-        print(magentaStr("\n==> Testing spider - classift k-means:"))
+        print(magentaStr("\n==> Testing spider - classify k-means:"))
         protKmeans = self.newProtocol(SpiderProtClassifyKmeans)
         protKmeans.pcaFile.set(protCAPCA.imcFile)
         protKmeans.inputParticles.set(protAPSR.outputParticles)

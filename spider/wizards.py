@@ -35,8 +35,8 @@ from pwem.emlib.image import ImageHandler
 
 from pwem.wizards import (EmWizard, ParticleMaskRadiusWizard,
                           ParticlesMaskRadiiWizard,
-                          FilterParticlesWizard, DownsampleDialog, ImagePreviewDialog,
-                          ListTreeProvider, VolumeMaskRadiiWizard, MaskPreviewDialog)
+                          FilterParticlesWizard, DownsampleDialog,
+                          ImagePreviewDialog, ListTreeProvider)
 import pyworkflow.gui.dialog as dialog
 from pyworkflow.gui.widgets import LabelSlider, HotButton
 
@@ -53,46 +53,18 @@ from .protocols import (SpiderProtCAPCA, SpiderProtAlignAPSR,
 # MASKS
 # =============================================================================
 
-class SpiderProtAlignRadiusWizard(VolumeMaskRadiiWizard):
-    _targets = [(SpiderProtRefinement, ['radius', 'alignmentShift'])]
-
-    def _getParameters(self, protocol):
-        label, value = self._getInputProtocol(self._targets, protocol)
-        protParams = dict()
-        protParams['input'] = protocol.input3DReference
-        protParams['label'] = label
-        protParams['value'] = value
-
-        return protParams
-
-    def _getProvider(self, protocol):
-        _objs = self._getParameters(protocol)['input']
-        return VolumeMaskRadiiWizard._getListProvider(self, _objs)
-
-    def show(self, form, *args):
-        protocol = form.protocol
-        provider = self._getProvider(protocol)
-
-        if provider is not None:
-            d = SpiderAlignRadiusDialog(form.root, provider,
-                                        protocolParent=protocol)
-            if d.resultYes():
-                form.setVar('radius', d.getRadius())
-                form.setVar('alignmentShift', d.getAliShift())
-        else:
-            dialog.showWarning("Input volume",
-                               "Select volume first", form.root)
-
-
 class SpiderProtMaskWizard(ParticleMaskRadiusWizard):
-    _targets = [(SpiderProtCAPCA, ['radius'])]
+    _targets = [(SpiderProtCAPCA, ['radius']),
+                (SpiderProtRefinement, ['radius'])]
 
     def _getParameters(self, protocol):
         
         label, value = self._getInputProtocol(self._targets, protocol)
-        
         protParams = dict()
-        protParams['input'] = protocol.inputParticles
+        if protocol.getClassName().endswith('Refinement'):
+            protParams['input'] = protocol.input3DReference
+        else:
+            protParams['input'] = protocol.inputParticles
         protParams['label'] = label
         protParams['value'] = value
         return protParams
@@ -132,11 +104,9 @@ class SpiderParticlesMaskRadiiWizard(ParticlesMaskRadiiWizard):
         _label = params['label']
         ParticlesMaskRadiiWizard.show(self, form, _value, _label, UNIT_PIXEL)
     
-
 # =============================================================================
 # FILTERS
 # =============================================================================
-
 
 class SpiderFilterParticlesWizard(FilterParticlesWizard):    
     _targets = [(SpiderProtFilter, ['filterRadius', 'lowFreq',
@@ -189,47 +159,6 @@ class SpiderFilterParticlesWizard(FilterParticlesWizard):
 # =============================================================================
 # UTILS
 # =============================================================================
-
-
-class SpiderAlignRadiusDialog(MaskPreviewDialog):
-
-    def _createPreview(self, frame):
-        from pyworkflow.gui.matplotlib_image import MaskPreview
-        self.innerRadius = self.protocolParent.radius.get()
-        self.outerRadius = self.innerRadius + self.protocolParent.alignmentShift.get()
-
-        if self.outerRadius is None or self.outerRadius > self.dim_par/2:
-            self.outerRadius = int(self.dim_par/2)
-        self.preview = MaskPreview(frame, self.dim, label=self.previewLabel,
-                                   outerRadius=int(self.outerRadius)*self.ratio,
-                                   innerRadius=int(self.innerRadius)*self.ratio)
-        self.preview.grid(row=0, column=0)
-
-    def _createControls(self, frame):
-        self.radSlider = LabelSlider(frame, 'Particle radius (px)',
-                                     from_=1, to=int(self.dim_par/2),
-                                     value=self.protocolParent.radius.get(),
-                                     step=1,
-                                     callback=lambda a, b, c: self.updateRadius())
-        self.radSlider.grid(row=0, column=0, padx=5, pady=5)
-
-        self.aliShSlider = LabelSlider(frame, 'Alignment shift (px)',
-                                       from_=1, to=int(self.dim_par/2),
-                                       value=self.protocolParent.alignmentShift.get(),
-                                       step=1,
-                                       callback=lambda a, b, c: self.updateRadius())
-        self.aliShSlider.grid(row=1, column=0, padx=5, pady=5)
-
-    def updateRadius(self):
-        self.preview.updateMask(self.radSlider.get() * self.ratio,
-                                self.aliShSlider.get() * self.ratio)
-
-    def getRadius(self):
-        return int(self.radSlider.get())
-
-    def getAliShift(self):
-        return int(self.aliShSlider.get())
-
 
 class SpiderFilterDialog(DownsampleDialog):
     
@@ -428,7 +357,7 @@ class CustomMaskDialog(ImagePreviewDialog):
             previewFrame = tk.Frame(frame)
             ImagePreviewDialog._createPreview(self, previewFrame)
             self._previews.append(self.preview)  # store all previews created
-            previewFrame.grid(row=i/4, column=i % 4)
+            previewFrame.grid(row=i//4, column=i % 4)
             
     def _itemSelected(self, obj):
         self.lastObj = obj
@@ -451,7 +380,7 @@ class CustomMaskDialog(ImagePreviewDialog):
         
         for i, varName in enumerate(CUSTOMMASK_VARS):
             self._createVarWidgets(inputFrame, varName,
-                                   CUSTOMMASK_VARS[varName], i % 2, i/2)
+                                   CUSTOMMASK_VARS[varName], i % 2, i//2)
             
         previewBtn = HotButton(frame, text='Preview',
                                command=self._computeRightPreview)
