@@ -1,3 +1,6 @@
+3.1.1:
+    - changed version to reflect Scipion 3 support
+    - fix refinement and mask wizards
 1.1.0 - migrated to python 3
 1.0.9 - config vars for binaries can be set by user
 1.0.7 - switch to rst

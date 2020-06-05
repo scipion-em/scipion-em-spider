@@ -142,7 +142,7 @@ class TestSpiderWorkflow(TestWorkflow):
         nativeFiles.append(averages)
         self.validateFilesExist(nativeFiles)
 
-        print(magentaStr("\n==> Testing spider - classift k-means:"))
+        print(magentaStr("\n==> Testing spider - classify k-means:"))
         protKmeans = self.newProtocol(SpiderProtClassifyKmeans)
         protKmeans.pcaFile.set(protCAPCA.imcFile)
         protKmeans.inputParticles.set(protAPSR.outputParticles)
