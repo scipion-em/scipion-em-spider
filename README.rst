@@ -39,7 +39,7 @@ b) Developer's version
         scipion installp -p path_to_scipion-em-spider --devel
 
 SPIDER binaries will be installed automatically with the plugin, but you can also link an existing installation. 
-Default installation path assumed is ``software/em/spider-25.02``, if you want to change it, set *SPIDER_HOME* in ``scipion.conf`` file to the folder where the SPIDER is installed. Additional information about using SPIDER with MPI can be found on a separate `page <https://github.com/scipion-em/scipion-em-spider/wiki/How-to-Install-MPI>`_. Unfortunately, at the moment we do not support MPI in our SPIDER wrappers, since it requires a lot of effort to refactor almost all protocols. :(
+Default installation path assumed is ``software/em/spider-26.06``, if you want to change it, set *SPIDER_HOME* in ``scipion.conf`` file to the folder where the SPIDER is installed. Additional information about using SPIDER with MPI can be found on a separate `page <https://github.com/scipion-em/scipion-em-spider/wiki/How-to-Install-MPI>`_. Unfortunately, at the moment we do not support MPI in our SPIDER wrappers, since it requires a lot of effort to refactor almost all protocols. :(
 Depending on you CPU type you might want to change the default binary from ``spider_linux_mp_intel64`` to a different one by explicitly setting *SPIDER* variable. Similarly you can modify *SPIDER_MPI* variable (default ``spider_linux_mpi_opt64``).
 
 To check the installation, simply run one of the following Scipion tests:
@@ -58,7 +58,7 @@ A complete list of tests can also be seen by executing ``scipion test --show --g
 Supported versions
 ------------------
 
-25.02
+26.06
 
 In 2018 the plugin was updated to support the latest (at that moment) SPIDER version - 25.02. This required a lot of code refactoring and the support of old SPIDER version 21.03 had to be discontinued. The full changelog since Scipion-1.x is available `here <https://github.com/scipion-em/scipion-em-spider/issues/1>`_.
 
