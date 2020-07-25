@@ -29,8 +29,8 @@ from glob import glob
 
 import pyworkflow.protocol.params as params
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
-from pwem.viewers import (EmPlotter, ChimeraClientView,
-                          ChimeraView, EmProtocolViewer)
+from pwem.viewers import (EmPlotter, ChimeraClientView, ChimeraView,
+                          EmProtocolViewer, ChimeraAngDist)
 
 from ..constants import *
 from ..protocols import SpiderProtRefinement
@@ -64,9 +64,6 @@ Examples:
                       help="Write the iteration list to visualize.")
 
         group = form.addGroup('Angular assignment')
-        # group.addParam('showImagesAngularAssignment',
-        # params.LabelParam, default=True,
-        # label='Particles angular assignment')
         group.addParam('displayAngDist', params.EnumParam,
                        choices=['2D plot', 'chimera'],
                        default=ANGDIST_2DPLOT,
@@ -190,22 +187,19 @@ Examples:
         volumes = self.getVolumeNames()
 
         if len(volumes) > 1:
-            cmdFile = self._getFinalPath('chimera_volumes.cmd')
+            cmdFile = self._getFinalPath('chimera_volumes.cxc')
             f = open(cmdFile, 'w+')
             for vol in volumes:
                 # We assume that the chimera script will be generated
                 # at the same folder than spider volumes
                 localVol = os.path.basename(vol)
                 if os.path.exists(vol):
-                    f.write("open spider:%s\n" % localVol)
+                    f.write("open %s format spider\n" % localVol)
             f.write('tile\n')
             f.close()
             view = ChimeraView(cmdFile)
         else:
-            # view = CommandView('xmipp_chimera_client --input "%s" --mode projector 256 &' % volumes[0])
-            # view = em.ChimeraClientView(volumes[0])
-            view = ChimeraClientView(volumes[0],
-                                     showProjection=True)  # , angularDistFile=sqliteFn, spheresDistance=radius)
+            view = ChimeraClientView(volumes[0])
 
         return [view]
 
@@ -341,9 +335,13 @@ Examples:
             self.createAngDistributionSqlite(anglesSqlite, nparts,
                                              itemDataIterator=self._iterAngles(it))
             volumes = self.getVolumeNames(it)
-            views.append(ChimeraClientView(volumes[0],
-                                           showProjection=True,
-                                           angularDistFile=anglesSqlite,
-                                           spheresDistance=2))  # self.spheresScale.get()))
+            vol = self.protocol.outputVolume
+            volOrigin = vol.getOrigin(force=True).getShifts()
+            samplingRate = vol.getSamplingRate()
+            views.append(ChimeraAngDist(volumes[0],
+                                        self.protocol._getTmpPath(),
+                                        voxelSize=samplingRate,
+                                        volOrigin=volOrigin,
+                                        angularDistFile=anglesSqlite))
 
         return views
