@@ -40,11 +40,11 @@ _references = ['Shaikh2008', 'Frank1996b']
 class Plugin(pwem.Plugin):
     _homeVar = SPIDER_HOME
     _pathVars = [SPIDER_HOME]
-    _supportedVersions = ['25.02']
+    _supportedVersions = ['25.02', '26.06']
 
     @classmethod
     def _defineVariables(cls):
-        cls._defineEmVar(SPIDER_HOME, 'spider-25.02')
+        cls._defineEmVar(SPIDER_HOME, 'spider-26.06')
         cls._defineVar(SPIDER, 'spider_linux_mp_intel64')
         cls._defineVar(SPIDER_MPI, 'spider_linux_mpi_opt64')
 
@@ -91,8 +91,15 @@ class Plugin(pwem.Plugin):
     @classmethod
     def defineBinaries(cls, env):
         env.addPackage('spider', version='25.02',
-                       url='https://spider.wadsworth.org/spider_doc/spider/'
-                           'download/spiderweb.25.02.tar.gz',
+                       url='https://github.com/spider-em/SPIDER/releases/'
+                           'download/25.02/spiderweb.25.02.tar.gz',
+                       createBuildDir=True,
+                       buildDir='spider',
+                       target="spider/spider",
+                       neededProgs=['csh'])
+        env.addPackage('spider', version='26.06',
+                       url='https://github.com/spider-em/SPIDER/releases/'
+                           'download/v26.06/spiderweb.26.06.tar.gz',
                        createBuildDir=True,
                        buildDir='spider',
                        target="spider/spider",
