@@ -30,7 +30,7 @@ from glob import glob
 import pyworkflow.protocol.params as params
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
 from pwem.viewers import (EmPlotter, ChimeraClientView, ChimeraView,
-                          EmProtocolViewer, ChimeraAngDist, pwutils)
+                          EmProtocolViewer, ChimeraAngDist)
 
 from ..constants import *
 from ..protocols import SpiderProtRefinement
