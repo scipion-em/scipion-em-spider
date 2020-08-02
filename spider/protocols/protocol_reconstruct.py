@@ -30,6 +30,7 @@ from pyworkflow.protocol.constants import LEVEL_ADVANCED, STEPS_SERIAL
 from pwem.constants import ALIGN_PROJ
 from pwem.emlib.image import ImageHandler
 from pwem.objects import Volume
+import pyworkflow.utils as pwutils
 
 from ..utils import SpiderDocFile
 from ..constants import (BP_32F, ANGLE_PHI, ANGLE_PSI,
@@ -135,8 +136,13 @@ class SpiderProtReconstruct(SpiderProtocol):
 
     def createOutputStep(self):
         imgSet = self.inputParticles.get()
+        # Let us use extension "vol" for the output vol
+        # use stk creates visualization probrems.
         vol = Volume()
-        vol.setFileName(self._getPath('volume.stk'))
+        volNameStk = self._getPath('volume.stk')
+        volName = volNameStk.replace(".stk", ".vol")
+        pwutils.createLink(volNameStk, volName)
+        vol.setFileName(volName)
         vol.setSamplingRate(imgSet.getSamplingRate())
 
         self._defineOutputs(outputVolume=vol)
