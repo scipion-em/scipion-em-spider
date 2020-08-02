@@ -29,7 +29,7 @@ from glob import glob
 
 import pyworkflow.protocol.params as params
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
-from pwem.viewers import (EmPlotter, ChimeraClientView, ChimeraView,
+from pwem.viewers import (EmPlotter, ChimeraView,
                           EmProtocolViewer, ChimeraAngDist)
 
 from ..constants import *
@@ -187,15 +187,14 @@ Examples:
         volumes = self.getVolumeNames()
 
         cmdFile = self._getFinalPath('chimera_volumes.cxc')
-        f = open(cmdFile, 'w+')
-        for vol in volumes:
-            # We assume that the chimera script will be generated
-            # at the same folder than spider volumes
-            localVol = os.path.basename(vol)
-            if os.path.exists(vol):
-                f.write("open %s format spider\n" % localVol)
-        f.write('tile\n')
-        f.close()
+        with open(cmdFile, 'w+') as f:
+            for vol in volumes:
+                # We assume that the chimera script will be generated
+                # at the same folder than spider volumes
+                localVol = os.path.basename(vol)
+                if os.path.exists(vol):
+                    f.write("open %s format spider\n" % localVol)
+            f.write('tile\n')
         view = ChimeraView(cmdFile)
         return [view]
 
