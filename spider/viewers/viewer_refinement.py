@@ -29,7 +29,7 @@ from glob import glob
 
 import pyworkflow.protocol.params as params
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
-from pwem.viewers import (EmPlotter, ChimeraClientView, ChimeraView,
+from pwem.viewers import (EmPlotter, ChimeraView,
                           EmProtocolViewer, ChimeraAngDist)
 
 from ..constants import *
@@ -186,9 +186,8 @@ Examples:
         """ Create a chimera script to visualize selected volumes. """
         volumes = self.getVolumeNames()
 
-        if len(volumes) > 1:
-            cmdFile = self._getFinalPath('chimera_volumes.cxc')
-            f = open(cmdFile, 'w+')
+        cmdFile = self._getFinalPath('chimera_volumes.cxc')
+        with open(cmdFile, 'w+') as f:
             for vol in volumes:
                 # We assume that the chimera script will be generated
                 # at the same folder than spider volumes
@@ -196,11 +195,7 @@ Examples:
                 if os.path.exists(vol):
                     f.write("open %s format spider\n" % localVol)
             f.write('tile\n')
-            f.close()
-            view = ChimeraView(cmdFile)
-        else:
-            view = ChimeraClientView(volumes[0])
-
+        view = ChimeraView(cmdFile)
         return [view]
 
     def _showVolumes(self, paramName=None):
@@ -338,10 +333,12 @@ Examples:
             vol = self.protocol.outputVolume
             volOrigin = vol.getOrigin(force=True).getShifts()
             samplingRate = vol.getSamplingRate()
+            
             views.append(ChimeraAngDist(volumes[0],
                                         self.protocol._getTmpPath(),
                                         voxelSize=samplingRate,
                                         volOrigin=volOrigin,
-                                        angularDistFile=anglesSqlite))
+                                        angularDistFile=anglesSqlite,
+                                        format="spider"))
 
         return views
