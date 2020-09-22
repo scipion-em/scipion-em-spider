@@ -130,8 +130,8 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
         
         if self.inputImage.hasValue():
             pixelSize = self.inputImage.get().getSamplingRate()
-            filter1Angstroms = pixelSize/self.filterRadius1.get()
-            filter2Angstroms = pixelSize/self.filterRadius2.get()
+            filter1Angstroms = pixelSize / self.filterRadius1.get()
+            filter2Angstroms = pixelSize / self.filterRadius2.get()
             
             summary.append('Radius for initial Fourier filter: *%s px^-1*' % self.filterRadius1)
             summary.append('              On the object scale: *%s Angstroms*' % filter1Angstroms)

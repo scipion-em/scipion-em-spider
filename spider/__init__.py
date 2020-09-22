@@ -35,6 +35,7 @@ from .constants import *
 
 _logo = "spider_logo.png"
 _references = ['Shaikh2008', 'Frank1996b']
+_url = "https://github.com/scipion-em/scipion-em-spider"
 
 
 class Plugin(pwem.Plugin):
