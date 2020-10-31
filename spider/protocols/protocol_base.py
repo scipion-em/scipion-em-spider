@@ -33,6 +33,7 @@ from ..convert import writeSetOfImages
 
 class SpiderProtocol(EMProtocol):
     """ Base protocol for SPIDER utils. """
+    _label = None
     _params = None
             
     def convertInput(self, attrName, stackFn, selFn):

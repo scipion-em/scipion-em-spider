@@ -427,7 +427,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             summary.append('Angular range: *%s*' % self.angLimits)
 
         diam = int(self.radius.get() * 2 * self.inputParticles.get().getSamplingRate())
-        summary.append('Particle diameter: *%s* Angstroms' % diam)
+        summary.append('Particle diameter: *%d* Angstroms' % diam)
         summary.append('Shift range: *%s* pixels' % self.alignmentShift)
         # summary.append('Projection diameter: *%s* of window size' % self.winFrac)
 

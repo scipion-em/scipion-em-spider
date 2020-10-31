@@ -39,6 +39,7 @@ from .protocol_base import SpiderProtocol
       
 class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
     """ Base protocol for SPIDER alignments. """
+    _label = None
     
     def __init__(self, script, alignDir, **args):
         ProtAlign2D.__init__(self, **args)

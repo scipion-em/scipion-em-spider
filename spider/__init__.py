@@ -32,7 +32,7 @@ from pyworkflow.utils import Environ, join
 
 from .constants import *
 
-
+__version__ = '3.1.4'
 _logo = "spider_logo.png"
 _references = ['Shaikh2008', 'Frank1996b']
 
@@ -41,6 +41,7 @@ class Plugin(pwem.Plugin):
     _homeVar = SPIDER_HOME
     _pathVars = [SPIDER_HOME]
     _supportedVersions = ['26.06']
+    _url = "https://github.com/scipion-em/scipion-em-spider"
 
     @classmethod
     def _defineVariables(cls):
