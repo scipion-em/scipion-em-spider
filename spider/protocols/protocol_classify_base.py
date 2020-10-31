@@ -38,6 +38,7 @@ from .protocol_base import SpiderProtocol
 
 class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
     """ Base protocol for SPIDER classifications. """
+    _label = None
 
     def __init__(self, script, classDir, **kwargs):
         ProtClassify2D.__init__(self, **kwargs)

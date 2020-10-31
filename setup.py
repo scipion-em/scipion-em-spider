@@ -36,7 +36,7 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 
-from spider.constants import __version__
+from spider import __version__
 
 
 here = os.path.abspath(os.path.dirname(__file__))
