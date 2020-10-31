@@ -4,6 +4,27 @@ Spider plugin
 
 This plugin provide wrappers around several programs of `SPIDER <https://spider.wadsworth.org/spider_doc/spider/docs/spider.html>`_ software suite.
 
+.. image:: https://img.shields.io/pypi/v/scipion-em-spider.svg
+        :target: https://pypi.python.org/pypi/scipion-em-spider
+        :alt: PyPI release
+
+.. image:: https://img.shields.io/pypi/l/scipion-em-spider.svg
+        :target: https://pypi.python.org/pypi/scipion-em-spider
+        :alt: License
+
+.. image:: https://img.shields.io/pypi/pyversions/scipion-em-spider.svg
+        :target: https://pypi.python.org/pypi/scipion-em-spider
+        :alt: Supported Python versions
+
+.. image:: https://img.shields.io/sonar/quality_gate/scipion-em_scipion-em-spider?server=https%3A%2F%2Fsonarcloud.io
+        :target: https://sonarcloud.io/dashboard?id=scipion-em_scipion-em-spider
+        :alt: SonarCloud quality gate
+
+.. image:: https://img.shields.io/pypi/dm/scipion-em-spider
+        :target: https://pypi.python.org/pypi/scipion-em-spider
+        :alt: Downloads
+
+
 +--------------+----------------+--------------------+
 | prod: |prod| | devel: |devel| | support: |support| |
 +--------------+----------------+--------------------+
