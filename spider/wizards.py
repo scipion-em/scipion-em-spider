@@ -36,7 +36,8 @@ from pwem.emlib.image import ImageHandler
 from pwem.wizards import (EmWizard, ParticleMaskRadiusWizard,
                           ParticlesMaskRadiiWizard,
                           FilterParticlesWizard, DownsampleDialog,
-                          ImagePreviewDialog, ListTreeProvider)
+                          ImagePreviewDialog, ListTreeProvider,
+                          MaskRadiiPreviewDialog)
 import pyworkflow.gui.dialog as dialog
 from pyworkflow.gui.widgets import LabelSlider, HotButton
 
@@ -100,9 +101,22 @@ class SpiderParticlesMaskRadiiWizard(ParticlesMaskRadiiWizard):
     
     def show(self, form, *args):
         params = self._getParameters(form.protocol)
-        _value = params['value']
-        _label = params['label']
-        ParticlesMaskRadiiWizard.show(self, form, _value, _label, UNIT_PIXEL)
+        value = params['value']
+        label = params['label']
+        protocol = form.protocol
+        provider = self._getProvider(protocol)
+
+        if provider is not None:
+            d = MaskRadiiPreviewDialog(form.root,
+                                       provider,
+                                       innerRadius=value[0],
+                                       outerRadius=value[1],
+                                       unit=UNIT_PIXEL)
+            if d.resultYes():
+                form.setVar(label[0], int(d.getRadius(d.radiusSliderIn)))
+                form.setVar(label[1], int(d.getRadius(d.radiusSliderOut)))
+        else:
+            dialog.showWarning("Empty input", "Select elements first", form.root)
     
 # =============================================================================
 # FILTERS
