@@ -81,8 +81,6 @@ Supported versions
 
 26.06
 
-In 2018 the plugin was updated to support the latest (at that moment) SPIDER version - 25.02. This required a lot of code refactoring and the support of old SPIDER version 21.03 had to be discontinued. The full changelog since Scipion-1.x is available `here <https://github.com/scipion-em/scipion-em-spider/issues/1>`_.
-
 Protocols
 ---------
 
