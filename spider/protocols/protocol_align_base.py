@@ -96,7 +96,7 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
     def createOutputStep(self):
         outputStk = self._getFileName('particlesAligned')
         if not exists(outputStk):
-            raise Exception('Output stack %s not produced. ' % outputStk)
+            raise FileNotFoundError('Output stack %s not produced. ' % outputStk)
         particles = self.inputParticles.get()
         # Create the output average image
         avg = Particle()

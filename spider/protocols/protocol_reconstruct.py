@@ -50,7 +50,6 @@ class SpiderProtReconstruct(SpiderProtocol):
     def __init__(self, **kwargs):
         SpiderProtocol.__init__(self, **kwargs)
         self.stepsExecutionMode = STEPS_SERIAL
-        # self.allowMpi = True
 
     # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):

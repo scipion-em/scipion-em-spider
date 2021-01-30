@@ -148,7 +148,7 @@ class SpiderViewerCAPCA(ProtocolViewer):
         f.close() 
         
         # Create the plot
-        xplotter = EmPlotter(1, 1)
+        xplotter = EmPlotter()
         a = xplotter.createSubPlot("Factor %d vs %d" % (x, y), 
                                    "Factor %d" % x, "Factor %d" % y)
         a.plot(xFactors, yFactors, 'o')

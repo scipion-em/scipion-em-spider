@@ -63,7 +63,7 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
     def getNumberOfClasses(self):
         return None
     
-     #--------------------------- DEFINE param functions ----------------------
+    # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
         self._defineBasicParams(form)
         form.addParallelSection(threads=4, mpi=0)

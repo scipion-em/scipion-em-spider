@@ -24,9 +24,9 @@
 # *
 # **************************************************************************
 
-from pwem.protocols import ProtImportParticles
 from pyworkflow.tests import setupTestProject, DataSet
 from pyworkflow.utils import magentaStr
+from pwem.protocols import ProtImportParticles
 from pwem.tests.workflows.test_workflow import TestWorkflow
 
 from ..protocols import (SpiderProtFilter, SpiderProtAlignAPSR,

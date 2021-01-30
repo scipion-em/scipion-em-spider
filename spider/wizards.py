@@ -30,16 +30,15 @@ import tkinter as tk
 from tkinter import ttk
 
 from pyworkflow.utils.path import cleanPath
+import pyworkflow.gui.dialog as dialog
+from pyworkflow.gui.widgets import LabelSlider, HotButton
 from pwem.constants import UNIT_PIXEL
 from pwem.emlib.image import ImageHandler
-
 from pwem.wizards import (EmWizard, ParticleMaskRadiusWizard,
                           ParticlesMaskRadiiWizard,
                           FilterParticlesWizard, DownsampleDialog,
                           ImagePreviewDialog, ListTreeProvider,
                           MaskRadiiPreviewDialog)
-import pyworkflow.gui.dialog as dialog
-from pyworkflow.gui.widgets import LabelSlider, HotButton
 
 from . import Plugin
 from .utils import SpiderShell, runCustomMaskScript
@@ -78,7 +77,7 @@ class SpiderProtMaskWizard(ParticleMaskRadiusWizard):
         params = self._getParameters(form.protocol)
         _value = params['value']
         _label = params['label']
-        ParticleMaskRadiusWizard.show(self, form, _value, _label, UNIT_PIXEL)
+        ParticleMaskRadiusWizard.show(self, form, _value, _label)
         
     
 class SpiderParticlesMaskRadiiWizard(ParticlesMaskRadiiWizard):
@@ -121,6 +120,7 @@ class SpiderParticlesMaskRadiiWizard(ParticlesMaskRadiiWizard):
 # =============================================================================
 # FILTERS
 # =============================================================================
+
 
 class SpiderFilterParticlesWizard(FilterParticlesWizard):    
     _targets = [(SpiderProtFilter, ['filterRadius', 'lowFreq',
@@ -174,6 +174,7 @@ class SpiderFilterParticlesWizard(FilterParticlesWizard):
 # UTILS
 # =============================================================================
 
+
 class SpiderFilterDialog(DownsampleDialog):
     
     def _beforePreview(self):
@@ -217,8 +218,8 @@ class SpiderFilterDialog(DownsampleDialog):
         return self.radiusSlider.get()
     
     def addFreqSlider(self, label, value, col):
-        slider = LabelSlider(self.freqFrame, label, from_=0, to=0.5,
-                             value=value, callback=None)
+        slider = LabelSlider(self.freqFrame, label, to=0.5,
+                             value=value)
         slider.grid(row=0, column=col, padx=5, pady=5)
         return slider
     
@@ -279,7 +280,7 @@ def filter_spider(inputLocStr, outputLocStr, **pars):
     """ Function to filter an image located on inputLocStr and
     write it to outputLocStr. """
      
-    spi = SpiderShell(ext='spi')  # Create the Spider process to send commands
+    spi = SpiderShell()  # Create the Spider process to send commands
     filterNumber = pars["filterType"] * 2 + 1
     
     # Consider low-pass or high-pass

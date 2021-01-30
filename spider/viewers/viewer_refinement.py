@@ -256,8 +256,8 @@ Examples:
                 return [self.errorMessage("Please select valid groups to display",
                                           title="Wrong groups selection")]
 
-        plotter = EmPlotter(x=1, y=1, windowTitle='Resolution FSC')
-        a = plotter.createSubPlot(title, 'Angstroms^-1', 'FSC', yformat=False)
+        plotter = EmPlotter(windowTitle='Resolution FSC')
+        a = plotter.createSubPlot(title, 'Angstroms^-1', 'FSC')
         legends = []
         for it, fscFile in files:
             if os.path.exists(fscFile):
@@ -318,7 +318,7 @@ Examples:
                     continue
                 anglesSqlite = self._getFinalPath('angular_dist_%03d.sqlite' % it)
                 title = 'Angular distribution iter %03d' % it
-                plotter = EmPlotter(x=1, y=1, windowTitle=title)
+                plotter = EmPlotter(windowTitle=title)
                 self.createAngDistributionSqlite(anglesSqlite, nparts,
                                                  itemDataIterator=self._iterAngles(it))
                 plotter.plotAngularDistributionFromMd(anglesSqlite, title)

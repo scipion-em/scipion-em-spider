@@ -25,7 +25,6 @@
 # **************************************************************************
 
 import os
-from os.path import abspath
 
 import pwem
 from pyworkflow.utils import Environ, join
@@ -85,7 +84,7 @@ class Plugin(pwem.Plugin):
         else:
             program = os.path.basename(cls.getVar(SPIDER))
 
-        cmd = abspath(join(cls.getEnviron()[SPBIN_DIR], program))
+        cmd = os.path.abspath(join(cls.getEnviron()[SPBIN_DIR], program))
 
         return str(cmd)
 
