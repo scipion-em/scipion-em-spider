@@ -185,13 +185,11 @@ Examples:
     def _showVolumesChimera(self):
         """ Create a chimera script to visualize selected volumes. """
         volumes = self.getVolumeNames()
-
         cmdFile = self._getFinalPath('chimera_volumes.cxc')
         with open(cmdFile, 'w+') as f:
             for vol in volumes:
-                # We assume that the chimera script will be generated
-                # at the same folder than spider volumes
-                localVol = os.path.basename(vol)
+                localVol = os.path.relpath(vol,
+                                           self.protocol._getFinalPath())
                 if os.path.exists(vol):
                     f.write("open %s format spider\n" % localVol)
             f.write('tile\n')

@@ -25,6 +25,7 @@
 # *
 # **************************************************************************
 
+from pyworkflow.constants import PROD
 from pyworkflow.utils.path import getLastFile
 
 from .protocol_align_base import SpiderProtAlign
@@ -39,6 +40,7 @@ class SpiderProtAlignAPSR(SpiderProtAlign):
     [[http://spider.wadsworth.org/spider_doc/spider/docs/man/apsr.html][SPIDER's AP SR online manual]]
     """
     _label = 'align ap sr'
+    _devStatus = PROD
     
     def __init__(self, **args):
         SpiderProtAlign.__init__(self, 'mda/apsr4class.msa', 'apsr', **args)

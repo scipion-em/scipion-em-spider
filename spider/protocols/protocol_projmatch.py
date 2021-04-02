@@ -31,6 +31,7 @@ from glob import glob
 import re
 
 import pyworkflow.utils as pwutils
+from pyworkflow.constants import PROD
 import pyworkflow.protocol.params as params
 from pwem.protocols import ProtRefine3D
 from pwem.emlib.image import ImageHandler
@@ -59,6 +60,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html][SPIDER documentation on projection-matching]]
     """
     _label = 'refine 3D'
+    _devStatus = PROD
 
     # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):

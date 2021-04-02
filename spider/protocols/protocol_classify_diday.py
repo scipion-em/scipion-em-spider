@@ -24,6 +24,7 @@
 # *
 # **************************************************************************
 
+from pyworkflow.constants import PROD
 from .protocol_classify_base import SpiderProtClassifyCluster
 
 
@@ -35,6 +36,7 @@ class SpiderProtClassifyDiday(SpiderProtClassifyCluster):
     on factors produced by CA or PCA.
     """
     _label = 'classify diday'
+    _devStatus = PROD
     
     def __init__(self, **kwargs):
         SpiderProtClassifyCluster.__init__(self, 'mda/cluster.msa',

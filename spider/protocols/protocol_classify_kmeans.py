@@ -24,6 +24,7 @@
 # *
 # **************************************************************************
 
+from pyworkflow.constants import PROD
 from pyworkflow.protocol.params import IntParam
 
 from ..utils import SpiderDocFile
@@ -37,6 +38,7 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
     on factors produced by CA or PCA.
     """
     _label = 'classify kmeans'
+    _devStatus = PROD
     
     def __init__(self, **kwargs):
         SpiderProtClassify.__init__(self, 'mda/kmeans.msa',

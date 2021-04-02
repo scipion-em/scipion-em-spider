@@ -26,6 +26,7 @@
 # **************************************************************************
 
 import pyworkflow.utils as pwutils
+from pyworkflow.constants import PROD
 from pyworkflow.protocol.params import IntParam
 
 from .. import Plugin
@@ -47,6 +48,7 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
     [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/MSA/index.html#pairwise][SPIDER's MDA online manual]]
     """
     _label = 'align pairwise'
+    _devStatus = PROD
     
     def __init__(self, **args):
         SpiderProtAlign.__init__(self, 'mda/pairwise.msa', 'pairwise', **args)
