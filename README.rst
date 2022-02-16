@@ -2,7 +2,7 @@
 Spider plugin
 =============
 
-This plugin provide wrappers around several programs of `SPIDER <https://spider.wadsworth.org/spider_doc/spider/docs/spider.html>`_ software suite.
+This plugin provides wrappers for several programs of `SPIDER <https://spider.wadsworth.org/spider_doc/spider/docs/spider.html>`_ software suite.
 
 .. image:: https://img.shields.io/pypi/v/scipion-em-spider.svg
         :target: https://pypi.python.org/pypi/scipion-em-spider
@@ -23,15 +23,6 @@ This plugin provide wrappers around several programs of `SPIDER <https://spider.
 .. image:: https://img.shields.io/pypi/dm/scipion-em-spider
         :target: https://pypi.python.org/pypi/scipion-em-spider
         :alt: Downloads
-
-
-+--------------+----------------+--------------------+
-| prod: |prod| | devel: |devel| | support: |support| |
-+--------------+----------------+--------------------+
-
-.. |prod| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_prod.svg
-.. |devel| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_devel.svg
-.. |support| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_support.svg
 
 
 Installation
@@ -57,7 +48,7 @@ b) Developer's version
 
     .. code-block::
 
-        scipion installp -p path_to_scipion-em-spider --devel
+        scipion installp -p /path/to/scipion-em-spider --devel
 
 SPIDER binaries will be installed automatically with the plugin, but you can also link an existing installation. 
 Default installation path assumed is ``software/em/spider-26.06``, if you want to change it, set *SPIDER_HOME* in ``scipion.conf`` file to the folder where the SPIDER is installed. Additional information about using SPIDER with MPI can be found on a separate `page <https://github.com/scipion-em/scipion-em-spider/wiki/How-to-Install-MPI>`_. Unfortunately, at the moment we do not support MPI in our SPIDER wrappers, since it requires a lot of effort to refactor almost all protocols. :(
