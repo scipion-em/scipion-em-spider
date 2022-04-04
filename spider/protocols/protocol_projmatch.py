@@ -31,6 +31,7 @@ from glob import glob
 import re
 
 import pyworkflow.utils as pwutils
+from pyworkflow.constants import PROD
 import pyworkflow.protocol.params as params
 from pwem.protocols import ProtRefine3D
 from pwem.emlib.image import ImageHandler
@@ -59,6 +60,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html][SPIDER documentation on projection-matching]]
     """
     _label = 'refine 3D'
+    _devStatus = PROD
 
     # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
@@ -252,7 +254,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
             params.update({'sphdecon': self.sphDeconAngle.get(),
                            'bp-type': self.bpType.get() + 1})
 
-        script('refine_settings.pam', params, protType=protType)
+        script('refine_settings.pam', params)
         if protType == DEF_GROUPS:
             scriptList = ['refine', 'prepare', 'grploop', 'mergegroups',
                           'enhance', 'endmerge', 'smangloop', 'endrefine']
@@ -352,19 +354,6 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         runScript(script, 'pam/stk', program=Plugin.getProgram(),
                   nummpis=1, cwd=refPath, log=self._log)
 
-    def projectStep(self, volumeId):
-        pass
-     
-    def alignStep(self):
-        """Create new stacks and selfiles per defocus groups """
-        pass
-    
-    def reconstructStep(self):
-        pass   
-    
-    def mergeStep(self):
-        pass    
-    
     def createOutputStep(self):
         imgSet = self.inputParticles.get()
         vol = Volume()
@@ -399,10 +388,9 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     # --------------------------- INFO functions ------------------------------
     def _validate(self):
         errors = []
-        if self.smallAngle:
-            if not self.inputParticles.get().hasAlignmentProj():
-                errors.append('*Small angle* option can only be used if '
-                              'the particles have angular assignment.')
+        if self.smallAngle and not self.inputParticles.get().hasAlignmentProj():
+            errors.append('*Small angle* option can only be used if '
+                          'the particles have angular assignment.')
         return errors
         
     def _warnings(self):

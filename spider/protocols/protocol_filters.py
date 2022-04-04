@@ -29,6 +29,7 @@ from pwem.protocols import ProtFilterParticles
 from pyworkflow.protocol.params import (EnumParam, BooleanParam,
                                         DigFreqParam, FloatParam)
 from pyworkflow.utils.path import removeBaseExt
+from pyworkflow.constants import PROD
 
 from ..constants import *
 from ..utils import SpiderShell
@@ -46,6 +47,7 @@ class SpiderProtFilter(ProtFilterParticles, SpiderProtocol):
     [[http://spider.wadsworth.org/spider_doc/spider/docs/man/fq.html][SPIDER's FQ online manual]]
     """
     _label = 'filter particles'
+    _devStatus = PROD
     
     def __init__(self, **kwargs):
         ProtFilterParticles.__init__(self, **kwargs)

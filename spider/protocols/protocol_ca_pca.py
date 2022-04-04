@@ -28,6 +28,7 @@ from os.path import join
 
 from pyworkflow.protocol.params import (IntParam, PointerParam,
                                         EnumParam, FloatParam)
+from pyworkflow.constants import PROD
 from pwem.emlib.image import ImageHandler
 
 from ..constants import CA
@@ -50,6 +51,7 @@ class SpiderProtCAPCA(SpiderProtocol):
     [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/classification/tutorial.html#CAPCA][SPIDER MDA documentation]] 
     """
     _label = 'ca pca'
+    _devStatus = PROD
     
     def __init__(self, **kwargs):
         SpiderProtocol.__init__(self, **kwargs)

@@ -26,6 +26,7 @@
 # **************************************************************************
 
 import pyworkflow.protocol.params as params
+from pyworkflow.constants import PROD
 from pyworkflow.protocol.constants import LEVEL_ADVANCED, STEPS_SERIAL
 from pwem.constants import ALIGN_PROJ
 from pwem.emlib.image import ImageHandler
@@ -46,11 +47,11 @@ class SpiderProtReconstruct(SpiderProtocol):
     Mainly used for testing conversion of Euler angles.
     """
     _label = 'reconstruct fourier'
+    _devStatus = PROD
 
     def __init__(self, **kwargs):
         SpiderProtocol.__init__(self, **kwargs)
         self.stepsExecutionMode = STEPS_SERIAL
-        # self.allowMpi = True
 
     # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):

@@ -24,7 +24,7 @@
 # *
 # **************************************************************************
 
-from pyworkflow.tests import *
+from pyworkflow.tests import BaseTest, setupTestProject, DataSet
 from pyworkflow.utils import magentaStr
 from pwem.protocols import ProtImportParticles, ProtImportVolumes
 

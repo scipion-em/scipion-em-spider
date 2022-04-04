@@ -80,5 +80,5 @@ class SpiderProtocol(EMProtocol):
         f = open(self.getLogPaths()[0], 'r')
         for line in f.readlines():
             if 'FATAL ERROR ENCOUNTERED IN BATCH MODE' in line:
-                raise Exception('Spider script error!')
+                raise RuntimeError('Spider script error!')
         f.close()

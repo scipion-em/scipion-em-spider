@@ -171,16 +171,12 @@ def alignmentToRow(alignment, alignmentRow, alignType):
         if flip:
             matrix[0, :2] *= -1.  # invert only the first two columns keep x
             matrix[2, 2] = 1.  # set 3D rot
-        else:
-            pass
 
     elif alignType == ALIGN_3D:
         flip = bool(numpy.linalg.det(matrix[0:3, 0:3]) < 0)
         if flip:
             matrix[0, :4] *= -1.  # now, invert first line including x
             matrix[3, 3] = 1.  # set 3D rot
-        else:
-            pass
 
     else:
         flip = bool(numpy.linalg.det(matrix[0:3, 0:3]) < 0)

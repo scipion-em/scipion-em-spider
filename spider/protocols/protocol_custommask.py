@@ -24,9 +24,10 @@
 # *
 # **************************************************************************
 
+from pyworkflow.constants import PROD
+from pyworkflow.protocol.params import PointerParam, FloatParam
 from pwem.protocols import ProtCreateMask2D
 from pwem.objects import Mask
-from pyworkflow.protocol.params import PointerParam, FloatParam
 from pwem.emlib.image import ImageHandler
 
 from ..utils import runCustomMaskScript
@@ -46,6 +47,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
     hand, given the power of modern computers, this step may be unnecessary.
     """
     _label = 'create 2d mask'
+    _devStatus = PROD
     
     def __init__(self, **kwargs):
         ProtCreateMask2D.__init__(self, **kwargs)

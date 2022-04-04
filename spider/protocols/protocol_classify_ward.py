@@ -24,6 +24,7 @@
 # *
 # **************************************************************************
 
+from pyworkflow.constants import PROD
 from .protocol_classify_base import SpiderProtClassifyCluster
 
 
@@ -36,6 +37,7 @@ class SpiderProtClassifyWard(SpiderProtClassifyCluster):
     Ward's method) to the resulting cluster centers.
     """
     _label = 'classify ward'
+    _devStatus = PROD
     
     def __init__(self, **kwargs):
         SpiderProtClassifyCluster.__init__(self, 'mda/hierarchical.msa',

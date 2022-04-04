@@ -25,14 +25,13 @@
 # **************************************************************************
 
 import os
-from os.path import abspath
 
 import pwem
-from pyworkflow.utils import Environ, join
+from pyworkflow.utils import Environ
 
 from .constants import *
 
-__version__ = '3.1.4'
+__version__ = '3.1.5'
 _logo = "spider_logo.png"
 _references = ['Shaikh2008', 'Frank1996b']
 
@@ -75,7 +74,7 @@ class Plugin(pwem.Plugin):
     @classmethod
     def getScript(cls, *paths):
         """ Return the script that will be used. """
-        cmd = join(__path__[0], 'scripts', cls.getActiveVersion(), *paths)
+        cmd = os.path.join(__path__[0], 'scripts', cls.getActiveVersion(), *paths)
         return str(cmd)
 
     @classmethod
@@ -85,7 +84,7 @@ class Plugin(pwem.Plugin):
         else:
             program = os.path.basename(cls.getVar(SPIDER))
 
-        cmd = abspath(join(cls.getEnviron()[SPBIN_DIR], program))
+        cmd = os.path.abspath(os.path.join(cls.getEnviron()[SPBIN_DIR], program))
 
         return str(cmd)
 

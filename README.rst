@@ -2,21 +2,33 @@
 Spider plugin
 =============
 
-This plugin provide wrappers around several programs of `SPIDER <https://spider.wadsworth.org/spider_doc/spider/docs/spider.html>`_ software suite.
+This plugin provides wrappers for several programs of `SPIDER <https://spider.wadsworth.org/spider_doc/spider/docs/spider.html>`_ software suite.
 
-+--------------+----------------+--------------------+
-| prod: |prod| | devel: |devel| | support: |support| |
-+--------------+----------------+--------------------+
+.. image:: https://img.shields.io/pypi/v/scipion-em-spider.svg
+        :target: https://pypi.python.org/pypi/scipion-em-spider
+        :alt: PyPI release
 
-.. |prod| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_prod.svg
-.. |devel| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_devel.svg
-.. |support| image:: http://scipion-test.cnb.csic.es:9980/badges/spider_support.svg
+.. image:: https://img.shields.io/pypi/l/scipion-em-spider.svg
+        :target: https://pypi.python.org/pypi/scipion-em-spider
+        :alt: License
+
+.. image:: https://img.shields.io/pypi/pyversions/scipion-em-spider.svg
+        :target: https://pypi.python.org/pypi/scipion-em-spider
+        :alt: Supported Python versions
+
+.. image:: https://img.shields.io/sonar/quality_gate/scipion-em_scipion-em-spider?server=https%3A%2F%2Fsonarcloud.io
+        :target: https://sonarcloud.io/dashboard?id=scipion-em_scipion-em-spider
+        :alt: SonarCloud quality gate
+
+.. image:: https://img.shields.io/pypi/dm/scipion-em-spider
+        :target: https://pypi.python.org/pypi/scipion-em-spider
+        :alt: Downloads
 
 
 Installation
 ------------
 
-You will need to use `3.0 <https://github.com/I2PC/scipion/releases/tag/V3.0.0>`_ version of Scipion to be able to run these protocols. To install the plugin, you have two options:
+You will need to use 3.0+ version of Scipion to be able to run these protocols. To install the plugin, you have two options:
 
 a) Stable version
 
@@ -36,11 +48,11 @@ b) Developer's version
 
     .. code-block::
 
-        scipion installp -p path_to_scipion-em-spider --devel
+        scipion installp -p /path/to/scipion-em-spider --devel
 
 SPIDER binaries will be installed automatically with the plugin, but you can also link an existing installation. 
 Default installation path assumed is ``software/em/spider-26.06``, if you want to change it, set *SPIDER_HOME* in ``scipion.conf`` file to the folder where the SPIDER is installed. Additional information about using SPIDER with MPI can be found on a separate `page <https://github.com/scipion-em/scipion-em-spider/wiki/How-to-Install-MPI>`_. Unfortunately, at the moment we do not support MPI in our SPIDER wrappers, since it requires a lot of effort to refactor almost all protocols. :(
-Depending on you CPU type you might want to change the default binary from ``spider_linux_mp_intel64`` to a different one by explicitly setting *SPIDER* variable. Similarly you can modify *SPIDER_MPI* variable (default ``spider_linux_mpi_opt64``).
+Depending on you CPU type you might want to change the default binary from ``spider_linux_mp_intel64`` to a different one by explicitly setting *SPIDER* variable.
 
 To check the installation, simply run one of the following Scipion tests:
 
@@ -59,8 +71,6 @@ Supported versions
 ------------------
 
 26.06
-
-In 2018 the plugin was updated to support the latest (at that moment) SPIDER version - 25.02. This required a lot of code refactoring and the support of old SPIDER version 21.03 had to be discontinued. The full changelog since Scipion-1.x is available `here <https://github.com/scipion-em/scipion-em-spider/issues/1>`_.
 
 Protocols
 ---------
