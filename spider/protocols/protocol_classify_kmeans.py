@@ -24,11 +24,18 @@
 # *
 # **************************************************************************
 
+from enum import Enum
+
 from pyworkflow.constants import PROD
 from pyworkflow.protocol.params import IntParam
+from pwem.objects import SetOfClasses2D
 
 from ..utils import SpiderDocFile
 from .protocol_classify_base import SpiderProtClassify
+
+
+class outputs(Enum):
+    outputClasses = SetOfClasses2D
 
 
 class SpiderProtClassifyKmeans(SpiderProtClassify):
@@ -39,6 +46,7 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
     """
     _label = 'classify kmeans'
     _devStatus = PROD
+    _possibleOutputs = outputs
     
     def __init__(self, **kwargs):
         SpiderProtClassify.__init__(self, 'mda/kmeans.msa',
@@ -76,7 +84,7 @@ class SpiderProtClassifyKmeans(SpiderProtClassify):
                                 updateClassCallback=self._updateClass,
                                 itemDataIterator=clsdoc.iterValues())
 
-        self._defineOutputs(outputClasses=classes2D)
+        self._defineOutputs(**{outputs.outputClasses.name: classes2D})
         self._defineSourceRelation(particles, classes2D)
          
     # --------------------------- INFO functions ------------------------------

@@ -25,6 +25,8 @@
 # *
 # **************************************************************************
 
+from enum import Enum
+
 import pyworkflow.protocol.params as params
 from pyworkflow.constants import PROD
 from pyworkflow.protocol.constants import LEVEL_ADVANCED, STEPS_SERIAL
@@ -40,6 +42,10 @@ from ..convert import convertEndian, alignmentToRow
 from .protocol_base import SpiderProtocol
 
 
+class outputs(Enum):
+    outputVolume = Volume
+
+
 class SpiderProtReconstruct(SpiderProtocol):
     """ This protocol wraps SPIDER BP 32F command.
 
@@ -48,6 +54,7 @@ class SpiderProtReconstruct(SpiderProtocol):
     """
     _label = 'reconstruct fourier'
     _devStatus = PROD
+    _possibleOutputs = outputs
 
     def __init__(self, **kwargs):
         SpiderProtocol.__init__(self, **kwargs)
@@ -146,7 +153,7 @@ class SpiderProtReconstruct(SpiderProtocol):
         vol.setFileName(volName)
         vol.setSamplingRate(imgSet.getSamplingRate())
 
-        self._defineOutputs(outputVolume=vol)
+        self._defineOutputs(**{outputs.outputVolume.name: vol})
         self._defineSourceRelation(self.inputParticles, vol)
     
     # --------------------------- INFO functions ------------------------------
