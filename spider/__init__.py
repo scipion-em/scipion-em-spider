@@ -25,6 +25,8 @@
 # **************************************************************************
 
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 import pwem
 from pyworkflow.utils import Environ
@@ -66,7 +68,7 @@ class Plugin(pwem.Plugin):
                 if var not in env:
                     errors += "\n   Missing SPIDER variable: '%s'" % var
             if len(errors):
-                print("ERRORS: " + errors)
+                logger.error("ERRORS: {errors}")
 
         env.set('PATH', env[SPBIN_DIR], env.END)
         return env

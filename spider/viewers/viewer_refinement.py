@@ -26,6 +26,8 @@
 
 import os
 from glob import glob
+import logging
+logger = logging.getLogger(__name__)
 
 import pyworkflow.protocol.params as params
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
@@ -262,7 +264,7 @@ Examples:
                 self._plotFSC(a, fscFile)
                 legends.append('%s %d' % (legendPrefix, it))
             else:
-                print("Missing file: ", fscFile)
+                logger.error(f"Missing file: {fscFile}")
 
         # plot final FSC curve (from BP)
         if self.groupFSC == 0 and not self.isGoldStdProt():
@@ -311,8 +313,8 @@ Examples:
         if self.displayAngDist == ANGDIST_2DPLOT:
             for it in iterations:
                 if it == 1:
-                    print("Orientations for the first iteration cannot be plotted. "
-                          "Skipping..")
+                    logger.warning(f"Orientations for the first iteration cannot be plotted. "
+                                   f"Skipping..")
                     continue
                 anglesSqlite = self._getFinalPath('angular_dist_%03d.sqlite' % it)
                 title = 'Angular distribution iter %03d' % it
@@ -323,7 +325,7 @@ Examples:
                 views.append(plotter)
         else:
             it = iterations[-1]
-            print("Using last iteration: ", it)
+            logger.info(f"Using last iteration: {it}")
             anglesSqlite = self._getFinalPath('angular_dist_%03d.sqlite' % it)
             self.createAngDistributionSqlite(anglesSqlite, nparts,
                                              itemDataIterator=self._iterAngles(it))
