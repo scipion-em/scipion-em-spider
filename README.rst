@@ -2,7 +2,7 @@
 Spider plugin
 =============
 
-This plugin provides wrappers for several programs of `SPIDER <https://spider.wadsworth.org/spider_doc/spider/docs/spider.html>`_ software suite.
+This plugin provides wrappers for several programs of `SPIDER <https://github.com/spider-em/SPIDER>`_ software suite.
 
 .. image:: https://img.shields.io/pypi/v/scipion-em-spider.svg
         :target: https://pypi.python.org/pypi/scipion-em-spider
