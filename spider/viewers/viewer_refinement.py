@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 import pyworkflow.protocol.params as params
 from pyworkflow.viewer import DESKTOP_TKINTER, WEB_DJANGO
+import pyworkflow.utils as pwutils
 from pwem.viewers import (EmPlotter, ChimeraView,
                           EmProtocolViewer, ChimeraAngDist)
 
@@ -146,10 +147,10 @@ Examples:
         if self.viewIter == ITER_LAST:
             return [self.protocol._getLastIterNumber()]
         else:
-            return self._getListFromRangeString(self.iterSelection.get(''))
+            return pwutils.getListFromRangeString(self.iterSelection.get(''))
 
     def _getGroups(self):
-        return self._getListFromRangeString(self.groupSelection.get(''))
+        return pwutils.getListFromRangeString(self.groupSelection.get(''))
 
     def _getFinalPath(self, *paths):
         return self.protocol._getExtraPath('Refinement', 'final', *paths)
