@@ -24,6 +24,8 @@
 # *
 # **************************************************************************
 
+from enum import Enum
+
 from pyworkflow.constants import PROD
 from pyworkflow.protocol.params import PointerParam, FloatParam
 from pwem.protocols import ProtCreateMask2D
@@ -32,6 +34,10 @@ from pwem.emlib.image import ImageHandler
 
 from ..utils import runCustomMaskScript
 from .protocol_base import SpiderProtocol
+
+
+class outputs(Enum):
+    outputMask = Mask
 
 
 class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
@@ -48,6 +54,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
     """
     _label = 'create 2d mask'
     _devStatus = PROD
+    _possibleOutputs = outputs
     
     def __init__(self, **kwargs):
         ProtCreateMask2D.__init__(self, **kwargs)
@@ -123,7 +130,7 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
         mask = Mask()
         mask.copyInfo(self.inputImg)
         mask.setLocation(4, maskFn)
-        self._defineOutputs(outputMask=mask)
+        self._defineOutputs(**{outputs.outputMask.name: mask})
         self._defineSourceRelation(self.inputImage, mask)
             
     # --------------------------- INFO functions ------------------------------

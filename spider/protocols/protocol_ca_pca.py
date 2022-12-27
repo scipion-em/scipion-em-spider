@@ -52,6 +52,10 @@ class SpiderProtCAPCA(SpiderProtocol):
     """
     _label = 'ca pca'
     _devStatus = PROD
+    _possibleOutputs = {
+        'imcFile': PcaFile,
+        'seqFile': PcaFile
+    }
     
     def __init__(self, **kwargs):
         SpiderProtocol.__init__(self, **kwargs)

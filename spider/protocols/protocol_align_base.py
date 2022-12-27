@@ -26,20 +26,27 @@
 # **************************************************************************
 
 from os.path import join, exists
+from enum import Enum
 
 from pyworkflow.protocol.params import IntParam, EnumParam
 from pwem.protocols import ProtAlign2D
-from pwem.objects import Particle, Transform
+from pwem.objects import Particle, Transform, SetOfParticles
 from pwem.constants import NO_INDEX
 
 from ..constants import *
 from ..utils import getDocsLink
 from .protocol_base import SpiderProtocol
 
+
+class outputs(Enum):
+    outputAverage = Particle
+    outputParticles = SetOfParticles
+
       
 class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
     """ Base protocol for SPIDER alignments. """
     _label = None
+    _possibleOutputs = outputs
     
     def __init__(self, script, alignDir, **args):
         ProtAlign2D.__init__(self, **args)
@@ -102,7 +109,7 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
         avg = Particle()
         avg.copyInfo(self.inputParticles.get())
         avg.setLocation(NO_INDEX, self.getAverage())
-        self._defineOutputs(outputAverage=avg)
+        self._defineOutputs(**{outputs.outputAverage.name: avg})
         self._defineSourceRelation(self.inputParticles, avg)
         
         imgSet = self._createSetOfParticles()
@@ -114,7 +121,7 @@ class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
                          itemDataIterator=iter(range(1,
                                                      particles.getSize()+1)))
 
-        self._defineOutputs(outputParticles=imgSet)
+        self._defineOutputs(**{outputs.outputParticles.name: imgSet})
         self._defineTransformRelation(self.inputParticles, imgSet)
         
     def _summary(self):

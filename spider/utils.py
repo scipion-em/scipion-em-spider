@@ -30,6 +30,9 @@ import datetime
 from collections import OrderedDict
 import subprocess
 import re
+import logging
+logger = logging.getLogger(__name__)
+
 
 from pyworkflow.utils import runJob
 from pyworkflow.utils.path import replaceBaseExt, removeBaseExt
@@ -92,7 +95,7 @@ def writeScript(inputScript, outputScript, paramsDict):
                 if newLine:
                     line = newLine
             except Exception as ex:
-                print(ex, "in line (%d): %s" % (i+1, line))
+                logger.error(f"{ex} in line ({i+1}: {line}")
             inFrL = line.lower().startswith("fr ")
         fOut.write(line)
     fIn.close()

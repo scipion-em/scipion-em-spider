@@ -25,13 +25,15 @@
 # **************************************************************************
 
 import os
+import logging
+logger = logging.getLogger(__name__)
 
 import pwem
 from pyworkflow.utils import Environ
 
 from .constants import *
 
-__version__ = '3.1.5'
+__version__ = '3.1.6'
 _logo = "spider_logo.png"
 _references = ['Shaikh2008', 'Frank1996b']
 
@@ -40,7 +42,7 @@ class Plugin(pwem.Plugin):
     _homeVar = SPIDER_HOME
     _pathVars = [SPIDER_HOME]
     _supportedVersions = ['26.06']
-    _url = "https://github.com/scipion-em/scipion-em-spider"
+    _url = "https://github.com/spider-em/SPIDER"
 
     @classmethod
     def _defineVariables(cls):
@@ -66,7 +68,7 @@ class Plugin(pwem.Plugin):
                 if var not in env:
                     errors += "\n   Missing SPIDER variable: '%s'" % var
             if len(errors):
-                print("ERRORS: " + errors)
+                logger.error("ERRORS: {errors}")
 
         env.set('PATH', env[SPBIN_DIR], env.END)
         return env

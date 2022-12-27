@@ -25,7 +25,10 @@
 # *
 # **************************************************************************
 
+from enum import Enum
+
 from pwem.protocols import ProtFilterParticles
+from pwem.objects import SetOfParticles
 from pyworkflow.protocol.params import (EnumParam, BooleanParam,
                                         DigFreqParam, FloatParam)
 from pyworkflow.utils.path import removeBaseExt
@@ -34,7 +37,11 @@ from pyworkflow.constants import PROD
 from ..constants import *
 from ..utils import SpiderShell
 from .protocol_base import SpiderProtocol
-        
+
+
+class outputs(Enum):
+    outputParticles = SetOfParticles
+
       
 class SpiderProtFilter(ProtFilterParticles, SpiderProtocol):
     """ Apply Fourier filters to an image or a volume using Spider FQ or FQ NP.
@@ -48,6 +55,7 @@ class SpiderProtFilter(ProtFilterParticles, SpiderProtocol):
     """
     _label = 'filter particles'
     _devStatus = PROD
+    _possibleOutputs = outputs
     
     def __init__(self, **kwargs):
         ProtFilterParticles.__init__(self, **kwargs)
@@ -178,7 +186,7 @@ See detailed description of the filter at [[http://spider.wadsworth.org/spider_d
                          updateItemCallback=updateItem,
                          itemDataIterator=iter(range(1, particles.getSize()+1)))
 
-        self._defineOutputs(outputParticles=imgSet)
+        self._defineOutputs(**{outputs.outputParticles.name: imgSet})
         self._defineTransformRelation(particles, imgSet)
         
 # --------------------------- INFO functions ----------------------------------

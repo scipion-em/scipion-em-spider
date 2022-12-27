@@ -29,6 +29,7 @@
 from os.path import join
 from glob import glob
 import re
+from enum import Enum
 
 import pyworkflow.utils as pwutils
 from pyworkflow.constants import PROD
@@ -36,7 +37,7 @@ import pyworkflow.protocol.params as params
 from pwem.protocols import ProtRefine3D
 from pwem.emlib.image import ImageHandler
 from pwem.constants import ALIGN_PROJ
-from pwem.objects import Volume, FSC
+from pwem.objects import Volume, FSC, SetOfParticles
 
 from .. import Plugin
 from ..utils import (SpiderDocFile, SpiderDocAliFile,
@@ -44,6 +45,12 @@ from ..utils import (SpiderDocFile, SpiderDocAliFile,
 from ..convert import convertEndian, alignmentToRow
 from ..constants import *
 from .protocol_base import SpiderProtocol
+
+
+class outputs(Enum):
+    outputVolume = Volume
+    outputParticles = SetOfParticles
+    outputFSC = FSC
 
 
 class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
@@ -61,6 +68,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     """
     _label = 'refine 3D'
     _devStatus = PROD
+    _possibleOutputs = outputs
 
     # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
@@ -373,16 +381,16 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         outImgSet.copyInfo(imgSet)
         self._fillDataFromDoc(outImgSet)
 
-        self._defineOutputs(outputVolume=vol)
+        self._defineOutputs(**{outputs.outputVolume.name: vol})
         self._defineSourceRelation(self.inputParticles, vol)
-        self._defineOutputs(outputParticles=outImgSet)
+        self._defineOutputs(**{outputs.outputParticles.name: outImgSet})
         self._defineTransformRelation(self.inputParticles, outImgSet)
 
         fsc = FSC(objLabel=self.getRunName())
         resolution, fscData = self._getFscData(it=lastIter)
         fsc.setData(resolution, fscData)
 
-        self._defineOutputs(outputFSC=fsc)
+        self._defineOutputs(**{outputs.outputFSC.name: fsc})
         self._defineSourceRelation(vol, fsc)
     
     # --------------------------- INFO functions ------------------------------
