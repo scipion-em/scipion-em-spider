@@ -42,7 +42,7 @@ class Plugin(pwem.Plugin):
     _homeVar = SPIDER_HOME
     _pathVars = [SPIDER_HOME]
     _supportedVersions = ['26.06']
-    _url = "https://github.com/spider-em/SPIDER"
+    _url = "https://github.com/scipion-em/scipion-em-spider"
 
     @classmethod
     def _defineVariables(cls):
