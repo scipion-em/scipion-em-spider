@@ -33,7 +33,7 @@ from pwem.protocols import ProtAlign2D
 from pwem.objects import Particle, Transform, SetOfParticles
 from pwem.constants import NO_INDEX
 
-from ..constants import *
+from ..constants import CG_PH
 from ..utils import getDocsLink
 from .protocol_base import SpiderProtocol
 

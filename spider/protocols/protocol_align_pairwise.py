@@ -41,11 +41,11 @@ class SpiderProtAlignPairwise(SpiderProtAlign):
     This alignment scheme aligns a pair of images at a time and then averages them.
     Then, the averages of each of those pairs are aligned and averaged,
     and then pairs of those pairs, etc.
-    Compared to [[http://spider.wadsworth.org/spider_doc/spider/docs/man/apsr.html][AP SR]], this alignment 
+    Compared to [[https://spider.wadsworth.org/spider_doc/spider/docs/man/apsr.html][AP SR]], this alignment
     scheme appears to be less random, which chooses seed images as alignment references.
     
     For more information, see Step 2b at
-    [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/MSA/index.html#pairwise][SPIDER's MDA online manual]]
+    [[https://spider.wadsworth.org/spider_doc/spider/docs/techs/MSA/index.html#pairwise][SPIDER's MDA online manual]]
     """
     _label = 'align pairwise'
     _devStatus = PROD

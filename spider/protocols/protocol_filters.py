@@ -34,7 +34,8 @@ from pyworkflow.protocol.params import (EnumParam, BooleanParam,
 from pyworkflow.utils.path import removeBaseExt
 from pyworkflow.constants import PROD
 
-from ..constants import *
+from ..constants import (FILTER_BUTTERWORTH, FILTER_FERMI,
+                         FILTER_LOWPASS, FILTER_SPACE_REAL)
 from ..utils import SpiderShell
 from .protocol_base import SpiderProtocol
 
@@ -51,7 +52,7 @@ class SpiderProtFilter(ProtFilterParticles, SpiderProtocol):
     during filtration if padding is selected.  
     
     See more documentation at: 
-    [[http://spider.wadsworth.org/spider_doc/spider/docs/man/fq.html][SPIDER's FQ online manual]]
+    [[https://spider.wadsworth.org/spider_doc/spider/docs/man/fq.html][SPIDER's FQ online manual]]
     """
     _label = 'filter particles'
     _devStatus = PROD
@@ -93,7 +94,7 @@ to the cut-off radius.
 *Raised cosine* Filter is: 0.5 * (COS(PI * (F - Flow) / (Flow - Fup)) + 1) 
 if Flow < F < Fup, 1 if F < Flow, and 0 if F > Fup
 
-See detailed description of the filter at [[http://spider.wadsworth.org/spider_doc/spider/docs/man/fq.html][SPIDER's FQ online manual]]
+See detailed description of the filter at [[https://spider.wadsworth.org/spider_doc/spider/docs/man/fq.html][SPIDER's FQ online manual]]
                            """)
         form.addParam('filterMode', EnumParam, choices=['low-pass', 'high-pass'],
                       label='Filter mode', default=FILTER_LOWPASS)

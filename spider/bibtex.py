@@ -34,7 +34,7 @@
   year = {2008},
   volume = {3},
   pages = {1941--1974},
-  doi = {http://dx.doi.org/10.1038/nprot.2008.156}
+  doi = {https://dx.doi.org/10.1038/nprot.2008.156}
 }
 
 @article{Baxter2007,
@@ -44,7 +44,7 @@
   year = {2007},
   volume = {157},
   pages = {56--63},
-  doi = {http://dx.doi.org/10.1016/j.jsb.2006.07.019}
+  doi = {https://dx.doi.org/10.1016/j.jsb.2006.07.019}
 }
 
 @article{Frank1996b,
@@ -54,7 +54,7 @@
   year = {1996},
   volume = {116},
   pages = {190-9},
-  doi = {http://dx.doi.org/10.1006/jsbi.1996.0030}
+  doi = {https://dx.doi.org/10.1006/jsbi.1996.0030}
 }
 
 @article{Marco1996,
@@ -64,7 +64,7 @@
   year = {1996},
   volume = {66},
   pages = {5-10},
-  doi = {http://dx.doi.org/10.1016/S0304-3991(96)00083-6}
+  doi = {https://dx.doi.org/10.1016/S0304-3991(96)00083-6}
 }
 
 @article{Penczek1992,
@@ -75,9 +75,9 @@
         journal = {Ultramicroscopy},
         volume = {40}, 
         pages = {33-53},
-        url = {http://view.ncbi.nlm.nih.gov/pubmed/1580010}, 
+        url = {https://view.ncbi.nlm.nih.gov/pubmed/1580010}, 
         title = {Three-dimensional reconstruction of single particles embedded in ice}, 
-        doi = {http://dx.doi.org/10.1016/0304-3991(92)90233-A}
+        doi = {https://dx.doi.org/10.1016/0304-3991(92)90233-A}
 }
 
 """

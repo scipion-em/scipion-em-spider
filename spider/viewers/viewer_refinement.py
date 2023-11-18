@@ -35,7 +35,9 @@ import pyworkflow.utils as pwutils
 from pwem.viewers import (EmPlotter, ChimeraView,
                           EmProtocolViewer, ChimeraAngDist)
 
-from ..constants import *
+from ..constants import (ITER_LAST, ITER_SELECTION, ANGDIST_2DPLOT,
+                         ANGDIST_CHIMERA, VOLUME_SLICES, VOL,
+                         VOLUME_CHIMERA, VOLNAMES_GOLDSTD, VOLNAMES_DEFGROUPS)
 from ..protocols import SpiderProtRefinement
 from ..utils import SpiderDocFile
 

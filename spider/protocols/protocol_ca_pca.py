@@ -48,7 +48,7 @@ class SpiderProtCAPCA(SpiderProtocol):
     less likely to be trapped in an infinite loop of numerical inaccuracy.
     
     For more info see:
-    [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/classification/tutorial.html#CAPCA][SPIDER MDA documentation]] 
+    [[https://spider.wadsworth.org/spider_doc/spider/docs/techs/classification/tutorial.html#CAPCA][SPIDER MDA documentation]]
     """
     _label = 'ca pca'
     _devStatus = PROD

@@ -64,6 +64,6 @@ class SpiderProtClassifyDiday(SpiderProtClassifyCluster):
     def _methods(self):
         msg = "\nInput particles %s " % self.getObjectTag('inputParticles')
         msg += "were subjected to Diday's method of moving centers "
-        msg += "(SPIDER command [[http://spider.wadsworth.org/spider_doc/spider/docs/man/clcla.html][CL CLA]]) "
+        msg += "(SPIDER command [[https://spider.wadsworth.org/spider_doc/spider/docs/man/clcla.html][CL CLA]]) "
         msg += "using %s factors. " % self.numberOfFactors
         return [msg]

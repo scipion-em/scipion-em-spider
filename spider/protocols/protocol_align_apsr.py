@@ -37,7 +37,7 @@ class SpiderProtAlignAPSR(SpiderProtAlign):
     of an image series.
     
     See detailed description at:
-    [[http://spider.wadsworth.org/spider_doc/spider/docs/man/apsr.html][SPIDER's AP SR online manual]]
+    [[https://spider.wadsworth.org/spider_doc/spider/docs/man/apsr.html][SPIDER's AP SR online manual]]
     """
     _label = 'align ap sr'
     _devStatus = PROD
