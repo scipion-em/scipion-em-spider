@@ -60,6 +60,6 @@ class SpiderProtClassifyWard(SpiderProtClassifyCluster):
     def _methods(self):
         msg = "\nInput particles %s " % self.getObjectTag('inputParticles')
         msg += "were subjected to Ward's method  "
-        msg += "(SPIDER command [[http://spider.wadsworth.org/spider_doc/spider/docs/man/clhc.html][CL HC]]) "
+        msg += "(SPIDER command [[https://spider.wadsworth.org/spider_doc/spider/docs/man/clhc.html][CL HC]]) "
         msg += "using %s factors. " % self.numberOfFactors
         return [msg]

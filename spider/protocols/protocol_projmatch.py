@@ -43,7 +43,8 @@ from .. import Plugin
 from ..utils import (SpiderDocFile, SpiderDocAliFile,
                      writeScript, runScript)
 from ..convert import convertEndian, alignmentToRow
-from ..constants import *
+from ..constants import (GOLD_STD, BP_3F, DEF_GROUPS, ANGLE_PHI, ANGLE_THE,
+                         ANGLE_PSI, SHIFTX, SHIFTY)
 from .protocol_base import SpiderProtocol
 
 
@@ -64,7 +65,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     without (gold-standard refinement).
     
     For more information, see:
-    [[http://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html][SPIDER documentation on projection-matching]]
+    [[https://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html][SPIDER documentation on projection-matching]]
     """
     _label = 'refine 3D'
     _devStatus = PROD
@@ -146,7 +147,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
                            "In small-angle refinement, "
                            "a set of reference projections is computed for each particle on the fly, "
                            "using the SPIDER command "
-                           "[[http://spider.wadsworth.org/spider_doc/spider/docs/man/voras.html][VO RAS]]. ")        
+                           "[[https://spider.wadsworth.org/spider_doc/spider/docs/man/voras.html][VO RAS]].")
         # GLO [ang-steps]  = '3.3,3.,2.,2.,2.,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5'  ; Angular degree steps
         # GLO [ang-limits] = '0.,0.,15.,8.,6.,5.,5.,5.,5.,5.,5.,5.,5.,5.,5.,5.'            ; Angular limits
         form.addParam('angSteps', params.StringParam, default='3.3 3 3x2 1.5',
@@ -458,7 +459,7 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
         files = sorted(glob(template))
         if files:
             f = files[-1]
-            s = re.compile('(\d{2}).stk').search(f)
+            s = re.compile(r'(\d{2}).stk').search(f)
             if s:
                 result = int(s.group(1))
         return result

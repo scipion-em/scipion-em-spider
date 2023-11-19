@@ -24,7 +24,7 @@
 # *
 # **************************************************************************
 
-from pyworkflow.protocol.params import *
+from pyworkflow.protocol.params import LabelParam, IntParam
 from pyworkflow.viewer import (ProtocolViewer, DESKTOP_TKINTER,
                                WEB_DJANGO)
 from pwem.viewers import DataView, EmPlotter
@@ -54,17 +54,17 @@ class SpiderViewerCAPCA(ProtocolViewer):
                       help='One of the methods to determine what eigenvalues are useful, '
                       'and which are from noise is to view a histogram showing the percentage '
                       'of eigenvalue variance accounted for by each factor.')
-        form.addParam('doShowPcaFile', LabelParam,  # expertLevel=LEVEL_ADVANCED,
+        form.addParam('doShowPcaFile', LabelParam,
                       label="Show IMC file?", default=True,
                       help='This file contains coordinates of each image in the new vector space.')
-        form.addParam('doShowFactorMaps', LabelParam,  # expertLevel=LEVEL_ADVANCED,
+        form.addParam('doShowFactorMaps', LabelParam,
                       label="Show factor maps?", default=True,
                       help='Once you know which eigenvectors have some meaning and which are from noise, '
                       'you can display 2D factor maps of selected pairs of factors to visualize clustering (if any).')        
         line = form.addLine('Factors')
-        line.addParam('firstFactor', IntParam,  # expertLevel=LEVEL_ADVANCED,
+        line.addParam('firstFactor', IntParam,
                       label="First", default=1) 
-        line.addParam('secondFactor', IntParam,  # expertLevel=LEVEL_ADVANCED,
+        line.addParam('secondFactor', IntParam,
                       label="Second", default=2)
                       
     def _getVisualizeDict(self):

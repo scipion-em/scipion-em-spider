@@ -1,3 +1,4 @@
+3.1.7 - minor changes
 3.1.6 - add possible outputs class
 3.1.5 - add devStatus to protocols
 3.1.3 - update to support ChimeraX

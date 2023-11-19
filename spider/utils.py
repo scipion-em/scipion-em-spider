@@ -49,11 +49,11 @@ TEMPLATE_DIR = 'templates'
 # Match two string types:
 # [key] = value ; some comment
 # GLO [key] = 'value' ; some comment
-REGEX_KEYVALUE = re.compile("(?P<prefix>\s+GLO\s|[^[a-zA-Z0-9_-]*)(?P<var>\[?[a-zA-Z0-9_-]+\]?)(?P<s1>\s*)=(?P<s2>\s*)(?P<value>\S+)(?P<suffix>\s+.*)")
+REGEX_KEYVALUE = re.compile(r"(?P<prefix>\s+GLO\s|[^[a-zA-Z0-9_-]*)(?P<var>\[?[a-zA-Z0-9_-]+\]?)(?P<s1>\s*)=(?P<s2>\s*)(?P<value>\S+)(?P<suffix>\s+.*)")
 
 # Match strings of the type [key]value
 # just before a 'fr l' line
-REGEX_KEYFRL = re.compile("(?P<var>\[?[a-zA-Z0-9_-]+\]?)(?P<value>\S+)(?P<suffix>\s+.*)")
+REGEX_KEYFRL = re.compile(r"(?P<var>\[?[a-zA-Z0-9_-]+\]?)(?P<value>\S+)(?P<suffix>\s+.*)")
 
 HEADER_COLUMNS = ['ANGLE_PSI2', 'ANGLE_THE',
                   'ANGLE_PHI', 'REF', 'EXP', 'ANGLE_PSI', 'SHIFTX',

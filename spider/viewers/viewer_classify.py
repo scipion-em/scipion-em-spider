@@ -131,14 +131,7 @@ class SpiderViewerWard(SpiderViewerClassify):
                                  help='Maximum level of classes to show')
 
     def visualizeClasses(self, e=None):
-        classTemplate = "class_%03d"
-        averages = '%03d@' + self.protocol._getFileName('averages')
-        
-        def getInfo2(level, classNo):
-            return classTemplate % classNo, averages % classNo
-        
         node = self.protocol.buildDendrogram(writeAverages=False)
-        
         g = Graph(root=node)
         self.graph = g
                
@@ -331,8 +324,7 @@ class SpiderViewerDiday(SpiderViewerClassify):
 
         particles = prot.inputParticles.get()
         particles.load()
-        sampling = particles.getSamplingRate()
-        
+
         setFn = prot._getTmpPath('classes2D.sqlite')
         cleanPath(setFn)
         classes2D = SetOfClasses2D(filename=setFn)
