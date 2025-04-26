@@ -55,10 +55,7 @@ class SpiderProtReconstruct(SpiderProtocol):
     _label = 'reconstruct fourier'
     _devStatus = PROD
     _possibleOutputs = outputs
-
-    def __init__(self, **kwargs):
-        SpiderProtocol.__init__(self, **kwargs)
-        self.stepsExecutionMode = STEPS_SERIAL
+    stepsExecutionMode = STEPS_SERIAL
 
     # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
