@@ -10,6 +10,5 @@
 # Include script files
  recursive-include spider/scripts *
 
-# Include the changelog
-include CHANGES.txt
-
+# Include the changelog and requirements
+include *.txt
