@@ -80,10 +80,11 @@ class SpiderProtReconstruct(SpiderProtocol):
     # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):        
         self._insertFunctionStep('convertInputStep',
-                                 self.inputParticles.get().getObjId())
-        self._insertFunctionStep('rotateStep')
-        self._insertFunctionStep('reconstructStep')
-        self._insertFunctionStep('createOutputStep')
+                                 self.inputParticles.get().getObjId(),
+                                 needsGPU=False)
+        self._insertFunctionStep('rotateStep', needsGPU=False)
+        self._insertFunctionStep('reconstructStep', needsGPU=False)
+        self._insertFunctionStep('createOutputStep', needsGPU=False)
     
     # --------------------------- STEPS functions -----------------------------
     def convertInputStep(self, particlesId):

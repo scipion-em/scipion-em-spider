@@ -130,9 +130,11 @@ See detailed description of the filter at [[https://spider.wadsworth.org/spider_
         # Insert processing steps
         self._insertFunctionStep('convertInput', 'inputParticles', 
                                  self._getFileName('particles'),
-                                 self._getFileName('particlesSel'))
-        self._insertFunctionStep('filterStep', self.filterType.get())
-        self._insertFunctionStep('createOutputStep')
+                                 self._getFileName('particlesSel'),
+                                 needsGPU=False)
+        self._insertFunctionStep('filterStep', self.filterType.get(),
+                                 needsGPU=False)
+        self._insertFunctionStep('createOutputStep', needsGPU=False)
 
     # --------------------------- STEPS functions -----------------------------
     def filterStep(self, filterType):
