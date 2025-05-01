@@ -101,14 +101,17 @@ class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
         self.outFn = self._getFileName('inputImage')
         self.inputImg = self.inputImage.get()
         # Convert the input image to Spider format
-        self._insertFunctionStep('convertInputStep', self.inputImg.getLocation(), 
-                                 self._getFileName('inputImage'))
+        self._insertFunctionStep('convertInputStep',
+                                 self.inputImg.getLocation(),
+                                 self._getFileName('inputImage'),
+                                 needsGPU=False)
         # Run Spider script to generate the custom mask
         self._insertFunctionStep('createMaskStep', 
                                  self.filterRadius1.get(), self.sdFactor.get(),
-                                 self.filterRadius2.get(), self.maskThreshold.get())
+                                 self.filterRadius2.get(), self.maskThreshold.get(),
+                                 needsGPU=False)
         # Create the output Mask object
-        self._insertFunctionStep('createOutputStep')
+        self._insertFunctionStep('createOutputStep', needsGPU=False)
         
     # --------------------------- STEPS functions -----------------------------
     def convertInputStep(self, inputLoc, outputFn):

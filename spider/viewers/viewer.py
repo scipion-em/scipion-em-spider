@@ -36,7 +36,7 @@ class SpiderViewer(DataViewer):
     
     _environments = [DESKTOP_TKINTER, WEB_DJANGO]
     _targets = [PcaFile]
-    _label = 'viewer'
+    _name = 'Spider'
 
     def _visualize(self, obj, **args):
         self._views.append(self.textView([obj.getFileName()], "PCA file"))

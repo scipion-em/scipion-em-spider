@@ -93,13 +93,15 @@ class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
         
         self._insertFunctionStep('convertInput', 'inputParticles',
                                  self._getFileName('particles'),
-                                 self._getFileName('particlesSel'))
+                                 self._getFileName('particlesSel'),
+                                 needsGPU=False)
         
         self._insertFunctionStep('classifyStep', pcaFile, 
                                  self.numberOfFactors.get(),
-                                 self.getNumberOfClasses())
+                                 self.getNumberOfClasses(),
+                                 needsGPU=False)
         
-        self._insertFunctionStep('createOutputStep')
+        self._insertFunctionStep('createOutputStep', needsGPU=False)
         
     # --------------------------- STEPS functions -----------------------------
     def _updateParams(self):

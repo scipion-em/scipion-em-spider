@@ -188,11 +188,13 @@ class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
     def _insertAllSteps(self):        
         # Create new stacks and selfiles per groups
         self._insertFunctionStep('convertInputStep',
-                                 self.inputParticles.get().getObjId())
+                                 self.inputParticles.get().getObjId(),
+                                 needsGPU=False)
 
-        self._insertFunctionStep('runScriptStep', 'refine.pam')
+        self._insertFunctionStep('runScriptStep', 'refine.pam',
+                                 needsGPU=False)
                 
-        self._insertFunctionStep('createOutputStep')
+        self._insertFunctionStep('createOutputStep', needsGPU=False)
     
     # --------------------------- STEPS functions -----------------------------
     

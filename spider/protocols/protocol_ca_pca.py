@@ -126,16 +126,19 @@ class SpiderProtCAPCA(SpiderProtocol):
         # Insert processing steps
         self._insertFunctionStep('convertInput', 'inputParticles',
                                  self._getFileName('particles'),
-                                 self._getFileName('particlesSel'))
+                                 self._getFileName('particlesSel'),
+                                 needsGPU=False)
         if self.maskType > 0:
             self._insertFunctionStep('convertMaskStep',
-                                     self.maskImage.get().getObjId())
+                                     self.maskImage.get().getObjId(),
+                                     needsGPU=False)
         else:
             self.maskImage.set(None)
             
         self._insertFunctionStep('capcaStep', self.analysisType.get(), 
-                                 self.numberOfFactors.get(), self.maskType.get())
-        self._insertFunctionStep('createOutputStep')
+                                 self.numberOfFactors.get(), self.maskType.get(),
+                                 needsGPU=False)
+        self._insertFunctionStep('createOutputStep', needsGPU=False)
         
     # --------------------------- STEPS functions -----------------------------
     def convertMaskStep(self, maskType):

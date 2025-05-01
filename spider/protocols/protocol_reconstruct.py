@@ -55,10 +55,7 @@ class SpiderProtReconstruct(SpiderProtocol):
     _label = 'reconstruct fourier'
     _devStatus = PROD
     _possibleOutputs = outputs
-
-    def __init__(self, **kwargs):
-        SpiderProtocol.__init__(self, **kwargs)
-        self.stepsExecutionMode = STEPS_SERIAL
+    stepsExecutionMode = STEPS_SERIAL
 
     # --------------------------- DEFINE param functions ----------------------
     def _defineParams(self, form):
@@ -83,10 +80,11 @@ class SpiderProtReconstruct(SpiderProtocol):
     # --------------------------- INSERT steps functions ----------------------
     def _insertAllSteps(self):        
         self._insertFunctionStep('convertInputStep',
-                                 self.inputParticles.get().getObjId())
-        self._insertFunctionStep('rotateStep')
-        self._insertFunctionStep('reconstructStep')
-        self._insertFunctionStep('createOutputStep')
+                                 self.inputParticles.get().getObjId(),
+                                 needsGPU=False)
+        self._insertFunctionStep('rotateStep', needsGPU=False)
+        self._insertFunctionStep('reconstructStep', needsGPU=False)
+        self._insertFunctionStep('createOutputStep', needsGPU=False)
     
     # --------------------------- STEPS functions -----------------------------
     def convertInputStep(self, particlesId):
