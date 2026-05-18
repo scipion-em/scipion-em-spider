@@ -55,17 +55,220 @@ class outputs(Enum):
 
 
 class SpiderProtRefinement(ProtRefine3D, SpiderProtocol):
-    """ Reference-based refinement using SPIDER AP SHC and AP REF commands.
+    # the URL doesn't load
+    """
+    Performs iterative 3D refinement of cryo-EM particle images using
+    SPIDER projection-matching strategies. The protocol improves the
+    accuracy of angular assignments and particle alignment by repeatedly
+    comparing experimental images against progressively refined reference
+    projections derived from a three-dimensional reconstruction. It is
+    designed for high-resolution single-particle analysis workflows in
+    which the goal is to obtain a biologically reliable reconstruction
+    from heterogeneous particle datasets. More info:
+    https://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html
 
-    Iterative refinement improves the accuracy in the determination of orientations.
-    This improvement is accomplished by successive use of
-    more finely-sampled reference projections.
-    
-    Two different workflows are suggested: with defocus groups or
-    without (gold-standard refinement).
-    
-    For more information, see:
-    [[https://spider.wadsworth.org/spider_doc/spider/docs/techs/recon/mr.html][SPIDER documentation on projection-matching]]
+    AI Generated:
+
+    Spider Projection Matching Refinement (SpiderProtRefinement) - User Manual
+        Overview
+
+        The Spider Projection Matching Refinement protocol performs
+        iterative three-dimensional refinement of cryo-EM particle images
+        using SPIDER projection-matching methods. Its primary purpose is
+        to improve the orientation parameters assigned to individual
+        particles so that increasingly accurate reconstructions can be
+        generated over successive refinement cycles.
+
+        In practical cryo-EM workflows, this protocol is commonly used
+        after obtaining an initial three-dimensional model and a set of
+        particles with preliminary angular assignments. Through iterative
+        refinement, the reconstruction gradually converges toward a more
+        accurate representation of the biological structure. The protocol
+        is suitable both for exploratory refinement and for demanding
+        high-resolution studies.
+
+        Refinement Strategies
+
+        The protocol supports two major refinement strategies. The first
+        uses defocus groups, where particles sharing similar optical
+        conditions are processed together before being merged into a
+        final reconstruction. This approach can improve stability when
+        datasets contain strong variations in imaging conditions.
+
+        The second strategy follows a gold-standard refinement procedure.
+        In this workflow, independent subsets of particles are refined
+        separately to reduce overfitting and improve the reliability of
+        resolution estimation. This strategy is generally preferred in
+        modern cryo-EM workflows because it produces more conservative
+        and biologically trustworthy reconstructions.
+
+        Choice between these approaches depends on the quality of the
+        dataset, microscope conditions, and the level of refinement
+        required. Gold-standard refinement is usually recommended for
+        high-resolution projects, while defocus-group refinement may be
+        useful in legacy workflows or datasets with substantial optical
+        variability.
+
+        Inputs and Biological Context
+
+        The protocol requires a set of particle images containing
+        contrast transfer function information together with an initial
+        three-dimensional reference volume. The quality of the initial
+        reference strongly influences refinement stability. A biologically
+        meaningful and approximately correct starting map generally
+        improves convergence and reduces the risk of model bias.
+
+        Iterative refinement progressively improves orientation accuracy
+        by generating increasingly dense sets of reference projections.
+        Early iterations typically perform broad searches to identify
+        approximate orientations, while later iterations focus on fine
+        angular adjustments.
+
+        In biological terms, this process allows structural details to
+        emerge gradually as particle alignment improves. However,
+        refinement cannot compensate for severe sample heterogeneity,
+        poor particle quality, or incorrect initial models. Careful data
+        curation before refinement remains essential.
+
+        Angular Sampling and Search Strategy
+
+        Angular sampling is one of the most important parameters in the
+        refinement process. Coarse angular steps are computationally
+        efficient and useful during early iterations when orientations
+        remain uncertain. Finer angular increments become increasingly
+        important during later refinement stages to maximize structural
+        detail and map accuracy.
+
+        The angular search range determines how broadly orientations are
+        explored around the current estimate. Wide searches provide
+        robustness against incorrect assignments but increase runtime.
+        Narrow searches improve efficiency and stability once approximate
+        orientations are already known.
+
+        From a biological perspective, gradual restriction of the angular
+        search space often reflects the transition from global structural
+        exploration toward high-resolution local optimization.
+
+        Small-Angle Refinement
+
+        The protocol optionally supports small-angle refinement, which is
+        intended for datasets that already possess reliable angular
+        assignments. In this mode, refinement focuses on limited angular
+        deviations around existing orientations instead of performing a
+        broad global search.
+
+        Small-angle refinement is especially useful during late-stage
+        optimization, local refinement of stable conformations, or
+        iterative improvement of already converged maps. Because the
+        search space is highly restricted, the procedure is faster and
+        often more stable for near-converged datasets.
+
+        However, this approach assumes that the starting orientations are
+        already reasonably accurate. Applying small-angle refinement too
+        early may trap the reconstruction in incorrect local solutions.
+
+        Shift Search and Projection Geometry
+
+        Translational alignment parameters determine how far particle
+        images may shift during refinement. Small shift ranges are
+        efficient when particles are well centered, while larger ranges
+        may be required for poorly aligned datasets.
+
+        The projection diameter parameter defines the effective region of
+        the particle contributing to projection matching. Biologically,
+        this parameter should encompass the relevant molecular signal
+        while minimizing excessive background or solvent contributions.
+
+        The particle radius parameter also influences the alignment
+        strategy and should approximately reflect the expected molecular
+        dimensions. Incorrect radius estimates may reduce refinement
+        accuracy or introduce instability.
+
+        Backprojection and Reconstruction Methods
+
+        Multiple reconstruction and backprojection approaches are
+        available for advanced refinement workflows. Different methods
+        provide tradeoffs between computational efficiency, memory
+        consumption, and numerical robustness.
+
+        Some methods are optimized for standard reconstruction tasks,
+        while others are more suitable for large datasets or systems with
+        demanding computational requirements. Selection of the
+        reconstruction method should consider available hardware
+        resources, dataset size, and refinement objectives.
+
+        The protocol also supports optional spherical deconvolution
+        strategies that can improve map interpretability under certain
+        imaging conditions.
+
+        Defocus Group Handling
+
+        When defocus-group refinement is selected, particles are grouped
+        according to their optical properties before reconstruction. This
+        allows the protocol to better account for contrast transfer
+        function variations across the dataset.
+
+        In biological practice, this strategy may improve reconstruction
+        quality when datasets contain substantial defocus variability or
+        when imaging conditions were not uniform during acquisition.
+
+        The grouping procedure also facilitates management of large
+        datasets by organizing particles into coherent subsets suitable
+        for iterative processing.
+
+        Outputs and Interpretation
+
+        The protocol produces a refined three-dimensional reconstruction
+        together with updated particle alignment parameters. In
+        gold-standard workflows, independent half maps are generated to
+        support reliable Fourier Shell Correlation analysis and
+        resolution estimation.
+
+        Updated particle orientations may be reused in downstream
+        analyses, including local refinement, classification, focused
+        reconstruction, or atomic modeling workflows.
+
+        The resulting FSC curve provides an estimate of reconstruction
+        resolution and consistency between independently refined halves.
+        Biological interpretation of the FSC should always consider map
+        quality, local resolution variability, and possible structural
+        heterogeneity.
+
+        Practical Recommendations
+
+        In routine cryo-EM practice, it is generally advisable to begin
+        refinement using moderate angular sampling and broad search
+        ranges, then progressively increase precision as the refinement
+        converges.
+
+        Gold-standard refinement should usually be preferred for
+        publication-quality reconstructions because it reduces the risk
+        of overfitting and provides more reliable resolution estimates.
+
+        Small-angle refinement is most appropriate during late refinement
+        stages when orientations are already stable. Broad global
+        refinement remains preferable during early iterations or when
+        the initial model is uncertain.
+
+        Visual inspection of intermediate reconstructions is strongly
+        recommended throughout refinement. Abrupt structural changes,
+        excessive noise amplification, or inconsistent FSC behavior may
+        indicate overfitting, poor alignment, or unresolved sample
+        heterogeneity.
+
+        Final Perspective
+
+        Three-dimensional refinement is one of the central stages in
+        single-particle cryo-EM analysis because it directly determines
+        the accuracy and interpretability of the final reconstruction.
+        Reliable results depend not only on computational refinement but
+        also on thoughtful experimental preparation, careful parameter
+        selection, and continuous biological validation of intermediate
+        results.
+
+        Successful refinement combines robust angular optimization,
+        appropriate search strategies, and biologically meaningful
+        interpretation of the resulting maps and resolution estimates.
     """
     _label = 'refine 3D'
     _devStatus = PROD

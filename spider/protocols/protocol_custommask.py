@@ -41,16 +41,158 @@ class outputs(Enum):
 
 
 class SpiderProtCustomMask(ProtCreateMask2D, SpiderProtocol):
-    """ This protocol creates a 2D mask using SPIDER.
+    """
+    Creates a customized 2D mask for particle analysis in cryo-EM workflows.
+    The protocol is intended to isolate the relevant structural region of a
+    particle image so that downstream multivariate statistical analysis and
+    dimensionality reduction focus only on biologically meaningful pixels.
+    This approach is especially valuable for elongated, asymmetric, or
+    flexible particles where a simple circular mask may include excessive
+    background noise or solvent regions.
 
-    In the step following this one, dimension-reduction, the covariance of 
-    the pixels in all images will be computed. Only pixels under a given 
-    mask will be analyzed. If this step is performed, a mask that follows 
-    closely the contour the particle of interest will be used. Absent a 
-    custom-made mask, a circular mask will be used.  For non-globular structures, 
-    this customized mask will reduce computational demand and the likelihood 
-    of numerical inaccuracy in the next dimension-reduction step. On the other 
-    hand, given the power of modern computers, this step may be unnecessary.
+    AI Generated:
+
+    Create Custom 2D Mask (SpiderProtCustomMask) - User Manual
+        Overview
+
+        The Create Custom 2D Mask protocol generates a biologically focused
+        mask from a representative particle image, typically an average image
+        obtained from aligned particles. The resulting mask defines which
+        image regions are considered relevant for subsequent statistical
+        analysis steps, particularly dimensionality reduction and
+        classification workflows. By restricting calculations to the particle
+        region, the protocol improves computational efficiency and reduces the
+        influence of noise and empty background areas.
+
+        In practical cryo-EM processing, this type of masking is particularly
+        important when studying non-globular particles, elongated complexes,
+        flexible assemblies, or particles containing large solvent regions.
+        For compact and symmetric particles, a simple circular mask is often
+        sufficient, but more complex biological structures frequently benefit
+        from a mask that follows the actual particle contour more closely.
+
+        Biological Motivation
+
+        During multivariate statistical analysis, covariance relationships are
+        computed between pixels across large numbers of particle images. If
+        irrelevant background regions are included, they contribute noise and
+        unnecessary computational cost. A carefully designed mask helps focus
+        the analysis on structural regions that contain biologically relevant
+        variability.
+
+        This becomes especially important for flexible macromolecular systems,
+        membrane proteins, filamentous assemblies, or particles with strongly
+        anisotropic shapes. In these cases, excluding empty solvent regions
+        can improve numerical stability and enhance the interpretability of
+        classification results.
+
+        Although modern computational resources reduce some of the historical
+        need for aggressive masking, biologically meaningful masks still often
+        improve the quality of downstream analyses and remain valuable in many
+        workflows.
+
+        Input Image Selection
+
+        The protocol requires a representative input image from which the mask
+        will be generated. In most practical situations, the recommended input
+        is a high-quality class average or reference average rather than a
+        single noisy particle image. Averaged images better represent the true
+        particle boundaries and reduce the influence of random noise.
+
+        The quality of the final mask strongly depends on the quality of the
+        selected input image. Poorly aligned averages, low-contrast images,
+        or images containing strong artifacts may produce masks that exclude
+        important structural regions or include unwanted background features.
+
+        Filtering and Boundary Smoothing
+
+        The protocol applies low-pass filtering to smooth the particle image
+        before mask generation. Biologically, this helps suppress high-
+        frequency noise and emphasizes the overall particle envelope rather
+        than fine structural details. The filtering radius controls how
+        strongly the image is smoothed.
+
+        Smaller filtering radii produce stronger smoothing and generate more
+        conservative masks focused on broad structural regions. Larger radii
+        preserve finer boundaries but may also retain noise or irregular edge
+        features. In practice, moderate smoothing is usually preferred because
+        it creates masks with stable and biologically meaningful contours.
+
+        Threshold Definition
+
+        After filtering, the protocol separates particle regions from the
+        background using an intensity threshold related to the image mean and
+        standard deviation. This threshold determines how much of the particle
+        density is included in the intermediate mask.
+
+        Lower thresholds tend to include weaker peripheral density and may be
+        useful for flexible or low-contrast structures. Higher thresholds
+        create tighter masks focused on the most stable and strongest density
+        regions. Excessively aggressive thresholds may exclude biologically
+        relevant flexible domains, while very permissive thresholds may
+        include excessive background.
+
+        Intermediate Mask Refinement
+
+        The protocol performs an additional smoothing operation on the
+        intermediate mask before generating the final binary mask. This step
+        helps remove jagged edges and isolated irregularities, producing a
+        cleaner and more biologically realistic contour.
+
+        From a practical perspective, smooth masks generally behave better in
+        downstream statistical analyses because they avoid introducing sharp
+        artificial boundaries. This refinement stage is particularly useful
+        when the original particle image contains noise or irregular density
+        distributions.
+
+        Final Mask Generation
+
+        The final thresholding stage converts the refined intermediate mask
+        into the definitive binary mask used in later processing steps. The
+        resulting mask identifies which pixels are retained for analysis and
+        which are excluded.
+
+        A biologically appropriate mask should contain the full stable core of
+        the particle while avoiding large solvent regions. Care should be
+        taken not to over-tighten the mask around the particle, since this
+        may exclude flexible peripheral domains that remain biologically
+        important.
+
+        Outputs and Interpretation
+
+        The protocol produces a 2D mask aligned with the geometry and sampling
+        characteristics of the input image. This mask can then be used in
+        multivariate statistical analysis, dimensionality reduction, and
+        classification workflows.
+
+        The output mask should always be visually inspected before further
+        processing. Users should verify that the mask adequately follows the
+        particle contour, includes all relevant structural regions, and does
+        not introduce disconnected regions or strong asymmetries unless these
+        are biologically expected.
+
+        Practical Recommendations
+
+        In routine workflows, it is generally advisable to begin with a clean
+        average image and moderate filtering parameters. If the generated mask
+        appears too fragmented or noisy, increasing the degree of smoothing
+        often improves robustness. If biologically important peripheral
+        regions are missing, lowering the threshold can help preserve them.
+
+        For globular and highly symmetric particles, the benefits of a custom
+        mask may be modest compared to a simple circular mask. However, for
+        elongated, flexible, or irregular complexes, carefully tuned custom
+        masks often improve classification quality and computational
+        efficiency.
+
+        Final Perspective
+
+        Custom masking is an important strategy for focusing cryo-EM analysis
+        on structurally meaningful regions of a particle. By reducing the
+        influence of background noise and emphasizing the biologically
+        relevant signal, the protocol helps improve the reliability and
+        interpretability of downstream statistical analyses and particle
+        classification workflows.
     """
     _label = 'create 2d mask'
     _devStatus = PROD

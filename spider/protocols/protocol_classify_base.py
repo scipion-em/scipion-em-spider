@@ -37,7 +37,160 @@ from .protocol_base import SpiderProtocol
 
 
 class SpiderProtClassify(ProtClassify2D, SpiderProtocol):
-    """ Base protocol for SPIDER classifications. """
+    """
+    Provides a general framework for unsupervised classification of cryo-EM
+    particle images using SPIDER multivariate analysis workflows.
+
+    AI Generated:
+
+    SPIDER Classification Framework (SpiderProtClassify) — User Manual
+        Overview
+
+        The SPIDER Classification framework provides the foundation for
+        organizing large collections of particle images into structurally
+        meaningful groups after dimensionality reduction by Principal
+        Component Analysis (PCA) or Correspondence Analysis (CA). Its
+        primary goal is to simplify the interpretation of heterogeneous
+        cryo-EM datasets by projecting particle variability into a reduced
+        factor space and then grouping particles according to their
+        similarities within that space.
+
+        In practical cryo-EM workflows, classification is one of the most
+        important steps for separating distinct molecular conformations,
+        removing inconsistent particles, and identifying dominant structural
+        states. By working in a reduced-dimensional representation rather
+        than directly on raw images, the protocol improves computational
+        efficiency while preserving the biologically meaningful variability
+        present in the dataset.
+
+        Inputs and Factor Space Representation
+
+        The protocol operates on a set of particle images together with
+        previously computed PCA or CA results. These reduced-dimension
+        representations summarize the major sources of variance in the
+        dataset and provide the coordinate system used for classification.
+
+        The number of selected factors strongly influences the biological
+        interpretation of the final classes. Retaining too few factors may
+        oversimplify the data and merge distinct conformations, while using
+        too many factors may introduce noise and reduce classification
+        stability. In many cryo-EM studies, users inspect the eigenimages or
+        variance distribution before deciding how many factors should be
+        retained for downstream analysis.
+
+        From a biological perspective, the selected factors should ideally
+        capture meaningful structural variability rather than imaging noise
+        or background fluctuations. Careful factor selection is therefore an
+        essential prerequisite for reliable classification.
+
+        Classification Strategies
+
+        The framework supports clustering-oriented classification workflows
+        that partition particles according to their similarity in factor
+        space. Different strategies may emphasize either compact class
+        separation, hierarchical organization, or exploratory visualization
+        of heterogeneity.
+
+        Some classification modes produce discrete particle groups directly,
+        while others generate hierarchical dendrograms that describe the
+        progressive relationships among classes. Hierarchical approaches are
+        particularly valuable when studying continuous conformational
+        variability because they allow users to inspect particle organization
+        at multiple levels of granularity.
+
+        In exploratory structural biology workflows, classification often
+        serves as an intermediate stage before refinement, heterogeneity
+        analysis, or three-dimensional reconstruction. The resulting classes
+        may correspond to different functional states, ligand occupancies,
+        assembly intermediates, or partially damaged particles.
+
+        Hierarchical Clustering and Dendrogram Interpretation
+
+        The framework includes support for hierarchical clustering workflows
+        in which particle relationships are represented as dendrogram trees.
+        In this representation, nearby branches correspond to more similar
+        particle populations, while distant branches indicate stronger
+        structural divergence.
+
+        For biological interpretation, dendrograms provide a useful way to
+        visualize gradual transitions between conformations or to identify
+        major structural subdivisions within a dataset. They are especially
+        informative when the dataset contains flexible complexes or multiple
+        related structural states rather than sharply separated classes.
+
+        The framework also enables the generation of representative class
+        averages associated with dendrogram nodes. These averages help users
+        visually inspect the structural content of each branch and evaluate
+        whether the observed variability corresponds to biologically relevant
+        heterogeneity or to noise and alignment artifacts.
+
+        Particle Assignment and Class Averages
+
+        After classification, particles are associated with one or more
+        structural groups and representative averages are generated for
+        interpretation. These averages improve signal-to-noise ratio and
+        provide a convenient visual summary of the particles assigned to each
+        class.
+
+        From a cryo-EM perspective, class averages are frequently used to
+        evaluate data quality, identify preferred orientations, detect
+        damaged particles, and inspect conformational differences. Reliable
+        averages should display consistent structural features and reduced
+        background variability.
+
+        In hierarchical workflows, averages generated at different levels of
+        the dendrogram can reveal both broad structural organization and
+        finer conformational distinctions. This multiscale interpretation is
+        particularly useful for flexible assemblies or continuously varying
+        systems.
+
+        Computational Considerations
+
+        Classification in reduced-dimensional factor space is significantly
+        more efficient than direct image-space clustering. This enables the
+        analysis of large particle datasets while reducing sensitivity to
+        noise and pixel-level fluctuations.
+
+        Nevertheless, classification quality still depends strongly on the
+        quality of the input particles, the dimensionality reduction stage,
+        and the biological homogeneity of the sample. Poor alignments,
+        inaccurate masking, or strong contamination may reduce class
+        interpretability.
+
+        Hierarchical analyses may become increasingly complex for highly
+        heterogeneous datasets, and users should interpret deep dendrogram
+        branches cautiously. Small branches containing very few particles
+        may reflect noise, rare orientations, or unstable classifications
+        rather than meaningful biological states.
+
+        Practical Recommendations
+
+        In routine cryo-EM practice, it is generally advisable to begin with
+        a moderate number of factors and inspect the resulting class
+        averages visually before increasing classification complexity.
+        Stable and biologically interpretable classes are usually more
+        informative than aggressively subdivided datasets.
+
+        Hierarchical clustering approaches are particularly useful for
+        exploratory studies of structural variability, while simpler
+        partitioning strategies may be preferable for rapid particle cleanup
+        or initial dataset inspection.
+
+        When interpreting results, users should always combine classification
+        outputs with biological knowledge, visual inspection, and downstream
+        reconstruction analysis. Classification alone does not establish the
+        biological significance of a structural state.
+
+        Final Perspective
+
+        For cryo-EM researchers, classification is a central tool for
+        transforming heterogeneous particle datasets into interpretable
+        structural populations. By organizing particles within reduced
+        factor spaces and optionally representing their relationships
+        hierarchically, the framework enables more reliable exploration of
+        conformational variability, structural heterogeneity, and sample
+        quality across a wide range of biological systems.
+    """
     _label = None
 
     def __init__(self, script, classDir, **kwargs):

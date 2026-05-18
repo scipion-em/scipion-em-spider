@@ -47,10 +47,121 @@ class outputs(Enum):
 
 
 class SpiderProtReconstruct(SpiderProtocol):
-    """ This protocol wraps SPIDER BP 32F command.
+    """
+    Reconstructs a 3D cryo-EM volume from a set of aligned particle images
+    using SPIDER Fourier back-projection methods. The protocol is intended
+    for situations where particle orientations are already known and a
+    rapid reconstruction of the underlying structure is required for
+    visualization, validation, or methodological testing.
 
-    Simple reconstruction protocol using Fourier back projection.
-    Mainly used for testing conversion of Euler angles.
+    AI Generated:
+
+    Reconstruct Fourier (SpiderProtReconstruct) - User Manual
+        Overview
+
+        The Reconstruct Fourier protocol generates a three-dimensional
+        reconstruction from a collection of two-dimensional cryo-EM
+        particle projections. It relies on Fourier back-projection
+        strategies implemented in the SPIDER image processing package,
+        allowing users to transform aligned particle datasets into an
+        interpretable density map.
+
+        In practical cryo-EM workflows, this type of reconstruction is
+        commonly used after angular assignment or projection alignment
+        steps have already been completed. The protocol assumes that the
+        orientation parameters associated with each particle are reliable
+        enough to support a meaningful 3D reconstruction. For this reason,
+        the biological quality of the final map strongly depends on the
+        accuracy of the upstream alignment procedures.
+
+        Biological Context and Typical Applications
+
+        From a biological perspective, reconstruction is the step where
+        individual particle observations are combined into a coherent
+        structural representation of the macromolecule. This allows
+        researchers to visualize the global architecture of protein
+        complexes, assemblies, or molecular machines from experimentally
+        observed projection images.
+
+        The protocol is especially useful for validating angular
+        assignments, testing reconstruction workflows, benchmarking
+        alignment methods, or producing intermediate maps during iterative
+        refinement strategies. Because of its relatively straightforward
+        reconstruction approach, it is also well suited for educational
+        purposes and methodological development.
+
+        Input Particles and Alignment Requirements
+
+        The protocol requires a set of particles that already contain
+        projection alignment information. Each particle contributes to
+        the reconstruction according to its assigned orientation and
+        in-plane shifts. If these alignment parameters are inaccurate,
+        inconsistent, or biologically heterogeneous, the reconstructed
+        volume may appear blurred, distorted, or difficult to interpret.
+
+        In most biological applications, the input dataset should
+        correspond to a relatively homogeneous conformational state.
+        Combining strongly heterogeneous particles into a single
+        reconstruction may obscure meaningful structural differences
+        and reduce map quality.
+
+        Reconstruction Strategies
+
+        The protocol provides alternative Fourier back-projection modes
+        that differ mainly in their computational behavior and memory
+        requirements. The standard reconstruction mode is generally
+        appropriate for most datasets and produces the final volume in
+        a single reconstruction workflow.
+
+        For larger particle images or computational environments with
+        limited memory availability, an alternative reconstruction mode
+        can be selected. This approach reduces memory pressure by
+        reconstructing intermediate components separately before
+        combining them into the final volume. Although computationally
+        more demanding, it can improve robustness on constrained systems.
+
+        Choice of reconstruction strategy is therefore mostly influenced
+        by computational resources rather than biological considerations.
+        In routine cryo-EM processing, the standard Fourier reconstruction
+        mode is usually preferred whenever sufficient memory is available.
+
+        Output Volume and Interpretation
+
+        After execution, the protocol produces a reconstructed 3D volume
+        representing the consensus structure derived from the aligned
+        particle dataset. The output map inherits the sampling properties
+        of the original particles, allowing direct integration into
+        downstream cryo-EM workflows such as masking, refinement,
+        visualization, segmentation, or atomic modeling.
+
+        The reconstructed map should always be interpreted in the context
+        of the quality and homogeneity of the input particles. Strong
+        structural variability, alignment errors, or insufficient angular
+        coverage can introduce reconstruction artifacts or anisotropic
+        resolution effects.
+
+        Practical Recommendations
+
+        In routine biological analyses, it is advisable to inspect the
+        angular distribution and alignment consistency of particles before
+        reconstruction. Uniform orientation coverage generally improves
+        map isotropy and structural interpretability.
+
+        When testing new alignment procedures or validating Euler angle
+        conventions, this protocol provides a fast and practical way to
+        evaluate whether the assigned orientations generate biologically
+        meaningful structures. If reconstruction quality appears poor,
+        users should first verify particle centering, orientation accuracy,
+        and dataset homogeneity before attempting additional processing.
+
+        Final Perspective
+
+        Fourier reconstruction represents one of the central operations
+        in cryo-EM image analysis because it transforms individual noisy
+        particle projections into a biologically interpretable 3D density
+        map. Reliable results depend not only on computational execution
+        but also on careful preparation of aligned particle datasets and
+        thoughtful interpretation of structural heterogeneity.
     """
     _label = 'reconstruct fourier'
     _devStatus = PROD
