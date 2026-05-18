@@ -44,7 +44,121 @@ class outputs(Enum):
 
       
 class SpiderProtAlign(ProtAlign2D, SpiderProtocol):
-    """ Base protocol for SPIDER alignments. """
+    """
+    Provides a general framework for reference-free two-dimensional particle
+    alignment within SPIDER-based cryo-EM workflows. The protocol is intended
+    to standardize particle orientations and centering so that images can be
+    compared consistently, averaged reliably, and prepared for downstream
+    classification or reconstruction tasks.
+
+    AI Generated:
+
+    SPIDER Align Protocol (SpiderProtAlign) - User Manual
+        Overview
+
+        The SPIDER Align protocol performs rotational and translational
+        alignment of two-dimensional particle images. Its primary goal is to
+        bring particles into a common orientation and center so that structural
+        features become directly comparable across the dataset. In cryo-EM
+        processing, this step is fundamental because raw particles frequently
+        appear with different in-plane rotations and positional offsets that
+        obscure biologically meaningful information.
+
+        For biological users, alignment is commonly applied before computing
+        class averages, performing dimensionality reduction, or initiating
+        three-dimensional reconstruction workflows. Proper alignment improves
+        signal consistency across particles and increases the interpretability
+        of averages and subsequent analyses. Poorly aligned particles, by
+        contrast, tend to produce blurred averages and unstable classifications.
+
+        General Workflow
+
+        The protocol operates on a collection of particle images and produces
+        an aligned particle set together with a reference-free average. The
+        resulting aligned dataset preserves the identity of the original
+        particles while expressing them in a more standardized coordinate
+        system. This allows downstream procedures to focus on structural
+        variability rather than differences caused by orientation or centering.
+
+        The workflow is designed to support several alignment strategies
+        implemented in derived SPIDER protocols. These specialized variants
+        may differ in the way references are generated or in how rotational
+        and translational searches are performed, but they all share the same
+        conceptual objective of improving particle consistency.
+
+        Radius Selection and Rotational Alignment
+
+        One of the central concepts in this protocol is the use of inner and
+        outer radii to define the image region contributing to rotational
+        alignment. These parameters determine which concentric rings of the
+        particle image are considered during orientation searches.
+
+        From a biological perspective, careful radius selection is important.
+        The inner radius is often chosen to exclude unstable central densities,
+        masking artifacts, or noisy low-frequency regions. The outer radius
+        generally defines the particle boundary and helps prevent surrounding
+        solvent noise from influencing the alignment.
+
+        If the selected outer radius is too small, important structural
+        features may be ignored. Conversely, if it is too large, the alignment
+        may become dominated by background noise or carbon edges. In practice,
+        the optimal values usually encompass the stable and visually reliable
+        portion of the particle projection.
+
+        Centering Strategies
+
+        The protocol supports optional centering strategies intended to improve
+        the consistency of the final particle average. These approaches attempt
+        to refine particle positioning after the initial alignment stages and
+        are especially useful for particles that exhibit asymmetric density or
+        uneven signal distribution.
+
+        Different centering approaches may perform better depending on particle
+        morphology. Compact and symmetric particles are generally easier to
+        center robustly, whereas elongated or highly flexible complexes may
+        require more careful parameter tuning. In some situations, avoiding
+        aggressive centering altogether can preserve biologically meaningful
+        asymmetry that might otherwise be distorted.
+
+        Outputs and Biological Interpretation
+
+        After processing, the protocol produces an aligned particle stack and
+        a representative average image. The aligned particles can be directly
+        used for classification, averaging, or refinement procedures. The
+        average image provides a convenient visual summary of the dominant
+        structural features present in the dataset.
+
+        Biologically, a sharp and coherent average is often an indicator that
+        the particles are structurally homogeneous and well aligned. Blurred
+        or poorly defined averages may indicate residual misalignment,
+        conformational heterogeneity, compositional variability, or excessive
+        noise in the dataset.
+
+        Practical Recommendations
+
+        In most cryo-EM workflows, alignment should be considered an iterative
+        refinement process rather than a single isolated operation. Initial
+        alignment results are often improved after particle cleaning,
+        classification, or masking procedures remove damaged or heterogeneous
+        images.
+
+        For exploratory processing, moderate radius values are usually a good
+        starting point. Biological users should visually inspect averages and
+        class consistency after alignment to determine whether parameter
+        adjustments are necessary. Flexible particles, membrane proteins, and
+        partially occupied complexes frequently require more conservative
+        alignment settings to avoid forcing incompatible conformations into an
+        artificial consensus.
+
+        Final Perspective
+
+        Two-dimensional particle alignment is one of the foundational steps in
+        single-particle cryo-EM analysis because it establishes the geometric
+        consistency needed for meaningful structural interpretation. Careful
+        selection of alignment regions, thoughtful centering strategies, and
+        critical visual inspection of the resulting averages are essential for
+        obtaining biologically reliable results.
+    """
     _label = None
     _possibleOutputs = outputs
     

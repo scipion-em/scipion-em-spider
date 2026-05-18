@@ -45,14 +45,186 @@ class outputs(Enum):
 
       
 class SpiderProtFilter(ProtFilterParticles, SpiderProtocol):
-    """ Apply Fourier filters to an image or a volume using Spider FQ or FQ NP.
-    
-    To improve boundary quality the image is padded 
-    with the average value to twice the original size 
-    during filtration if padding is selected.  
-    
-    See more documentation at: 
-    [[https://spider.wadsworth.org/spider_doc/spider/docs/man/fq.html][SPIDER's FQ online manual]]
+    # the URL doesn't load
+    """
+    Applies Fourier-space filtering operations to particle images or volumes
+    using several classical frequency-domain filters commonly employed in
+    cryo-EM image processing. The protocol is designed to enhance structural
+    signal, suppress noise, or emphasize specific spatial frequency ranges in
+    preparation for downstream reconstruction, classification, alignment, or
+    visualization tasks. More info:
+    https://spider.wadsworth.org/spider_doc/spider/docs/man/fq.html
+
+    AI Generated:
+
+    Filter Particles (SpiderProtFilter) - User Manual
+        Overview
+
+        The Filter Particles protocol applies frequency-domain filters to
+        cryo-EM particle images or volumetric data in order to control the
+        balance between signal preservation and noise suppression. Filtering is
+        one of the most common preprocessing operations in structural biology
+        because experimental images typically contain substantial levels of
+        high-frequency noise, low-frequency background variation, or unwanted
+        frequency components introduced during acquisition and reconstruction.
+
+        In practical cryo-EM workflows, filtering is frequently used before
+        particle alignment, classification, refinement, or visualization.
+        Depending on the scientific objective, the protocol may either suppress
+        noisy high-frequency information, remove low-frequency background
+        gradients, or isolate a specific frequency band that contains relevant
+        structural detail. Proper filtering often improves algorithmic
+        stability and visual interpretability, although excessive filtering may
+        remove biologically meaningful information.
+
+        Inputs and General Workflow
+
+        The protocol accepts a set of particles or images that will be
+        transformed through Fourier filtering operations. The resulting output
+        preserves the original particle organization while generating a new
+        filtered dataset suitable for subsequent analysis.
+
+        From a biological perspective, filtering should be understood as a
+        signal-conditioning step rather than a reconstruction method. The goal
+        is not to create new structural information but to improve the
+        interpretability of information already present in the data. Care must
+        therefore be taken to avoid introducing misleading visual features or
+        suppressing weak but biologically relevant signals.
+
+        Filter Types and Their Biological Meaning
+
+        Several filtering models are available, each emphasizing different
+        frequency behaviors and suited to different biological scenarios.
+
+        The Top-hat filter performs an abrupt truncation of frequencies beyond
+        a selected cutoff. This approach is computationally simple and useful
+        for exploratory analysis or aggressive denoising, but the sharp
+        transition may introduce ringing artifacts near strong density
+        boundaries. Biological users should therefore apply this filter
+        cautiously when interpreting fine structural details.
+
+        The Gaussian filter produces a smooth attenuation of frequencies and is
+        one of the most commonly used filtering strategies in cryo-EM. Because
+        the transition is gradual, Gaussian filtering tends to preserve overall
+        structural continuity while reducing high-frequency noise. This option
+        is often preferred for visualization, initial preprocessing, or gentle
+        denoising workflows.
+
+        The Fermi filter provides an intermediate behavior between abrupt and
+        smooth filtering. By adjusting the temperature parameter, the user can
+        control how sharply the transition occurs around the cutoff frequency.
+        This flexibility is particularly useful when balancing noise reduction
+        against preservation of intermediate-resolution features.
+
+        The Butterworth filter is widely used in signal processing because it
+        allows controlled frequency attenuation with adjustable steepness. The
+        order parameter determines how rapidly frequencies are suppressed
+        beyond the cutoff region. Lower orders provide smoother transitions,
+        while higher orders behave more aggressively. In biological practice,
+        moderate Butterworth filters are often effective for reducing noise
+        while preserving interpretable density boundaries.
+
+        The Raised cosine filter creates a smooth transition between retained
+        and suppressed frequencies within a specified frequency interval. This
+        approach is especially useful when the user wishes to isolate or
+        emphasize a frequency band without introducing abrupt Fourier-space
+        discontinuities.
+
+        Low-Pass and High-Pass Filtering
+
+        The protocol supports both low-pass and high-pass filtering modes.
+        Understanding the biological implications of these modes is essential
+        for correct interpretation.
+
+        Low-pass filtering suppresses high-frequency components and is commonly
+        used to reduce noise. This operation smooths the data and highlights
+        large-scale structural organization. In cryo-EM workflows, low-pass
+        filtering is frequently applied during early refinement stages,
+        visualization, or preparation of low-resolution references. Excessive
+        low-pass filtering, however, may remove secondary structure features
+        or blur biologically meaningful conformational differences.
+
+        High-pass filtering suppresses low-frequency information and enhances
+        local contrast or fine structural details. This may improve visibility
+        of edges or local features but can also amplify noise if applied too
+        aggressively. Biological users should employ high-pass filtering
+        carefully, particularly when analyzing weak densities or flexible
+        regions.
+
+        Frequency Selection and Resolution Interpretation
+
+        Frequency parameters define which spatial frequencies are retained or
+        attenuated. In cryo-EM terms, these frequencies are directly related
+        to structural resolution.
+
+        Lower spatial frequencies correspond to broad global shapes and overall
+        molecular architecture, while higher frequencies contain finer
+        structural information such as secondary structure elements or local
+        side-chain detail. Selecting an appropriate cutoff therefore depends on
+        the biological question being addressed.
+
+        For example, strong low-pass filtering may be appropriate when
+        inspecting overall domain organization or particle orientation, whereas
+        milder filtering is preferred when evaluating secondary structure
+        quality or map interpretability.
+
+        Padding and Boundary Effects
+
+        The protocol optionally applies padding during filtering operations.
+        Padding extends the image boundaries before Fourier transformation,
+        reducing edge discontinuities and minimizing artifacts introduced by
+        periodic boundary assumptions in Fourier processing.
+
+        From a practical perspective, padding is generally recommended because
+        it improves boundary behavior and reduces artificial ringing near the
+        particle edges. This becomes particularly important for particles that
+        occupy a large fraction of the image box or contain strong density
+        gradients near the borders.
+
+        Disabling padding may reduce computational overhead slightly, but it
+        can increase the risk of edge artifacts that interfere with alignment,
+        classification, or interpretation.
+
+        Outputs and Their Interpretation
+
+        The protocol produces a filtered particle dataset that preserves the
+        original metadata and organizational structure while replacing the
+        image content with filtered versions. The resulting particles can be
+        used directly in downstream cryo-EM workflows including alignment,
+        classification, reconstruction, or visualization.
+
+        Biologically, filtered particles should always be interpreted in the
+        context of the chosen frequency parameters. Features removed by
+        filtering are not necessarily absent from the specimen itself but may
+        simply have been suppressed computationally. For this reason,
+        publication-quality interpretation should ideally compare filtered and
+        unfiltered representations whenever possible.
+
+        Practical Recommendations
+
+        In routine cryo-EM processing, Gaussian or moderate Butterworth
+        low-pass filtering provides a good starting point for reducing noise
+        while preserving structural continuity. Padding should generally remain
+        enabled unless there is a strong computational reason to disable it.
+
+        Aggressive filtering strategies may improve visual appearance but can
+        distort biological interpretation if overused. When evaluating flexible
+        complexes, weak ligand densities, or heterogeneous conformations,
+        conservative filtering is usually preferable.
+
+        High-pass filtering is best reserved for specialized applications such
+        as contrast enhancement or feature detection rather than routine
+        structural interpretation.
+
+        Final Perspective
+
+        Fourier filtering is a foundational operation in cryo-EM image
+        analysis because it directly shapes the balance between signal and
+        noise. Although mathematically straightforward, filtering decisions can
+        strongly influence biological interpretation, alignment stability, and
+        downstream reconstruction quality. Careful selection of filter type,
+        cutoff frequency, and transition behavior is therefore essential for
+        producing reliable and biologically meaningful results.
     """
     _label = 'filter particles'
     _devStatus = PROD
